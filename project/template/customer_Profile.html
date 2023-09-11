@@ -4,7 +4,7 @@
 <html lang="en">
 
 <head>
-    <title>AgriSelect-Smarter Crop Choices</title>
+    <title>AgriSelect-Customer Profile</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="icon" href="{% static 'img/Agriselect1.png' %}" width='30' height='30'>
@@ -41,7 +41,7 @@
                         </li>
                         {% if user.is_authenticated %}
                         <li class="nav-item">
-                            <a class="nav-link" href="#">All Products</a>
+                            <a class="nav-link" href="{% url 'customer_allProducts' %}">All Products</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="#">Orders</a>
@@ -90,6 +90,7 @@
                         {% if request.user.is_authenticated %}
                             <a class="dropdown-item" href="#">{{ request.user.name }}</a>
                             <a class="dropdown-item" href="{% url 'customer_Profile' %}">Profile</a>
+                            <a class="dropdown-item" href="{% url 'customer_Wishlist' %}">Wishlist</a>
                             <a class="dropdown-item" href="{% url 'user_logout' %}" onclick="return confirm('Are you sure you want to sign out?')">Sign out</a>
                         {% else %}  
                             <a class="dropdown-item" href="{% url 'user_login' %}">Sign in</a>
@@ -121,132 +122,151 @@
         </div>
     </div>
     <!--nav ends -->
-    
-    <!--Profile-->
-    <div class="container">
-        <div class="row">
-                <div class="col-12">
-                    <!-- Page title -->
-                    <div class="my-5">
-                        <h3>My Profile</h3>
-                        <hr>
-                    </div>
 
+    {% if messages %}
+    <div class="messages">
+      {% for message in messages %}
+        <div class="alert alert-success">{{ message }}</div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+ <div class="container ">
+    <div class="row ">
+        <!-- Sidebar -->
+        <div class="col-lg-3 mb-4 mt-5 vh-100 d-flex flex-column shadow-lg" style="background-color: #F8F9F9">
+            <!-- Profile Picture -->
+            <div class="text-center p-4">
+                <img src="{% static 'img/avatar.png' %}" alt="Profile Picture" class="img-fluid rounded-circle mb-3 mt-4" width="100">
+                <!-- Greeting -->
+                <p class="mb-0"><b>Hello!</b></p>
+            </div>
+            <div class="list-group mt-3 flex-grow-1">
+                <a href="javascript:void(0);" class="list-group-item list-group-item-action mb-2" onclick="showProfileForm()">Dashboard</a>
+                <a href="javascript:void(0);" class="list-group-item list-group-item-action mb-2" onclick="showAddressCards()">My Addresses</a>
+                <a href="#" class="list-group-item list-group-item-action mb-2">My Gifts</a>
+                <a href="#" class="list-group-item list-group-item-action mb-2">Payments</a>
+                <!-- Add more sidebar items as needed -->
+            </div>
+        </div>
+        
+        <div class="col-lg-9 mt-5 shadow-lg vh-100"  style="background-color: #ffffff;">
+            <!-- Main Content -->    
+                <!-- Form START -->
+                <div id="profile-form-section">
+                    <form method="POST" class="file-upload mt-1 " action="{% url 'customer_Profile' %}">
+                    {% csrf_token %}
+                    <div class="row mb-5 gx-5">
+                        <!-- Contact detail -->
+                        <div class="col-xxl-8 mb-5 mb-xxl-0">
+                            <div class="bg-secondary-soft px-4 py-5 rounded">
+                                <div class="row g-3">
+                                    <h5 class="mb-4 mt-0">Personal Details</h5>
+                
+                                    <!-- First Name -->
+                                    <div class="col-md-6">
+                                        <label class="form-label">First Name *</label>
+                                        <input type="text" class="form-control" id="first_name" name="first_name" placeholder="Enter your First Name" value="{% if form_submitted %}{{ request.POST.first_name }}{% else %}{{ user_profile.first_name }}{% endif %}" {% if not form_submitted %}disabled{% endif %} oninput="validateName(this)">
+                                        <div id="first_name_error" class="text-danger"></div>
+                                    </div>
+                
+                                    <!-- Last Name -->
+                                    <div class="col-md-6">
+                                        <label class="form-label">Last Name *</label>
+                                        <input type="text" class="form-control" id="last_name" name="last_name" placeholder="Enter your Last Name" value="{% if form_submitted %}{{ request.POST.last_name }}{% else %}{{ user_profile.last_name }}{% endif %}" {% if not form_submitted %}disabled{% endif %} oninput="validateName(this)">
+                                        <div id="last_name_error" class="text-danger"></div>
+                                    </div>
+                                </div> <!-- Row 1 END -->
+                
+                                <!-- Space -->
+                                <div class="mb-3"></div>
+                
+                                <!-- Mobile number -->
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Mobile number *</label>
+                                        <input type="text" class="form-control" id="mobile_number" name="mobile_number" placeholder="Enter your mobile no." value="{% if form_submitted %}{{ request.POST.mobile_number }}{% else %}{{ user_profile.mobile_number }}{% endif %}" {% if not form_submitted %}disabled{% endif %}>
+                                        <div id="mobile_number_error" class="text-danger"></div>
+                                    </div>
+                                </div> <!-- Row 2 END -->
+                
+                                <!-- Space -->
+                                <div class="mb-3"></div>
+                
+                                <!-- Email -->
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label for="inputEmail4" class="form-label">Email *</label>
+                                        <input type="email" class="form-control" id="inputEmail4" name="email" value="{% if request.user.is_authenticated %}{{ request.user.email }}{% endif %}" disabled>
+                                    </div>
+                                </div> <!-- Row 3 END -->
+                
+                                <!-- Add margin to move buttons up -->
+                                <div class="mt-3"></div>
+                
+                                <div class="gap-3 d-md-flex justify-content-md-center text-center">
+                                    <button type="submit" class="btn btn-danger btn" id="save_button">Save</button>
+                                    <button type="submit" class="btn btn-primary btn" id="update_button">Update</button>
+                                </div>
+                                
+                            </div>
+                        </div>
+                    </div> <!-- Row END -->
+                    </form>
+                    <!-- Form END -->
+                </div>
+            <!-- Address Form Card Template (hidden) -->
+            <div id="address-form-card-template" style="display: none">
+                <div class="card mt-2" style="max-width: 400px; margin: 0 auto;" id="address-cards-container">
                     
-            <!-- Form START -->
-        <form class="file-upload">
-            <div class="row mb-5 gx-5">
-                <!-- Contact detail -->
-                <div class="col-xxl-8 mb-5 mb-xxl-0">
-                    <div class="bg-secondary-soft px-4 py-5 rounded">
-                        <div class="row g-3">
-                            <h4 class="mb-4 mt-0">Personal Details</h4>
-                            <!-- Profile Picture -->
-                            <div class="col-md-12">
-                                <label class="form-label">Profile Picture *</label>
-                                <input type="file" class="form-control" name="profile_picture">
+                    <div class="card-body">
+                        <h5 class="card-title">Add New Address</h5>
+                        <form method="post" id="address-form">
+                            {% csrf_token %}
+                            <div class="mb-1">
+                                <label for="building_name" class="form-label">Building Name</label>
+                                <input type="text" class="form-control" id="building_name" name="building_name" required>
                             </div>
-                            <!-- Display Profile Image -->
-                            <div class="col-md-12">
-                                {% if profile_image_url %}
-                                <img src="{{ profile_image_url }}" alt="Profile Image" class="img-fluid">
-                                {% else %}
-                                <p>No profile image uploaded yet.</p>
-                                {% endif %}
+                            <div class="mb-1">
+                                <label for="address_type" class="form-label">Address Type</label>
+                                <select class="form-select" id="address_type" name="address_type">
+                                    <option value="" disabled selected>--Select--</option>
+                                    <option value="home">Home</option>
+                                    <option value="work">Work</option>
+                                    <option value="other">Other</option>
+                                </select>
                             </div>
-                            <!--  Name -->
-                            <div class="col-md-6">
-                                <label class="form-label">Name *</label>
-                                <input type="text" class="form-control" name="first_name" placeholder="Enter your Name" value="">
+                            <div class="mb-1">
+                                <label for="street" class="form-label">Street</label>
+                                <input type="text" class="form-control" id="street" name="street" required>
                             </div>
-                            
-                            <!-- Mobile number -->
-                            <div class="col-md-6">
-                                <label class="form-label">Mobile number *</label>
-                                <input type="text" class="form-control" name="mobile_number" placeholder="Enter your mobile no." value="">
+                            <div class="mb-1">
+                                <label for="city" class="form-label">City</label>
+                                <input type="text" class="form-control" id="city" name="city" required>
                             </div>
-                            <!-- Email -->
-                            <div class="col-md-6">
-                                <label for="inputEmail4" class="form-label">Email *</label>
-                                <input type="email" class="form-control" id="inputEmail4" name="email" value="">
+                            <div class="mb-1">
+                                <label for="state" class="form-label">State</label>
+                                <input type="text" class="form-control" id="state" name="state" required>
                             </div>
-                            <!-- House Name -->
-                            <div class="col-md-6">
-                                <label class="form-label">House Name *</label>
-                                <input type="text" class="form-control" name="house_name" placeholder="Enter your house name" value="">
+                            <div class="mb-1">
+                                <label for="zip_code" class="form-label">ZIP Code</label>
+                                <input type="text" class="form-control" id="zip_code" name="zip_code" required>
                             </div>
-                            <!-- Street -->
-                            <div class="col-md-6">
-                                <label class="form-label">Street *</label>
-                                <input type="text" class="form-control" name="street" placeholder="Enter your street" value="">
-                            </div>
-                            <!-- Locality -->
-                            <div class="col-md-6">
-                                <label class="form-label">Locality *</label>
-                                <input type="text" class="form-control" name="locality" placeholder="Enter your locality" value="">
-                            </div>
-                            <!-- City -->
-                            <div class="col-md-6">
-                                <label class="form-label">City *</label>
-                                <input type="text" class="form-control" name="city" placeholder="Enter your city" value="">
-                            </div>
-                            <!-- State -->
-                            <div class="col-md-6">
-                                <label class="form-label">State *</label>
-                                <input type="text" class="form-control" name="state" placeholder="Enter your state" value="">
-                            </div>
-                            <!-- Pincode -->
-                            <div class="col-md-6">
-                                <label class="form-label">Pincode *</label>
-                                <input type="text" class="form-control" name="pincode" placeholder="Enter valid pincode" value="">
-                            </div>
-                        </div> <!-- Row END -->
+                            <button type="submit" class="btn btn-primary">Save Address</button>
+                        </form>
                     </div>
                 </div>
-                
-                <!-- <div class="col-xxl-4">
-                    <div class="bg-secondary-soft px-4 py-5 rounded">
-                        <div class="row g-3">
-                            <h4 class="mb-4 mt-0">Change Password</h4>
-                            <!-- Bank Account No -->
-                            <!-- <div class="col-md-12">
-                                <label class="form-label">Bank Account No *</label>
-                                <input type="text" class="form-control" name="bank_account_no" placeholder="Enter Account No." value="">
-                            </div> -->
-                            <!-- IFSC Code -->
-                            <!-- <div class="col-md-12">
-                                <label class="form-label">IFSC Code *</label>
-                                <input type="text" class="form-control" name="ifsc_code" placeholder="Enter IFSC Code" value="">
-                            </div> -->
-                            <!-- Branch Name -->
-                            <!-- <div class="col-md-12">
-                                <label class="form-label">Branch Name *</label>
-                                <input type="text" class="form-control" name="branch_name" placeholder="Enter Branch" value="">
-                            </div> -->
-                            <!-- Bank Name -->
-                            <!-- <div class="col-md-12">
-                                <label class="form-label">Bank Name *</label>
-                                <input type="text" class="form-control" name="bank_name" placeholder="Enter Bank Name" value="">
-                            </div> -->
-                        <!-- </div> Row END -->
-                    <!-- </div> -->
-                <!-- </div> --> 
-            </div> <!-- Row END -->
-            <div class="gap-3 d-md-flex justify-content-md-end text-center mb-3">
-                <button type="button" class="btn btn-danger btn">Save</button>
-                <button type="button" class="btn btn-primary btn">Update</button>
             </div>
-        </form> <!-- Form END -->
+               
+        </div>
+    </div>
+</div>
 
-        </div>
-        </div>
-        </div>
 
-    <!--Profile ends-->
 
 
         <!-- Footer -->
-    <footer class="footer mt-0 py-3 bg-dark">
+    <footer class="footer mt-5 py-3 bg-dark">
         <div class="container text-center">
         <div class="row text-center text-md-left align-items-center">
             <div class="col-md-5">
@@ -263,8 +283,124 @@
         </div>
     </footer>
   <!-- Footer -->
-  
+ 
+  <script>
+    // Function to show the address card section
+    function showAddressCards() {
+        var profileFormSection = document.getElementById("profile-form-section");
+        var addressFormCardTemplate = document.getElementById("address-form-card-template");
+    
+        profileFormSection.style.display = "none";
+        addressFormCardTemplate.style.display = "block";
+    }
+    
+    // Function to show the profile form section
+    function showProfileForm() {
+        var profileFormSection = document.getElementById("profile-form-section");
+        var addressFormCardTemplate = document.getElementById("address-form-card-template");
 
+        // Hide the address card template
+        addressFormCardTemplate.style.display = "none";
+
+        // Show the profile form section
+        profileFormSection.style.display = "block";
+    }
+    </script>
+    
+
+
+  <script>
+    // Add event listeners for input fields
+    const firstNameInput = document.querySelector('input[name="first_name"]');
+    const lastNameInput = document.querySelector('input[name="last_name"]');
+    const mobileNumberInput = document.querySelector('input[name="mobile_number"]');
+    const saveButton = document.querySelector('button#save_button');
+    const updateButton = document.querySelector('button#update_button');
+
+    firstNameInput.addEventListener('input', validateForm);
+    lastNameInput.addEventListener('input', validateForm);
+    mobileNumberInput.addEventListener('input', validateForm);
+
+    function enableInputs(enable) {
+        [firstNameInput, lastNameInput, mobileNumberInput].forEach((input) => {
+            input.disabled = !enable;
+        });
+    }
+
+    updateButton.addEventListener('click', function (event) {
+        event.preventDefault(); // Prevent the form from submitting
+
+        // Enable input fields except for email
+        enableInputs(true);
+
+        // Disable the email field
+        emailInput.disabled = true;
+    });
+
+    function validateForm() {
+    const firstName = firstNameInput.value.trim();
+    const lastName = lastNameInput.value.trim();
+    let mobileNumber = mobileNumberInput.value.trim();
+    const firstNameError = document.getElementById('first_name_error');
+    const lastNameError = document.getElementById('last_name_error');
+    const mobileNumberError = document.getElementById('mobile_number_error');
+
+    // Validate First Name
+    if (firstName === '') {
+        firstNameError.textContent = 'First Name is required';
+    } else if (!/^[a-zA-Z]+$/.test(firstName)) {
+        firstNameError.textContent = 'Only alphabets are allowed';
+    } else {
+        firstNameError.textContent = '';
+    }
+
+    // Validate Last Name
+    if (lastName === '') {
+        lastNameError.textContent = 'Last Name is required';
+    } else if (!/^[a-zA-Z ]+$/.test(lastName)) {
+        lastNameError.textContent = 'Only alphabets are allowed';
+    } else {
+        lastNameError.textContent = '';
+    }
+
+    // Only validate and format Mobile Number if it's changed from the existing value
+    if (mobileNumber !== '{{ user_profile.mobile_number }}') {
+        // Remove spaces and non-digit characters from mobile number except '+'
+        mobileNumber = mobileNumber.replace(/[^+\d]/g, '');
+
+        // Automatically add "+91" in front of mobile number if it has 10 digits
+        if (mobileNumber.length === 10) {
+            mobileNumber = '+91' + mobileNumber;
+        }
+
+        // Validate Mobile Number
+        if (mobileNumber === '') {
+            mobileNumberError.textContent = 'Mobile Number is required';
+        } else if (!/^\+91\d{10}$/.test(mobileNumber)) {
+            mobileNumberError.textContent = 'Mobile Number must start with +91 and have 10 digits';
+        } else {
+            mobileNumberError.textContent = '';
+        }
+
+        // Update the input field with the formatted mobile number
+        mobileNumberInput.value = mobileNumber;
+    } else {
+        mobileNumberError.textContent = ''; // Clear error for existing value
+    }
+
+    // Enable or disable buttons based on validation
+    if (firstName !== '' && /^[a-zA-Z]+$/.test(firstName) &&
+        lastName !== '' && /^[a-zA-Z ]+$/.test(lastName) &&
+        (mobileNumber === '{{ user_profile.mobile_number }}' || /^\+91\d{10}$/.test(mobileNumber))) {
+        saveButton.disabled = false;
+        updateButton.disabled = false;
+    } else {
+        saveButton.disabled = true;
+        updateButton.disabled = true;
+    }
+}
+
+</script>
 
 
     <!-- Start Script -->

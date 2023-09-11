@@ -1,0 +1,240 @@
+{%load static%}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>AgriSelect-All Products</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="{% static 'img/Agriselect1.png' %}" width='30' height='30'>
+
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/templatemo.css' %}">
+    <link rel="stylesheet" href="{% static 'css/custom.css' %}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+    <!-- Load fonts style after rendering the layout styles -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;200;300;400;500;700;900&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+</head>
+
+<body>
+    <!-- Header -->
+    <nav class="navbar navbar-expand-lg navbar-light shadow p-0 sticky-top">
+        <div class="container d-flex justify-content-between align-items-center">
+            
+            <img src="{% static 'img/Agriselect1.png'%}" width='100' height='auto' class='logo'>
+
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#templatemo_main_nav" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="align-self-center collapse navbar-collapse flex-fill  d-lg-flex justify-content-lg-between" id="templatemo_main_nav">
+                <div class="flex-fill">
+                    <ul class="nav navbar-nav d-flex justify-content-between mx-lg-auto custom-nav-links">
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'index' %}">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">About</a>
+                        </li>
+                        {% if user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'customer_allProducts' %}">All Products</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Orders</a>
+                        </li>
+                        {%else%}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'user_login' %}">All Products</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'user_login' %}">Orders</a>
+                        </li>         
+                        {% endif %}             
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Contact</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Gallery</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="navbar align-self-center d-flex">
+                    <div class="d-lg-none flex-sm-fill mt-3 mb-4 col-7 col-sm-auto pr-3">
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="inputMobileSearch" placeholder="Search ...">
+                            <div class="input-group-text">
+                                <i class="fa fa-fw fa-search"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <a class="nav-icon d-none d-lg-inline" href="#" data-bs-toggle="modal" data-bs-target="#templatemo_search">
+                        <i class="fa fa-fw fa-search text-dark mr-2"></i>
+                    </a>
+                    {% if user.is_authenticated %}
+                    <a class="nav-icon position-relative text-decoration-none" href="#">
+                        <i class="fa fa-fw fa-shopping-cart text-dark mr-1"></i>
+                    </a>
+                    {%else%}
+                    <a class="nav-icon position-relative text-decoration-none" href="{% url 'user_login' %}">
+                        <i class="fa fa-fw fa-shopping-cart text-dark mr-1"></i>
+                    </a>
+                    {% endif %}
+                    <a class="nav-icon position-relative text-decoration-none dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fa fa-fw fa-user text-dark mr-3"></i>
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="userDropdown">
+                        {% if request.user.is_authenticated %}
+                            <a class="dropdown-item" href="#">{{ request.user.name }}</a>
+                            <a class="dropdown-item" href="{% url 'customer_Profile' %}">Profile</a>
+                            <a class="dropdown-item" href="{% url 'customer_Wishlist' %}">Wishlist</a>
+                            <a class="dropdown-item" href="{% url 'user_logout' %}" onclick="return confirm('Are you sure you want to sign out?')">Sign out</a>
+                        {% else %}  
+                            <a class="dropdown-item" href="{% url 'user_login' %}">Sign in</a>
+                            <a class="dropdown-item" href="{% url 'customer_Registration' %}">Register</a>
+                            <a class="dropdown-item" href="{% url 'seller_home' %}">Seller's Home</a>
+                        {% endif %}
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <!-- Close Header -->
+
+    <!-- Modal -->
+    <div class="modal fade bg-white" id="templatemo_search" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="w-100 pt-1 mb-5 text-right">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="" method="get" class="modal-content modal-body border-0 p-0">
+                <div class="input-group mb-2">
+                    <input type="text" class="form-control" id="inputModalSearch" name="q" placeholder="Search ...">
+                    <button type="submit" class="input-group-text bg-success text-light">
+                        <i class="fa fa-fw fa-search text-white"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!--nav ends -->
+
+
+    <div class="container">
+        <h3>All Products</h3>
+        <!-- Add this select element at the top of your HTML page -->
+        <select id="categorySelect">
+            <option value="All">All</option>
+            {% for category in categories %}
+                <option value="{{ category }}">{{ category }}</option>
+            {% endfor %}
+        </select>
+
+        <div class="row" id="filteredProducts">
+            {% for product in products %}
+            <div class="col-md-4">
+                <div class="card mb-4 shadow-sm">
+                    <img src="{{ product.product_image.url }}" class="card-img-top" alt="{{ product.product_name }}" style="height: 250px; object-fit: cover;">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ product.product_name }}</h5>
+                        <p class="card-text">Price: Rs.{{ product.price }}</p>
+                        <a href="{% url 'customer_ProductView' product.id %}" class="btn btn-success">View Product</a>
+                        <a href="#" onclick="addToWishlist('{{ product.id }}')" class="btn btn-outline-danger"><i class="fas fa-heart"></i></a>
+                    </div>
+                </div>                
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+<script>
+    // JavaScript to trigger page refresh when category is selected
+    document.getElementById('categorySelect').addEventListener('change', function() {
+        const selectedCategory = this.value;
+        if (selectedCategory === 'All') {
+            window.location.href = '/customer_allProducts/';
+        } else {
+            window.location.href = `/customer_allProducts/${selectedCategory}/`;
+        }
+    });
+
+    
+</script>
+
+
+        <!-- Footer -->
+    <footer class="footer mt-5 py-3 bg-dark">
+        <div class="container text-center">
+        <div class="row text-center text-md-left align-items-center">
+            <div class="col-md-5">
+            <p class="text-light">Copyright @2023 All rights are preserved</p>
+            </div>
+            <div class="col-md-7">
+            <a href="#" class="social-icons text-white"><i class="fab fa-facebook-f"></i></a>
+            <span class="mx-2"></span> <!-- Add space between icons using a span element with margin -->
+            <a href="#" class="social-icons text-white"><i class="fab fa-twitter"></i></a>
+            <span class="mx-2"></span> <!-- Add space between icons -->
+            <a href="#" class="social-icons text-white"><i class="fab fa-instagram"></i></a>
+            </div>
+        </div>
+        </div>
+    </footer>
+  <!-- Footer -->
+
+  <script>
+    function addToWishlist(productId) {
+        // Get the CSRF token from the cookies
+        const csrfToken = getCookie('csrftoken');
+
+        $.ajax({
+            url: `/add_to_wishlist/${productId}/`,
+            type: 'POST',
+            dataType: 'json',
+            data: {
+                csrfmiddlewaretoken: csrfToken,  // Include the CSRF token in the data
+            },
+            success: function (data) {
+                if (data.success) {
+                    alert('Product added to wishlist successfully.');
+                } else {
+                    alert('Failed to add product to wishlist.');
+                }
+            },
+            error: function () {
+                alert('An error occurred while adding the product to wishlist.');
+            }
+        });
+    }
+
+    // Function to get the CSRF token from cookies
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+</script>
+
+
+    <!-- Start Script -->
+    <script src="{% static 'js/jquery-1.11.0.min.js' %}"></script>
+    <script src="{% static 'js/jquery-migrate-1.2.1.min.js' %}"></script>
+    <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'js/templatemo.js' %}"></script>
+    <script src="{% static 'js/custom.js' %}"></script>
+    <!-- End Script -->
+</body>
+
+</html>

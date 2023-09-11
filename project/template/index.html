@@ -41,7 +41,7 @@
                         </li>
                         {% if user.is_authenticated %}
                         <li class="nav-item">
-                            <a class="nav-link" href="#">All Products</a>
+                            <a class="nav-link" href="{% url 'customer_allProducts' %}">All Products</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="#">Orders</a>
@@ -90,6 +90,7 @@
                         {% if request.user.is_authenticated %}
                             <a class="dropdown-item" href="#">{{ request.user.name }}</a>
                             <a class="dropdown-item" href="{% url 'customer_Profile' %}">Profile</a>
+                            <a class="dropdown-item" href="{% url 'customer_Wishlist' %}">Wishlist</a>
                             <a class="dropdown-item" href="{% url 'user_logout' %}" onclick="return confirm('Are you sure you want to sign out?')">Sign out</a>
                         {% else %}  
                             <a class="dropdown-item" href="{% url 'user_login' %}">Sign in</a>
@@ -105,23 +106,28 @@
     <!-- Close Header -->
 
     <!-- Modal -->
-    <div class="modal fade bg-white" id="templatemo_search" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg" role="document">
-            <div class="w-100 pt-1 mb-5 text-right">
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form action="" method="get" class="modal-content modal-body border-0 p-0">
-                <div class="input-group mb-2">
-                    <input type="text" class="form-control" id="inputModalSearch" name="q" placeholder="Search ...">
-                    <button type="submit" class="input-group-text bg-success text-light">
-                        <i class="fa fa-fw fa-search text-white"></i>
-                    </button>
-                </div>
-            </form>
+<div class="modal fade bg-white" id="templatemo_search" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="w-100 pt-1 mb-5 text-right">
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
+        <form id="search-form" class="modal-content modal-body border-0 p-0">
+            <div class="input-group mb-2">
+                <input type="text" class="form-control" id="inputModalSearch" name="q" placeholder="Search ...">
+                <button type="submit" class="input-group-text bg-success text-light">
+                    <i class="fa fa-fw fa-search text-white"></i>
+                </button>
+            </div>
+            <div id="search-results">
+            </div>
+        </form>
+        <!-- Display search results here -->
     </div>
+</div>
+
     <!--nav ends -->
 
+    
         <!-- Start Banner Hero -->
         <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
             <div class="carousel-inner">
@@ -344,7 +350,49 @@
   </footer>
   <!-- Footer -->
   
+  <!-- Include jQuery library -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
+<script>
+    $(document).ready(function() {
+        // Handle the form submission
+        $("#search-form").submit(function(event) {
+            event.preventDefault(); // Prevent the default form submission
+
+            // Get the search query from the input field
+            var query = $("#inputModalSearch").val();
+
+            // Send an AJAX request to the Django view
+            $.ajax({
+                type: "GET",
+                url: "/search/", // URL should match the URL pattern in your urls.py
+                data: {'q': query},
+                dataType: "json",
+                success: function(response) {
+                    // Handle the response and update the search results container
+                    var results = response.results;
+                    var resultHtml = '';
+
+                    if (results.length === 0) {
+                        resultHtml = '<p>No results found.</p>';
+                    } else {
+                        for (var i = 0; i < results.length; i++) {
+                            // Construct the URLs for product name and category
+                            var productNameUrl = "/customer_ProductView/" + results[i].product_id + "/";
+                            var categoryUrl = "{% url 'customer_allProducts' %}?category=" + results[i].product_category;
+                            
+                            // Create clickable links for product name and category
+                            resultHtml += '<a style:"z-index:7" href="' + productNameUrl + '">' + results[i].product_name + '</a> - <a href="' + categoryUrl + '">' + results[i].product_category + '</a><br>';
+                        }
+                    }
+
+                    // Update the search results container
+                    $("#search-results").html(resultHtml);
+                }
+            });
+        });
+    });
+</script>
 
 
     <!-- Start Script -->

@@ -162,21 +162,30 @@
                                 </div>
                                 
                                 <div class="mb-3">
+                                    <label for="{{ form.stock.id_for_label }}" class="form-label" style="margin-bottom: 10px;">Stock:</label>
+                                    <input type="number" class="form-control" id="{{ form.stock.id_for_label }}" name="{{ form.stock.name }}" min="0" required>
+                                </div>
+                                
+                                <div class="mb-3">
                                     <label for="{{ form.category.id_for_label }}" class="form-label" style="margin-bottom: 10px;">Product Category:</label>
                                     {{ form.category }}
                                 </div>
                                 
-                                <div class="mb-3">
-                                    <label for="{{ form.subcategory.id_for_label }}" class="form-label" style="margin-bottom: 10px;">Product Subcategory:</label>
-                                    {{ form.subcategory }}
+                                <div id="subcategory-field">
+                                    <div class="mb-3">
+                                        <label for="{{ form.subcategory.id_for_label }}" class="form-label" style="margin-bottom: 10px;">Product Subcategory:</label>
+                                        {{ form.subcategory }}
+                                    </div>
                                 </div>
                                 
                                 
-                                <div class="mb-3">
-                                    <label for="{{ form.price.id_for_label }}" class="form-label" style="margin-bottom: 10px;">Price:</label>
-                                    <div class="input-group">
-                                        <span class="input-group-text" style="width: 40px; height: 40px">Rs.</span>
-                                        <input type="text" class="form-control" id="{{ form.price.id_for_label }}" name="{{ form.price.name }}" oninput="validatePrice(this)" required>
+                                <div id="price-field">
+                                    <div class="mb-3">
+                                        <label for="{{ form.price.id_for_label }}" class="form-label" style="margin-bottom: 10px;">Price:</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text" style="width: 40px; height: 40px">Rs.</span>
+                                            <input type="text" class="form-control" id="{{ form.price.id_for_label }}" name="{{ form.price.name }}" oninput="validatePrice(this)" required>
+                                        </div>
                                     </div>
                                 </div>
                                 
@@ -216,6 +225,9 @@
         </div>
     </footer>
   <!-- Footer -->
+
+    <!-- Add this script at the end of your HTML body -->
+    
   <script>
     const productNameInput = document.getElementById("{{ form.product_name.id_for_label }}");
     const productNameError = document.getElementById("productNameError");

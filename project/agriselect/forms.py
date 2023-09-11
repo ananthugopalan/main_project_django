@@ -1,5 +1,5 @@
 from django import forms
-from .models import Products
+from .models import Product, SellerProfile, Address
 
 class ProductForm(forms.ModelForm):
     CATEGORY_CHOICES = [
@@ -13,14 +13,15 @@ class ProductForm(forms.ModelForm):
         ('vegetables', 'Vegetables'),
         ('fruits', 'Fruits'),
         ('flowers', 'Flowers'),
-        ('grains', 'Grains'),
+        ('cereals', 'Cereals'),
     ]
-
     category = forms.ChoiceField(choices=CATEGORY_CHOICES)
     subcategory = forms.ChoiceField(choices=SUBCATEGORY_CHOICES)
+
+
     class Meta:
-        model = Products
-        fields = ('product_name', 'description', 'category', 'subcategory', 'price', 'product_image')
+        model = Product
+        fields = ('product_name', 'description','stock', 'category', 'subcategory','price','product_image')
         # ... other code
 
     def __init__(self, *args, **kwargs):
@@ -36,3 +37,17 @@ class ProductForm(forms.ModelForm):
         for field_name, field in self.fields.items():
             field.widget.attrs['class'] = 'form-control'
             field.widget.attrs['style'] = 'margin-bottom: 10px;'
+
+
+
+class SellerProfileForm(forms.ModelForm):
+    class Meta:
+        model = SellerProfile
+        fields = '__all__'
+
+
+class AddressForm(forms.ModelForm):
+    class Meta:
+        model = Address
+        fields = '__all__'
+
