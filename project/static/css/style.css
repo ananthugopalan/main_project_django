@@ -1,0 +1,72 @@
+.custom-nav-links .nav-link {
+    font-family: 'Georgia', sans-serif; /* Replace 'Your Font Name' with the actual font name */
+    font-size: 16px; /* Adjust the font size as needed */
+    font-weight: bold; /* Adjust the font weight as needed */
+    color: #000000; /* Adjust the font color as needed */
+    /* Other CSS properties */
+  }
+  .full-width {
+    width: 100%;
+    height: auto;
+}
+.carousel-inner .carousel-item img {
+    height: 500px; /* Adjust this value as needed */
+    object-fit: cover;
+  }
+  .carousel-control-prev,
+  .carousel-control-next {
+    background-color: transparent;
+    border: none;
+  }
+  .dropdown-item, .h1 {
+    font-family: 'Georgia', sans-serif; /* Replace 'Your Font' with the actual font name */
+    font-size: 14px; /* Adjust the font size as needed */
+    font-weight: normal; /* Adjust the font weight as needed */
+    color: #000000; /* Adjust the font color as needed */
+    /* Other CSS properties */
+}
+.circle-image {
+    width: 150px; /* Adjust the desired width */
+    height: 150px; /* Adjust the desired height */
+    object-fit: cover; /* Maintain aspect ratio */
+    border-radius: 50%; /* Create a circular shape */
+}
+.card-rounded {
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+.card-rounded .card-img-top {
+    border-radius: 15px;
+} 
+
+.sticky-top {
+    background-color: #ffffff; /* Change to your desired background color */
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* Add a subtle shadow */
+    transition: background-color 0.3s, box-shadow 0.3s; /* Add transitions for smooth effects */
+}
+
+.circle-shape {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+}
+.circle-image {
+    width: 150px; /* Adjust the desired width */
+    height: 150px; /* Adjust the desired height */
+    object-fit: cover; /* Maintain aspect ratio */
+    border-radius: 50%; /* Create a circular shape */
+    overflow: hidden; /* Hide overflowing content */
+    transition: background-color 0.3s; /* Add a transition effect for background color change */
+}
+
+.circle-image:hover {
+    background-color: #82ae46 !important; /* Change the background color on hover */
+}
+
+
+
+.img-opacity {
+    opacity: 0.8; /* Adjust the opacity value as needed */
+}
+

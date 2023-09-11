@@ -1,0 +1,172 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Customer Register</title>
+  <link rel="icon" href="{% static 'img/Agriselect1.png' %}" width='30' height='30'>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-APkiNv6V6Zzv5SZ/gO4if/XvJ21foE94OcC96vgt1z3xJlZnuB+KqYfhmG1tY2NqCfyWQZC53GoN3R9kbbDvQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <style>
+    .invalid-tooltip {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      z-index: 5;
+      width: 100%;
+      margin-top: .1rem;
+      font-size: 0.875rem;
+      color: #dc3545;
+    }
+    .error {
+    font-size: 0.75rem; /* Smaller font size for error messages */
+    padding-top: 0.1rem; /* Reduce top padding for error messages */
+    color: #dc3545; /* Error message text color */
+  }
+  </style>
+
+</head>
+<body>
+  
+<!-- Register starts -->
+{% csrf_token %}
+<section class="min-vh-100 d-flex flex-column mt-2">
+  <div class="row d-flex justify-content-center align-items-center h-100">
+    <div class="container d-flex justify-content-center" style="margin-top: 20px;"> <!-- Add "margin-top" style -->
+      <a class="navbar-brand" href="#">
+        <img src="{% static 'img/Agriselect1.png'%}" width='100' height='auto' class='logo'>
+      </a>
+    </div>
+    <div class="col-md-8 col-lg-6 col-xl-4 shadow-lg p-3 bg-body rounded form-container">
+      <div class="h3 text-center mt-5">
+        <h4><u>Create New Account?</u></h4>
+      </div>
+      
+      <form class="m-3" autocomplete="off" id="registerForm" method="POST"> <!-- Add id="registerForm" to the form element -->
+        {%csrf_token%}
+        <!-- Name input -->
+        <div class="mb-3">
+          <input type="text" name="name" id="name" class="form-control" placeholder="Enter your name" data-toggle="tooltip" data-placement="right" title="" />
+          <div class="error" id="nameError"></div>
+        </div>
+
+        <!-- Email input -->
+          
+        <div class="mb-3">
+          <input type="email" name="email" id="email" class="form-control" placeholder="Enter a valid email address" data-toggle="tooltip" data-placement="right" title="" />
+          <div class="error" id="emailError">
+          </div> <!-- Add a div with .error class for email error -->
+        </div>
+        
+        <!-- Password input -->
+        <div class="mb-3">
+          <input type="password" name="password" id="password" class="form-control" placeholder="Enter password" data-toggle="tooltip" data-placement="right" title="" />
+          <div class="error" id="passwordError">
+          </div> <!-- Add a div with .error class for password error -->
+        </div>
+        
+        <!-- Confirm pass -->
+        <div class="mb-3 position-relative">
+          <input type="password" name="confirmPassword" id="confirmPassword" class="form-control" placeholder="Confirm Password" data-toggle="tooltip" data-placement="right" title="" />
+          <div class="position-absolute end-0 top-50 translate-middle-y">
+            <i id="confirmPasswordIcon" class="fas fa-check-circle text-success d-none" style="transform: translateX(-10px);"></i>
+          </div>
+          <div class="error" id="confirmPasswordError">
+            {% if messages %}
+              {% for message in messages %}
+                  {{ message }}
+              {% endfor %}
+          {% endif %}
+          </div>
+        </div>
+            
+        <div class="text-center mt-4">
+          <button type="submit" id="registerBtn" class="btn btn-success" style="padding-left: 2.5rem; padding-right: 2.5rem;">Sign Up</button>
+          <p class="small mt-2">Already have an account? <a href="{% url 'user_login' %}" class="link-danger">Login</a></p>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+<!-- Register ends -->
+
+<!-- Footer -->
+<footer class="footer mt-5 py-3 bg-dark">
+  <div class="container text-center">
+    <div class="row text-center text-md-left align-items-center">
+      <div class="col-md-5">
+        <p class="text-light">Copyright @2023 All rights are preserved</p>
+      </div>
+      <div class="col-md-7">
+        <a href="#" class="social-icons text-white"><i class="fab fa-facebook-f"></i></a>
+        <span class="mx-2"></span> <!-- Add space between icons using a span element with margin -->
+        <a href="#" class="social-icons text-white"><i class="fab fa-twitter"></i></a>
+        <span class="mx-2"></span> <!-- Add space between icons -->
+        <a href="#" class="social-icons text-white"><i class="fab fa-instagram"></i></a>
+      </div>
+    </div>
+  </div>
+</footer>
+<!-- Footer -->
+
+  
+  <script src="{% static 'js/validation.js' %}"></script>
+  <script>
+document.addEventListener('DOMContentLoaded', function() {
+  var confirmPasswordInput = document.getElementById('confirmPassword');
+  var confirmPasswordIcon = document.getElementById('confirmPasswordIcon');
+  
+  confirmPasswordInput.addEventListener('input', function() {
+    if (confirmPasswordInput.value === document.getElementById('password').value) {
+      confirmPasswordIcon.classList.remove('d-none');
+    } else {
+      confirmPasswordIcon.classList.add('d-none');
+    }
+  });
+  
+  // Rest of your JavaScript code...
+});
+
+  </script>
+  
+  <!-- <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var registerBtn = document.getElementById('registerBtn');
+      registerBtn.addEventListener('click', function(event) {
+        event.preventDefault(); // Prevent default form submission
+        var delayInMilliseconds = 2000; // Delay in milliseconds (2 seconds)
+  
+        // Disable the button during the delay
+        registerBtn.disabled = true;
+  
+        // Show the button again, display the message, and perform the form submission after the delay
+        setTimeout(function() {
+          registerBtn.disabled = false;
+  
+          // Display the message using an alert or a modal
+          // Example using an alert:
+          alert("Registration successful! Sign in to your account.");
+  
+          // Perform the form submission after the message is displayed
+          document.getElementById('registerForm').submit();
+        }, delayInMilliseconds);
+      });
+    });
+  </script> -->
+  
+  
+
+<!-- Bootstrap and other scripts -->
+  <script src="https://kit.fontawesome.com/abaaeb8089.js" crossorigin="anonymous"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>
+</body>
+</html>
