@@ -18,23 +18,11 @@ def search_products(request):
         results = Product.objects.filter(product_name__icontains=query)
 
     # Prepare the search results as JSON data
-    search_results = [{'product_name': product.product_name, 'product_category': product.product_category} for product in results]
+    search_results = [{'id':product.id,'product_name': product.product_name, 'product_category': product.product_category} for product in results]
 
     response_data = {'results': search_results}
     return JsonResponse(response_data)
 
-# def product_view(request):
-#     product_name = request.GET.get('name')
-#     product_category = request.GET.get('category')
-
-#     # Query the database to get the product details
-#     product = Product.objects.filter(product_name=product_name, product_category=product_category).first()
-
-#     context = {
-#         'product': product,
-#     }
-
-#     return render(request, 'customer_ProductView.html', context)
 
 def customer_allProducts(request, category='All'):
     if category == 'All':
@@ -48,23 +36,49 @@ def customer_Profile(request):
     user_profile, created = Customer_Profile.objects.get_or_create(customer=request.user)
 
     if request.method == 'POST':
-        first_name = request.POST.get('first_name')
-        last_name = request.POST.get('last_name')
-        mobile_number = request.POST.get('mobile_number')
+        # Check which form was submitted based on the button clicked
+        if 'profile_save_button' in request.POST:
+            # Handle profile form submission
+            first_name = request.POST.get('first_name')
+            last_name = request.POST.get('last_name')
+            mobile_number = request.POST.get('mobile_number')
 
-        # Update the user profile fields
-        user_profile.first_name = first_name
-        user_profile.last_name = last_name
-        user_profile.mobile_number = mobile_number
-        user_profile.save()
+            # Update the user profile fields
+            user_profile.first_name = first_name
+            user_profile.last_name = last_name
+            user_profile.mobile_number = mobile_number
+            user_profile.save()
 
-        messages.success(request, 'Profile added successfully')  # Display a success message
+            messages.success(request, 'Profile added successfully')  # Display a success message
+
+        elif 'address_save_button' in request.POST:
+            print("Please enter")
+            # Handle address form submission
+            building_name = request.POST.get('building_name')
+            address_type = request.POST.get('address_type')
+            street = request.POST.get('street')
+            city = request.POST.get('city')
+            state = request.POST.get('state')
+            zip_code = request.POST.get('zip_code')            
+            
+            address = Address(
+                user=request.user,
+                building_name=building_name,
+                address_type=address_type,
+                street=street,
+                city=city,
+                state=state,
+                zip_code=zip_code
+            )
+            address.save()
+            messages.success(request, 'Address added successfully')  # Display a success message
         return redirect('customer_Profile') 
+
     context = {
         'user_profile': user_profile,
         'form_submitted': request.method == 'POST',
     }
-    return render(request,'customer_Profile.html', context)
+    return render(request, 'customer_Profile.html', context)
 
 def customer_Wishlist(request):
     if request.user.is_authenticated:
@@ -91,31 +105,6 @@ def remove_from_wishlist(request, product_id):
     else:
         return JsonResponse({'success': False})
 
-def add_address(request):
-    if request.method == 'POST':
-        building_name = request.POST.get('building_name')
-        address_type = request.POST.get('address_type')
-        street = request.POST.get('street')
-        city = request.POST.get('city')
-        state = request.POST.get('state')
-        zip_code = request.POST.get('zip_code')
-        
-        # Assuming you have access to the current user object
-        user = request.user
-        
-        # Create and save the address
-        address = Address.objects.create(
-            user=user,
-            building_name=building_name,
-            address_type=address_type,
-            street=street,
-            city=city,
-            state=state,
-            zip_code=zip_code
-        )
-        return redirect('customer_Profile')  # Redirect to the address list page or another appropriate page
-
-    return render(request, 'customer_Profile.html')
 
 def customer_ProductView(request,product_id):
     product = get_object_or_404(Product, pk=product_id)

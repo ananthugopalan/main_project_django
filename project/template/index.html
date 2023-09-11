@@ -354,44 +354,48 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <script>
-    $(document).ready(function() {
-        // Handle the form submission
-        $("#search-form").submit(function(event) {
-            event.preventDefault(); // Prevent the default form submission
+$(document).ready(function() {
+    // Handle the form submission
+    $("#search-form").submit(function(event) {
+        event.preventDefault(); // Prevent the default form submission
 
-            // Get the search query from the input field
-            var query = $("#inputModalSearch").val();
+        // Get the search query from the input field
+        var query = $("#inputModalSearch").val();
 
-            // Send an AJAX request to the Django view
-            $.ajax({
-                type: "GET",
-                url: "/search/", // URL should match the URL pattern in your urls.py
-                data: {'q': query},
-                dataType: "json",
-                success: function(response) {
-                    // Handle the response and update the search results container
-                    var results = response.results;
-                    var resultHtml = '';
+        // Send an AJAX request to the Django view
+        $.ajax({
+            type: "GET",
+            url: "/search/", // URL should match the URL pattern in your urls.py
+            data: {'q': query},
+            dataType: "json",
+            success: function(response) {
+                // Handle the response and update the search results container
+                var results = response.results;
+                console.log(results)
+                var resultHtml = '';
 
-                    if (results.length === 0) {
-                        resultHtml = '<p>No results found.</p>';
-                    } else {
-                        for (var i = 0; i < results.length; i++) {
-                            // Construct the URLs for product name and category
-                            var productNameUrl = "/customer_ProductView/" + results[i].product_id + "/";
-                            var categoryUrl = "{% url 'customer_allProducts' %}?category=" + results[i].product_category;
-                            
-                            // Create clickable links for product name and category
-                            resultHtml += '<a style:"z-index:7" href="' + productNameUrl + '">' + results[i].product_name + '</a> - <a href="' + categoryUrl + '">' + results[i].product_category + '</a><br>';
-                        }
+                if (results.length === 0) {
+                    resultHtml = '<p>No results found.</p>';
+                } else {
+                    for (var i = 0; i < results.length; i++) {
+                        // Construct the URLs for product name and category
+
+                        console.log(results[i])
+                        var productNameUrl = "/customer_ProductView/" + results[i].id+ "/";
+                        var categoryUrl = "/customer_allProducts/?category=" + results[i].product_category;
+                        
+                        // Create clickable links for product name and category
+                        resultHtml += '<a style="z-index:7" href="' + productNameUrl + '">' + results[i].product_name + '</a> - <a href="' + categoryUrl + '">' + results[i].product_category + '</a><br>';
                     }
-
-                    // Update the search results container
-                    $("#search-results").html(resultHtml);
                 }
-            });
+
+                // Update the search results container
+                $("#search-results").html(resultHtml);
+            }
         });
     });
+});
+
 </script>
 
 

@@ -111,14 +111,17 @@
             <div class="w-100 pt-1 mb-5 text-right">
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="" method="get" class="modal-content modal-body border-0 p-0">
+            <form id="search-form" class="modal-content modal-body border-0 p-0">
                 <div class="input-group mb-2">
                     <input type="text" class="form-control" id="inputModalSearch" name="q" placeholder="Search ...">
                     <button type="submit" class="input-group-text bg-success text-light">
                         <i class="fa fa-fw fa-search text-white"></i>
                     </button>
                 </div>
+                <div id="search-results">
+                </div>
             </form>
+            <!-- Display search results here -->
         </div>
     </div>
     <!--nav ends -->
@@ -154,7 +157,7 @@
             <!-- Main Content -->    
                 <!-- Form START -->
                 <div id="profile-form-section">
-                    <form method="POST" class="file-upload mt-1 " action="{% url 'customer_Profile' %}">
+                    <form method="POST" class="file-upload mt-1 " action="{% url 'customer_Profile' %}" id="profile-form">
                     {% csrf_token %}
                     <div class="row mb-5 gx-5">
                         <!-- Contact detail -->
@@ -205,7 +208,7 @@
                                 <div class="mt-3"></div>
                 
                                 <div class="gap-3 d-md-flex justify-content-md-center text-center">
-                                    <button type="submit" class="btn btn-danger btn" id="save_button">Save</button>
+                                    <button type="submit" class="btn btn-danger btn" id="save_button" name="profile_save_button">Save</button>
                                     <button type="submit" class="btn btn-primary btn" id="update_button">Update</button>
                                 </div>
                                 
@@ -215,10 +218,12 @@
                     </form>
                     <!-- Form END -->
                 </div>
+
             <!-- Address Form Card Template (hidden) -->
-            <div id="address-form-card-template" style="display: none">
+            <div id="address-form-card-template" style="display: none">                
+                <button type="button" class="btn btn-primary" id="show-address-form-button">Add Address</button>
+
                 <div class="card mt-2" style="max-width: 400px; margin: 0 auto;" id="address-cards-container">
-                    
                     <div class="card-body">
                         <h5 class="card-title">Add New Address</h5>
                         <form method="post" id="address-form">
@@ -226,33 +231,42 @@
                             <div class="mb-1">
                                 <label for="building_name" class="form-label">Building Name</label>
                                 <input type="text" class="form-control" id="building_name" name="building_name" required>
+                                <span id="buildingNameError" class="text-danger"></span>
                             </div>
                             <div class="mb-1">
                                 <label for="address_type" class="form-label">Address Type</label>
-                                <select class="form-select" id="address_type" name="address_type">
+                                <select class="form-select" id="address_type" name="address_type" required>
                                     <option value="" disabled selected>--Select--</option>
                                     <option value="home">Home</option>
                                     <option value="work">Work</option>
                                     <option value="other">Other</option>
                                 </select>
                             </div>
-                            <div class="mb-1">
-                                <label for="street" class="form-label">Street</label>
-                                <input type="text" class="form-control" id="street" name="street" required>
+                            <div class="d-flex">
+                                <div class="mb-1 me-2">
+                                    <label for="street" class="form-label">Street</label>
+                                    <input type="text" class="form-control" id="street" name="street" required>
+                                    <span id="streetError" class="text-danger"></span>
+                                </div>
+                                <div class="mb-1">
+                                    <label for="city" class="form-label">City</label>
+                                    <input type="text" class="form-control" id="city" name="city" required>
+                                    <span id="cityError" class="text-danger"></span>
+                                </div>
                             </div>
-                            <div class="mb-1">
-                                <label for="city" class="form-label">City</label>
-                                <input type="text" class="form-control" id="city" name="city" required>
+                            <div class="d-flex">
+                                <div class="mb-1 me-2">
+                                    <label for="state" class="form-label">State</label>
+                                    <input type="text" class="form-control" id="state" name="state" required>
+                                    <span id="stateError" class="text-danger"></span>
+                                </div>
+                                <div class="mb-1">
+                                    <label for="zip_code" class="form-label">ZIP Code</label>
+                                    <input type="text" class="form-control" id="zip_code" name="zip_code" required pattern="[0-9]{6}">
+                                    <span id="zipCodeError" class="text-danger"></span>
+                                </div>
                             </div>
-                            <div class="mb-1">
-                                <label for="state" class="form-label">State</label>
-                                <input type="text" class="form-control" id="state" name="state" required>
-                            </div>
-                            <div class="mb-1">
-                                <label for="zip_code" class="form-label">ZIP Code</label>
-                                <input type="text" class="form-control" id="zip_code" name="zip_code" required>
-                            </div>
-                            <button type="submit" class="btn btn-primary">Save Address</button>
+                            <button type="submit" class="btn btn-primary" name="address_save_button">Save Address</button>
                         </form>
                     </div>
                 </div>
@@ -261,8 +275,6 @@
         </div>
     </div>
 </div>
-
-
 
 
         <!-- Footer -->
@@ -285,6 +297,15 @@
   <!-- Footer -->
  
   <script>
+        function showAddressForm() {
+        var addressFormContainer = document.getElementById("address-form-container");
+        addressFormContainer.style.display = "block";
+    }
+
+    // Add an event listener to the "Add Address" button
+    var showAddressFormButton = document.getElementById("show-address-form-button");
+    showAddressFormButton.addEventListener("click", showAddressForm);
+
     // Function to show the address card section
     function showAddressCards() {
         var profileFormSection = document.getElementById("profile-form-section");
@@ -402,6 +423,141 @@
 
 </script>
 
+<script>
+    const buildingNameInput = document.getElementById('building_name');
+    const streetInput = document.getElementById('street');
+    const cityInput = document.getElementById('city');
+    const stateInput = document.getElementById('state');
+    const zipCodeInput = document.getElementById('zip_code');
+
+    const buildingNameError = document.getElementById('buildingNameError');
+    const streetError = document.getElementById('streetError');
+    const cityError = document.getElementById('cityError');
+    const stateError = document.getElementById('stateError');
+    const zipCodeError = document.getElementById('zipCodeError');
+
+    buildingNameInput.addEventListener('input', validateBuildingName);
+    streetInput.addEventListener('input', validateStreet);
+    cityInput.addEventListener('input', validateCity);
+    stateInput.addEventListener('input', validateState);
+    zipCodeInput.addEventListener('input', validateZipCode);
+
+    function validateBuildingName() {
+        const buildingName = buildingNameInput.value;
+
+        if (buildingName.length <= 20) {
+            buildingNameError.textContent = '';
+            return true;
+        } else {
+            buildingNameError.textContent = 'Building name must be 20 characters or less.';
+            return false;
+        }
+    }
+
+    function validateStreet() {
+        const street = streetInput.value;
+
+        if (street.length <= 20) {
+            streetError.textContent = '';
+            return true;
+        } else {
+            streetError.textContent = 'Street must be 20 characters or less.';
+            return false;
+        }
+    }
+
+    function validateCity() {
+        const city = cityInput.value;
+
+        if (city.length <= 20) {
+            cityError.textContent = '';
+            return true;
+        } else {
+            cityError.textContent = 'City must be 20 characters or less.';
+            return false;
+        }
+    }
+
+    function validateState() {
+        const state = stateInput.value;
+
+        if (state.length <= 20) {
+            stateError.textContent = '';
+            return true;
+        } else {
+            stateError.textContent = 'State must be 20 characters or less.';
+            return false;
+        }
+    }
+
+    function validateZipCode() {
+        const zipCode = zipCodeInput.value;
+        const zipCodePattern = /^[0-9]{6}$/;
+
+        if (zipCodePattern.test(zipCode)) {
+            zipCodeError.textContent = '';
+            return true;
+        } else {
+            zipCodeError.textContent = 'ZIP code must be 6 digits long and contain only numbers.';
+            return false;
+        }
+    }
+
+    const addressForm = document.getElementById('address-form');
+
+    addressForm.addEventListener('submit', function (event) {
+        if (!validateBuildingName() || !validateStreet() || !validateCity() || !validateState() || !validateZipCode()) {
+            event.preventDefault();
+        }
+    });
+</script>
+
+
+<script>
+    $(document).ready(function() {
+        // Handle the form submission
+        $("#search-form").submit(function(event) {
+            event.preventDefault(); // Prevent the default form submission
+    
+            // Get the search query from the input field
+            var query = $("#inputModalSearch").val();
+    
+            // Send an AJAX request to the Django view
+            $.ajax({
+                type: "GET",
+                url: "/search/", // URL should match the URL pattern in your urls.py
+                data: {'q': query},
+                dataType: "json",
+                success: function(response) {
+                    // Handle the response and update the search results container
+                    var results = response.results;
+                    console.log(results)
+                    var resultHtml = '';
+    
+                    if (results.length === 0) {
+                        resultHtml = '<p>No results found.</p>';
+                    } else {
+                        for (var i = 0; i < results.length; i++) {
+                            // Construct the URLs for product name and category
+    
+                            console.log(results[i])
+                            var productNameUrl = "/customer_ProductView/" + results[i].id+ "/";
+                            var categoryUrl = "/customer_allProducts/?category=" + results[i].product_category;
+                            
+                            // Create clickable links for product name and category
+                            resultHtml += '<a style="z-index:7" href="' + productNameUrl + '">' + results[i].product_name + '</a> - <a href="' + categoryUrl + '">' + results[i].product_category + '</a><br>';
+                        }
+                    }
+    
+                    // Update the search results container
+                    $("#search-results").html(resultHtml);
+                }
+            });
+        });
+    });
+    
+    </script>
+    
 
     <!-- Start Script -->
     <script src="{% static 'js/jquery-1.11.0.min.js' %}"></script>
