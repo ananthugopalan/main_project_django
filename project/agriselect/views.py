@@ -3,7 +3,7 @@ from django.http import JsonResponse
 from .forms import ProductForm
 from .models import Customer_Profile,Product, SellerProfile,Wishlist, Address
 from django.contrib import messages
-from django.db.models import Q
+from django.core.paginator import Paginator
 # Create your views here.
 
 def index(request):
@@ -30,11 +30,14 @@ def customer_allProducts(request, category='All'):
     else:
         products = Product.objects.filter(product_category=category)
     categories = Product.objects.values_list('product_category', flat=True).distinct()
-    return render(request, 'customer_allProducts.html', {'products': products, 'selected_category': category, 'categories': categories})
+    paginator = Paginator(products, 6)
+    page_number = request.GET.get('page')
+    page = paginator.get_page(page_number)
+    return render(request, 'customer_allProducts.html', {'page': page,'products': products, 'selected_category': category, 'categories': categories})
 
 def customer_Profile(request):
     user_profile, created = Customer_Profile.objects.get_or_create(customer=request.user)
-
+    addresses = Address.objects.filter(user=request.user)
     if request.method == 'POST':
         # Check which form was submitted based on the button clicked
         if 'profile_save_button' in request.POST:
@@ -52,7 +55,6 @@ def customer_Profile(request):
             messages.success(request, 'Profile added successfully')  # Display a success message
 
         elif 'address_save_button' in request.POST:
-            print("Please enter")
             # Handle address form submission
             building_name = request.POST.get('building_name')
             address_type = request.POST.get('address_type')
@@ -76,6 +78,7 @@ def customer_Profile(request):
 
     context = {
         'user_profile': user_profile,
+        'addresses': addresses, 
         'form_submitted': request.method == 'POST',
     }
     return render(request, 'customer_Profile.html', context)
@@ -155,7 +158,10 @@ def seller_addProducts(request):
 
 def seller_Products(request):
     products = Product.objects.filter(seller=request.user)  # Fetch products associated with the currently logged-in seller
-    context = {'products': products}
+    paginator = Paginator(products, 6)
+    page_number = request.GET.get('page')
+    page = paginator.get_page(page_number)
+    context = {'page': page,'products': products}
     return render(request, 'seller_Products.html', context)
 
 def delete_product(request, product_id):

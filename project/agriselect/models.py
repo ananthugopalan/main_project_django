@@ -71,7 +71,7 @@ class Address(models.Model):
     zip_code = models.CharField(max_length=10)
 
     def __str__(self):
-        return f"{self.address_type} - {self.building_name}"
+        return f"{self.user.email} - {self.address_type}"
     
 
 # class Cart(models.Model):

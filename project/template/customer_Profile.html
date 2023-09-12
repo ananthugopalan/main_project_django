@@ -221,17 +221,26 @@
 
             <!-- Address Form Card Template (hidden) -->
             <div id="address-form-card-template" style="display: none">                
-                <button type="button" class="btn btn-primary" id="show-address-form-button">Add Address</button>
+                <button type="button" class="btn btn-primary mt-5 ms-3" id="show-address-form-button">Add Address</button>
+                <div id="address-card-display">
+                    {% block content %}
+                    {% for i in addresses %}
+                    <strong>{{ i.address_type }}</strong><br>
+                    Building: {{ i.building_name }}<br>
+                    Street: {{ i.street }}<br>
+                    {% endfor %}
+                    {%endblock%}
+                </div>
 
-                <div class="card mt-2" style="max-width: 400px; margin: 0 auto;" id="address-cards-container">
-                    <div class="card-body">
+                <div class="card mt-2" style="max-width: 400px; margin: 0 auto; display: none;" id="address-cards-container">
+                    <div class="card-body" >
                         <h5 class="card-title">Add New Address</h5>
                         <form method="post" id="address-form">
                             {% csrf_token %}
                             <div class="mb-1">
                                 <label for="building_name" class="form-label">Building Name</label>
                                 <input type="text" class="form-control" id="building_name" name="building_name" required>
-                                <span id="buildingNameError" class="text-danger"></span>
+                                <span id="buildingNameError" class="text-danger" style="font-size: 10px;"></span>
                             </div>
                             <div class="mb-1">
                                 <label for="address_type" class="form-label">Address Type</label>
@@ -246,27 +255,27 @@
                                 <div class="mb-1 me-2">
                                     <label for="street" class="form-label">Street</label>
                                     <input type="text" class="form-control" id="street" name="street" required>
-                                    <span id="streetError" class="text-danger"></span>
+                                    <span id="streetError" class="text-danger" style="font-size: 10px;"></span>
                                 </div>
                                 <div class="mb-1">
                                     <label for="city" class="form-label">City</label>
                                     <input type="text" class="form-control" id="city" name="city" required>
-                                    <span id="cityError" class="text-danger"></span>
+                                    <span id="cityError" class="text-danger" style="font-size: 10px;"></span>
                                 </div>
                             </div>
                             <div class="d-flex">
                                 <div class="mb-1 me-2">
                                     <label for="state" class="form-label">State</label>
                                     <input type="text" class="form-control" id="state" name="state" required>
-                                    <span id="stateError" class="text-danger"></span>
+                                    <span id="stateError" class="text-danger" style="font-size: 10px;"></span>
                                 </div>
                                 <div class="mb-1">
                                     <label for="zip_code" class="form-label">ZIP Code</label>
                                     <input type="text" class="form-control" id="zip_code" name="zip_code" required pattern="[0-9]{6}">
-                                    <span id="zipCodeError" class="text-danger"></span>
+                                    <span id="zipCodeError" class="text-danger" style="font-size: 10px;"></span>
                                 </div>
                             </div>
-                            <button type="submit" class="btn btn-primary" name="address_save_button">Save Address</button>
+                            <button type="submit" class="btn btn-primary mt-3" name="address_save_button">Save Address</button>
                         </form>
                     </div>
                 </div>
@@ -296,10 +305,20 @@
     </footer>
   <!-- Footer -->
  
+
+  
   <script>
         function showAddressForm() {
-        var addressFormContainer = document.getElementById("address-form-container");
-        addressFormContainer.style.display = "block";
+        var addressFormContainer = document.getElementById("address-cards-container");
+        var showAddressFormButton = document.getElementById("show-address-form-button");
+
+        if (addressFormContainer.style.display === "none" || addressFormContainer.style.display === "") {
+            addressFormContainer.style.display = "block";
+            showAddressFormButton.textContent = "Hide Form";
+        } else {
+            addressFormContainer.style.display = "none";
+            showAddressFormButton.textContent = "Add Address";
+        }
     }
 
     // Add an event listener to the "Add Address" button
@@ -498,7 +517,7 @@
             zipCodeError.textContent = '';
             return true;
         } else {
-            zipCodeError.textContent = 'ZIP code must be 6 digits long and contain only numbers.';
+            zipCodeError.textContent = 'ZIP code must be 6 digits.';
             return false;
         }
     }
