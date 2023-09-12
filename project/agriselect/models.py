@@ -57,9 +57,9 @@ class SellerProfile(models.Model):
 
 class Address(models.Model):
     ADDRESS_TYPE_CHOICES = [
-        ('home', 'Home'),
-        ('work', 'Work'),
-        ('other', 'Other'),
+        ('Home', 'Home'),
+        ('Work', 'Work'),
+        ('Other', 'Other'),
     ]
 
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)  # Add a foreign key to CustomUser

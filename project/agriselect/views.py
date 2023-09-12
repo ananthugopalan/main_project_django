@@ -74,7 +74,24 @@ def customer_Profile(request):
             )
             address.save()
             messages.success(request, 'Address added successfully')  # Display a success message
-        return redirect('customer_Profile') 
+        
+        elif 'update_address_form' in request.POST:
+            address_id = request.POST.get('address_id')  # Retrieve the address_id from POST data
+            address = get_object_or_404(Address, id=address_id) 
+
+            # Update the address fields
+            address.building_name = request.POST.get('building_name')
+            address.address_type = request.POST.get('address_type')
+            address.street = request.POST.get('street')
+            address.city = request.POST.get('city')
+            address.state = request.POST.get('state')
+            address.zip_code = request.POST.get('zip_code')
+
+            # Save the updated address record
+            address.save()
+
+            messages.success(request, 'Address updated successfully')  # Display a success message
+            return redirect('customer_Profile')  # Replace 'profile' with the URL name of your profile page
 
     context = {
         'user_profile': user_profile,
@@ -82,6 +99,15 @@ def customer_Profile(request):
         'form_submitted': request.method == 'POST',
     }
     return render(request, 'customer_Profile.html', context)
+
+def delete_address(request, address_id):
+    try:
+        details = Address.objects.get(id=address_id)
+        details.delete()
+        return JsonResponse({'success': True})
+    except Address.DoesNotExist:
+        # Handle the case where the address does not exist
+        return JsonResponse({'success': False})
 
 def customer_Wishlist(request):
     if request.user.is_authenticated:

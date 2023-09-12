@@ -222,15 +222,73 @@
             <!-- Address Form Card Template (hidden) -->
             <div id="address-form-card-template" style="display: none">                
                 <button type="button" class="btn btn-primary mt-5 ms-3" id="show-address-form-button">Add Address</button>
-                <div id="address-card-display">
+                <div class=" flex-wrap" style="margin-left: 15px;" id="address-card-display">                    
                     {% block content %}
                     {% for i in addresses %}
-                    <strong>{{ i.address_type }}</strong><br>
-                    Building: {{ i.building_name }}<br>
-                    Street: {{ i.street }}<br>
+                    <div class="card mt-3" style="width: 200px; margin-right: 20px;" id="address-card-{{ i.id }}">
+                        <div class="card-body">                            
+                            <strong>{{ i.address_type }}</strong><br>
+                            Building: {{ i.building_name }}<br>
+                            Street: {{ i.street }}<br>
+                            City: {{ i.city }}<br>
+                            Zip Code: {{ i.zip_code }}<br>
+                            <div class="mt-3 d-flex">
+                                <button class="btn btn-primary btn-sm me-4 edit-address-button"
+                                data-building-name="{{ i.building_name }}"
+                                data-address-type="{{ i.address_type }}"
+                                data-street="{{ i.street }}"
+                                data-city="{{ i.city }}"
+                                data-state="{{ i.state }}"
+                                data-zip-code="{{ i.zip_code }}">
+                            <i class="fas fa-edit"></i>
+                        </button>                                
+                        <button class="btn btn-danger btn-sm" onclick="deleteAddress('{{ i.id }}')"><i class="fas fa-trash-alt"></i></button>
+                            </div>
+                        </div>
+                    </div>
                     {% endfor %}
-                    {%endblock%}
+                    {% endblock %}
                 </div>
+                
+                <div class="card mt-2" style="max-width: 400px; margin: 0 auto; display: none;" id="edit-address-form">
+                    <div class="card-body" >
+                        <h5>Edit Address</h5>
+                        <form method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="address_id" value="{{ address.id }}">
+                            <div class="mb-1">
+                                <label for="building_name" class="form-label">Building Name</label>
+                                <input type="text" class="form-control" id="building_name" name="building_name" value="{{ address.building_name }}" required>
+                            </div>
+                            <div class="mb-1">
+                                <label for="address_type" class="form-label">Address Type</label>
+                                <select class="form-select" id="address_type" name="address_type" required>
+                                    <option value="Home" {% if address.address_type == 'Home' %}selected{% endif %}>Home</option>
+                                    <option value="Work" {% if address.address_type == 'Work' %}selected{% endif %}>Work</option>
+                                    <option value="Other" {% if address.address_type == 'Other' %}selected{% endif %}>Other</option>
+                                </select>
+                            </div>
+                            <div class="mb-1">
+                                <label for="street" class="form-label">Street</label>
+                                <input type="text" class="form-control" id="street" name="street" value="{{ address.street }}" required>
+                            </div>
+                            <div class="mb-1">
+                                <label for="city" class="form-label">City</label>
+                                <input type="text" class="form-control" id="city" name="city" value="{{ address.city }}" required>
+                            </div>
+                            <div class="mb-1">
+                                <label for="state" class="form-label">State</label>
+                                <input type="text" class="form-control" id="state" name="state" value="{{ address.state }}" required>
+                            </div>
+                            <div class="mb-1">
+                                <label for="zip_code" class="form-label">ZIP Code</label>
+                                <input type="text" class="form-control" id="zip_code" name="zip_code" value="{{ address.zip_code }}" required pattern="[0-9]{6}">
+                            </div>
+                            <button type="submit" class="btn btn-primary" name="update_address_form">Save Changes</button>
+                        </form>
+                    </div>
+                </div>
+
 
                 <div class="card mt-2" style="max-width: 400px; margin: 0 auto; display: none;" id="address-cards-container">
                     <div class="card-body" >
@@ -246,9 +304,9 @@
                                 <label for="address_type" class="form-label">Address Type</label>
                                 <select class="form-select" id="address_type" name="address_type" required>
                                     <option value="" disabled selected>--Select--</option>
-                                    <option value="home">Home</option>
-                                    <option value="work">Work</option>
-                                    <option value="other">Other</option>
+                                    <option value="Home">Home</option>
+                                    <option value="Work">Work</option>
+                                    <option value="Other">Other</option>
                                 </select>
                             </div>
                             <div class="d-flex">
@@ -305,19 +363,89 @@
     </footer>
   <!-- Footer -->
  
+<!-- Add this JavaScript code to your template -->
+<script>
+    // Function to show the edit address form and populate it with data
+    function showEditAddressForm(addressData) {
+        // Hide the address card display
+        document.getElementById("address-card-display").style.display = "none";
+        
+        // Show the edit address form
+        var editAddressForm = document.getElementById("edit-address-form");
+        editAddressForm.style.display = "block";
 
-  
-  <script>
-        function showAddressForm() {
+        // Populate the form fields with address data
+        document.getElementById("building_name").value = addressData.building_name;
+        document.getElementById("address_type").value = addressData.address_type;
+        document.getElementById("street").value = addressData.street;
+        document.getElementById("city").value = addressData.city;
+        document.getElementById("state").value = addressData.state;
+        document.getElementById("zip_code").value = addressData.zip_code;
+    }
+
+    // Attach click event listeners to the edit buttons
+    var editButtons = document.querySelectorAll('.edit-address-button');
+    editButtons.forEach(function(button) {
+        button.addEventListener('click', function() {
+            // Extract the address data from the data attributes
+            var addressData = {
+                building_name: button.getAttribute('data-building-name'),
+                address_type: button.getAttribute('data-address-type'),
+                street: button.getAttribute('data-street'),
+                city: button.getAttribute('data-city'),
+                state: button.getAttribute('data-state'),
+                zip_code: button.getAttribute('data-zip-code')
+            };
+            showEditAddressForm(addressData);
+        });
+    });
+</script>
+
+
+<script>
+    function deleteAddress(addressId) {
+        $.ajax({
+            type: "POST",
+            url: "{% url 'delete_address' 0 %}".replace('0', addressId),  // Replace '0' with the actual address ID
+            data: {
+                csrfmiddlewaretoken: "{{ csrf_token }}",  // Include the CSRF token
+            },
+            success: function (response) {
+                if (response.success) {
+                    // Address deleted successfully, update the display
+                    $("#address-card-" + addressId).remove();
+                } else {
+                    // Handle the case where deletion failed (optional)
+                    console.log("Deletion failed");
+                }
+            },
+            error: function () {
+                // Handle errors (optional)
+                console.log("Error occurred");
+            },
+        });
+    }
+</script>
+
+
+<script>
+    function showAddressForm() {
         var addressFormContainer = document.getElementById("address-cards-container");
         var showAddressFormButton = document.getElementById("show-address-form-button");
-
+        var addressCardDisplay = document.getElementById("address-card-display");
+        console.log(addressCardDisplay);
         if (addressFormContainer.style.display === "none" || addressFormContainer.style.display === "") {
             addressFormContainer.style.display = "block";
             showAddressFormButton.textContent = "Hide Form";
+            
+            // Hide the address card display
+            addressCardDisplay.style.display = "none";
         } else {
             addressFormContainer.style.display = "none";
             showAddressFormButton.textContent = "Add Address";
+            
+            // Show the address card display
+            addressCardDisplay.style.display = "flex";
         }
     }
 
@@ -329,25 +457,31 @@
     function showAddressCards() {
         var profileFormSection = document.getElementById("profile-form-section");
         var addressFormCardTemplate = document.getElementById("address-form-card-template");
-    
+        var addressCardDisplay = document.getElementById("address-card-display");
+
         profileFormSection.style.display = "none";
         addressFormCardTemplate.style.display = "block";
+        addressCardDisplay.style.display = "flex"; // Hide the address card display
     }
-    
+
     // Function to show the profile form section
     function showProfileForm() {
         var profileFormSection = document.getElementById("profile-form-section");
         var addressFormCardTemplate = document.getElementById("address-form-card-template");
+        var addressCardDisplay = document.getElementById("address-card-display");
 
         // Hide the address card template
         addressFormCardTemplate.style.display = "none";
 
         // Show the profile form section
         profileFormSection.style.display = "block";
-    }
-    </script>
-    
 
+        // Show the address card display
+        addressCardDisplay.style.display = "flex";
+    }
+</script>
+
+<!-- ... Rest of your HTML ... -->
 
   <script>
     // Add event listeners for input fields
