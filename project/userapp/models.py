@@ -18,5 +18,5 @@ class CustomUser(AbstractUser):
     role = models.PositiveSmallIntegerField(choices=ROLE_CHOICE, blank=True, null=True,default=CUSTOMER)
     REQUIRED_FIELDS = []
     def __str__(self):
-        return self.name
+        return self.first_name
     

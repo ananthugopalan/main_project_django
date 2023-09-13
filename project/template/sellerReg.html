@@ -32,68 +32,138 @@
   </style>
 
 </head>
-<body>
+  <body>
   
-<!-- Register starts -->
-{% csrf_token %}
-<section class="min-vh-100 d-flex flex-column mt-2">
-  <div class="row d-flex justify-content-center align-items-center h-100">
-    <div class="container d-flex justify-content-center" style="margin-top: 20px;"> <!-- Add "margin-top" style -->
-      <a class="navbar-brand" href="#">
-        <img src="{% static 'img/Agriselect1.png'%}" width='100' height='auto' class='logo'>
-      </a>
-    </div>
-    <div class="col-md-8 col-lg-6 col-xl-4 shadow-lg p-3 bg-body rounded form-container">
-      <div class="h3 text-center mt-5">
-        <h4><u>Create New Account?</u></h4>
-      </div>
-      
-      <form class="m-3" autocomplete="off" id="registerForm" method="POST"> <!-- Add id="registerForm" to the form element -->
-        {%csrf_token%}
-        <!-- Name input -->
-        <div class="mb-3">
-          <input type="text" name="name" id="name" class="form-control" placeholder="Enter your name" data-toggle="tooltip" data-placement="right" title="" />
-          <div class="error" id="nameError"></div>
-        </div>
+        <!-- Register starts -->
+        {% csrf_token %}
+        <section class="min-vh-100 d-flex flex-column mt-2">
+          <div class="row d-flex justify-content-center align-items-center h-100">
+            <div class="container d-flex justify-content-center">
+              <a class="navbar-brand" href="#">
+                <img src="{% static 'img/Agriselect1.png'%}" width='100' height='auto' class='logo'>
+              </a>
+            </div>
+            <div class="col-md-8 col-lg-6 col-xl-8 shadow-lg p-3 bg-body rounded form-container">
+              <div class="h3 text-center mt-5">
+                <h4><u>Create Seller Account</u></h4>
+              </div>
+              <form class="m-3" autocomplete="off" id="sellerRegistrationForm" method="POST">
+                {% csrf_token %}
+                <ul class="nav nav-tabs mb-3" id="registrationTabs" role="tablist">
+                  <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="step1-tab" data-bs-toggle="tab" data-bs-target="#step1" type="button" role="tab" aria-controls="step1" aria-selected="true">Step 1</button>
+                  </li>   
+                  <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="step2-tab" data-bs-toggle="tab" data-bs-target="#step2" type="button" role="tab" aria-controls="step2" aria-selected="false">Step 2</button>
+                  </li>
+                  <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="step3-tab" data-bs-toggle="tab" data-bs-target="#step3" type="button" role="tab" aria-controls="step3" aria-selected="false">Step 3</button>
+                  </li>
+                  <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="step4-tab" data-bs-toggle="tab" data-bs-target="#step4" type="button" role="tab" aria-controls="step4" aria-selected="false">Step 4</button>
+                  </li>
+                  <!-- Add more tabs as needed -->
+                </ul>
+                
+                <div class="tab-content" id="registrationTabContent">
+                  <!-- Step 1 Content -->
+                  <div class="tab-pane fade show active" id="step1" role="tabpanel" aria-labelledby="step1-tab">
+                    <div class="mb-3">
+                      <input type="email" name="email" id="email" class="form-control" placeholder="Enter a valid email address" />
+                      <div class="error" id="emailError"></div>
+                    </div>
+                    <div class="mb-3">
+                      <input type="text" name="pan_number" id="pan_number" class="form-control" placeholder="Enter your PAN number" />
+                      <div class="error" id="panNumberError"></div>
+                    </div>
+                    <!-- Add more fields for step 1 -->
+                  </div>
+                  
+                  <!-- Step 2 Content -->
+                  <div class="tab-pane fade" id="step2" role="tabpanel" aria-labelledby="step2-tab">
+                    <div class="mb-3">
+                      <input type="text" name="name" id="seller_name" class="form-control" placeholder="Enter your name" />
+                      <div class="error" id="sellerNameError"></div>
+                    </div>
+                    <div class="mb-3">
+                      <input type="text" name="shop_name" id="shop_name" class="form-control" placeholder="Enter your shop name" />
+                      <div class="error" id="shopNameError"></div>
+                    </div>
+                    <!-- Add more fields for step 2 -->
+                  </div>
 
-        <!-- Email input -->
-          
-        <div class="mb-3">
-          <input type="email" name="email" id="email" class="form-control" placeholder="Enter a valid email address" data-toggle="tooltip" data-placement="right" title="" />
-          <div class="error" id="emailError">
-          </div> <!-- Add a div with .error class for email error -->
-        </div>
-        
-        <!-- Password input -->
-        <div class="mb-3">
-          <input type="password" name="password" id="password" class="form-control" placeholder="Enter password" data-toggle="tooltip" data-placement="right" title="" />
-          <div class="error" id="passwordError"></div> <!-- Add a div with .error class for password error -->
-        </div>
-        
-        <!-- Confirm pass -->
-        <div class="mb-3 position-relative">
-          <input type="password" name="confirmPassword" id="confirmPassword" class="form-control" placeholder="Confirm Password" data-toggle="tooltip" data-placement="right" title="" />
-          <div class="position-absolute end-0 top-50 translate-middle-y">
-            <i id="confirmPasswordIcon" class="fas fa-check-circle text-success d-none" style="transform: translateX(-10px);"></i>
+                  <!-- Step 3 Content -->
+                  <div class="tab-pane fade" id="step3" role="tabpanel" aria-labelledby="step3-tab">
+                    <div class="mb-3">
+                      <input type="text" name="building_name" id="building_name" class="form-control" placeholder="Enter Building Name" />
+                      <div class="error" id="buildingNameError"></div>
+                    </div>
+                    <div class="mb-3">
+                      <input type="text" name="street" id="street" class="form-control" placeholder="Enter Street" />
+                      <div class="error" id="streetError"></div>
+                    </div>
+                    <div class="mb-3">
+                      <input type="text" name="area" id="area" class="form-control" placeholder="Enter Area" />
+                      <div class="error" id="areaError"></div>
+                    </div>
+                    <div class="mb-3">
+                      <input type="text" name="city" id="city" class="form-control" placeholder="Enter City" />
+                      <div class="error" id="cityError"></div>
+                    </div>
+                    <div class="mb-3">
+                      <input type="text" name="state" id="state" class="form-control" placeholder="Enter State" />
+                      <div class="error" id="stateError"></div>
+                    </div>
+                    <div class="mb-3">
+                      <input type="text" name="pincode" id="pincode" class="form-control" placeholder="Enter Pincode" />
+                      <div class="error" id="pincodeError"></div>
+                    </div>
+                  </div>
+
+                  <!-- Step 4 Content (Selling Preferences and Shipping Fee Preferences) -->
+                  <div class="tab-pane fade" id="step4" role="tabpanel" aria-labelledby="step4-tab">
+                    <h5>Selling Preferences</h5>
+                    <div class="mb-3">
+                      <label for="selling_preference">Select Selling Preference:</label>
+                      <select name="selling_preference" id="selling_preference" class="form-select">
+                        <option value="" disabled selected>--Select Preference--</option>
+                        <option value="store_and_ship_yourself">Store and Ship Yourself</option>
+                        <option value="store_yourself_ship_by_agri_select">Store Yourself and Ship by AgriSelect</option>
+                      </select>
+                    </div>
+
+                    <h5>Shipping Fee Preferences</h5>
+                    <div class="mb-3">
+                      <p>Shipping fees (per order):</p>
+                      <p><strong>Local:</strong> Rs. 45</p>
+                      <p><strong>Regional:</strong> Rs. 55</p>
+                      <p><strong>National:</strong> Rs. 65</p>
+                    </div>
+
+                    <div class="mb-3">
+                      <select name="shipping_fee_preference" id="shipping_fee_preference" class="form-select">
+                        <option value="" disabled selected>--Select Fee Preference--</option>
+                        <option value="pay_by_yourself">Pay by Yourself (Free delivery for customers)</option>
+                        <option value="pay_by_customer">Pay by Customer (Provide delivery charges for customers)</option>
+                      </select>
+                    </div>
+                  </div>
+
+
+                  
+                  <!-- Add more tab content sections as needed -->
+                </div>
+                
+                <div class="text-center mt-4">
+                  <button type="button" id="prevBtn" class="btn btn-secondary">Previous</button>
+                  <button type="button" id="nextBtn" class="btn btn-primary">Next</button>
+                  <button type="submit" id="registerBtn" class="btn btn-success" style="display: none;">Sign Up</button>
+                  <p class="small mt-2">Already have an account? <a href="{% url 'user_login' %}" class="link-danger">Login</a></p>
+                </div>
+              </form>
+            </div>
           </div>
-          <div class="error" id="confirmPasswordError">            
-            {% if messages %}
-              {% for message in messages %}
-                  {{ message }}
-              {% endfor %}
-          {% endif %}
-          </div>
-        </div>
-            
-        
-        <div class="text-center mt-4">
-          <button type="submit" id="registerBtn" class="btn btn-success" style="padding-left: 2.5rem; padding-right: 2.5rem;">Sign Up</button>
-          <p class="small mt-2">Already have an account? <a href="{% url 'user_login' %}" class="link-danger">Login</a></p>
-        </div>
-      </form>
-    </div>
-  </div>
-</section>
+        </section>
 <!-- Register ends -->
 
 <!-- Footer -->
@@ -114,6 +184,212 @@
   </div>
 </footer>
 <!-- Footer -->
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var currentTab = 0;
+    var registrationForm = document.getElementById('sellerRegistrationForm');
+    var prevButton = document.getElementById('prevBtn');
+    var nextButton = document.getElementById('nextBtn');
+    var registerButton = document.getElementById('registerBtn');
+    var tabs = document.querySelectorAll('.nav-link');
+    
+    function showTab(n) {
+      tabs[n].classList.add('active');
+      tabs[n].setAttribute('aria-selected', 'true');
+      tabs[n].removeAttribute('disabled');
+    }
+    
+    function hideTab(n) {
+      tabs[n].classList.remove('active');
+      tabs[n].setAttribute('aria-selected', 'false');
+      tabs[n].setAttribute('disabled', 'true');
+    }
+    
+    function validateTab() {
+      // Validate PAN number
+      if (currentTab === 0) {
+        var panNumberInput = document.getElementById('pan_number');
+        var panNumberError = document.getElementById('panNumberError');
+        var panNumberRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/; // Modify the regex pattern as needed
+
+        if (!panNumberInput.value.match(panNumberRegex)) {
+          panNumberError.textContent = 'Invalid PAN number format';
+          panNumberError.style.display = 'block';
+          return false;
+        } else {
+          panNumberError.style.display = 'none';
+        }
+      }
+      else if (currentTab === 1) {
+        var sellerNameInput = document.getElementById('seller_name');
+        var sellerNameError = document.getElementById('sellerNameError');
+
+        if (sellerNameInput.value.trim() === '') {
+          sellerNameError.textContent = 'Name is required';
+          sellerNameError.style.display = 'block';
+          return false;
+        } else {
+          sellerNameError.style.display = 'none';
+        }
+
+        // Validate shop name
+        var shopNameInput = document.getElementById('shop_name');
+        var shopNameError = document.getElementById('shopNameError');
+
+        if (shopNameInput.value.trim() === '') {
+          shopNameError.textContent = 'Shop name is required';
+          shopNameError.style.display = 'block';
+          return false;
+        } else {
+          shopNameError.style.display = 'none';
+        }
+      }
+      else if (currentTab === 2) {
+        // Validate building name
+        var buildingNameInput = document.getElementById('building_name');
+        var buildingNameError = document.getElementById('buildingNameError');
+
+        if (buildingNameInput.value.trim() === '') {
+          buildingNameError.textContent = 'Building name is required';
+          buildingNameError.style.display = 'block';
+          return false;
+        } else {
+          buildingNameError.style.display = 'none';
+        }
+
+        // Validate street
+        var streetInput = document.getElementById('street');
+        var streetError = document.getElementById('streetError');
+
+        if (streetInput.value.trim() === '') {
+          streetError.textContent = 'Street is required';
+          streetError.style.display = 'block';
+          return false;
+        } else {
+          streetError.style.display = 'none';
+        }
+
+        // Validate area
+        var areaInput = document.getElementById('area');
+        var areaError = document.getElementById('areaError');
+
+        if (areaInput.value.trim() === '') {
+          areaError.textContent = 'Area is required';
+          areaError.style.display = 'block';
+          return false;
+        } else {
+          areaError.style.display = 'none';
+        }
+
+        // Validate city
+        var cityInput = document.getElementById('city');
+        var cityError = document.getElementById('cityError');
+
+        if (cityInput.value.trim() === '') {
+          cityError.textContent = 'City is required';
+          cityError.style.display = 'block';
+          return false;
+        } else {
+          cityError.style.display = 'none';
+        }
+
+        // Validate state
+        var stateInput = document.getElementById('state');
+        var stateError = document.getElementById('stateError');
+
+        if (stateInput.value.trim() === '') {
+          stateError.textContent = 'State is required';
+          stateError.style.display = 'block';
+          return false;
+        } else {
+          stateError.style.display = 'none';
+        }
+
+        // Validate pincode
+        var pincodeInput = document.getElementById('pincode');
+        var pincodeError = document.getElementById('pincodeError');
+
+        if (pincodeInput.value.trim() === '') {
+          pincodeError.textContent = 'Pincode is required';
+          pincodeError.style.display = 'block';
+          return false;
+        } else {
+          pincodeError.style.display = 'none';
+        }
+      }
+      else if (currentTab === 3) {
+        // Validate selling preferences (step 4)
+        var sellingPreferenceInput = document.getElementById('selling_preference');
+        var sellingPreferenceError = document.getElementById('sellingPreferenceError');
+
+        if (sellingPreferenceInput.value === '') {
+          sellingPreferenceError.textContent = 'Please select a selling preference';
+          sellingPreferenceError.style.display = 'block';
+          return false;
+        } else {
+          sellingPreferenceError.style.display = 'none';
+        }
+      } 
+      else if (currentTab === 4) {
+        // Validate shipping fee preference (step 4)
+        var shippingFeePreferenceInput = document.getElementById('shipping_fee_preference');
+        var shippingFeePreferenceError = document.getElementById('shippingFeePreferenceError');
+
+        if (shippingFeePreferenceInput.value === '') {
+          shippingFeePreferenceError.textContent = 'Please select a shipping fee preference';
+          shippingFeePreferenceError.style.display = 'block';
+          return false;
+        } else {
+          shippingFeePreferenceError.style.display = 'none';
+        }
+      }
+
+      // Add your other validation logic for step 1 here
+      return true; // Return true if validation passes, false otherwise
+    }
+
+    
+    function updateButtons() {
+      if (currentTab === 0) {
+        prevButton.style.display = 'none';
+      } else {
+        prevButton.style.display = 'inline-block';
+      }
+      
+      if (currentTab === tabs.length - 1) {
+        nextButton.style.display = 'none';
+        registerButton.style.display = 'inline-block';
+      } else {
+        nextButton.style.display = 'inline-block';
+        registerButton.style.display = 'none';
+      }
+    }
+
+    function navigateTab(direction) {
+      if (direction === 1) {
+        if (!validateTab()) {
+          return;
+        }
+      }
+      
+      hideTab(currentTab);
+      currentTab += direction;
+      showTab(currentTab);
+      updateButtons();
+    }
+
+    
+    prevButton.addEventListener('click', function() {
+      navigateTab(-1);
+    });
+    
+    nextButton.addEventListener('click', function() {
+      navigateTab(1);
+    });
+  });
+  </script>
+  
 
   
   <script src="{% static 'js/validation.js' %}"></script>

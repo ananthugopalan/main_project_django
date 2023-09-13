@@ -124,79 +124,134 @@
             <!-- Display search results here -->
         </div>
     </div>
-    <!--nav ends -->
-
-
-    <div class="container">
-        <h3>All Products</h3>
-        <!-- Add this select element at the top of your HTML page -->
-        <select id="categorySelect">
-            <option value="All">All</option>
-            {% for category in categories %}
-                <option value="{{ category }}">{{ category }}</option>
-            {% endfor %}
-        </select>
-
-        <div class="row" id="filteredProducts">
-            {% for product in page %}
-            <div class="col-md-4">
-                <div class="card mb-4 shadow-sm">
-                    <img src="{{ product.product_image.url }}" class="card-img-top" alt="{{ product.product_name }}" style="height: 250px; object-fit: cover;">
-                    <div class="card-body">
-                        <h5 class="card-title">{{ product.product_name }}</h5>
-                        <p class="card-text">Price: Rs.{{ product.price }}</p>
-                        <a href="{% url 'customer_ProductView' product.id %}" class="btn btn-success">View Product</a>
-                        <a href="#" onclick="addToWishlist('{{ product.id }}')" class="btn btn-outline-danger"><i class="fas fa-heart"></i></a>
-                    </div>
-                </div>                
-            </div>
-            {% endfor %}
-        </div>
-        <div class="row mt-4">
-            <div class="col-md-12 text-center">
-                <ul class="pagination">
-                    {% if page.has_previous %}
-                        <li class="page-item">
-                            <a class="page-link" href="?page=1">First</a>
-                        </li>
-                        <li class="page-item">
-                            <a class="page-link" href="?page={{ page.previous_page_number }}">Previous</a>
-                        </li>
-                    {% endif %}
-                    
-                    {% for num in page.paginator.page_range %}
-                        <li class="page-item {% if num == page.number %}active{% endif %}">
-                            <a class="page-link" href="?page={{ num }}">{{ num }}</a>
-                        </li>
-                    {% endfor %}
-                    
-                    {% if page.has_next %}
-                        <li class="page-item">
-                            <a class="page-link" href="?page={{ page.next_page_number }}">Next</a>
-                        </li>
-                        <li class="page-item">
-                            <a class="page-link" href="?page={{ page.paginator.num_pages }}">Last</a>
-                        </li>
-                    {% endif %}
-                </ul>
-            </div>
-        </div>
-    </div>
-
-
-<script>
-    // JavaScript to trigger page refresh when category is selected
-    document.getElementById('categorySelect').addEventListener('change', function() {
-        const selectedCategory = this.value;
-        if (selectedCategory === 'All') {
-            window.location.href = '/customer_allProducts/';
-        } else {
-            window.location.href = `/customer_allProducts/${selectedCategory}/`;
-        }
-    });
-
     
-</script>
+        <!--nav ends -->
+
+        <div class="container mt-5">
+            <div class="row">
+                <!-- Sidebar -->
+                <div class="col-md-3">
+                    <div class="sidebar bg-light p-3" style="width: 200px;">
+                        
+                        <!-- Categories -->
+                        <h4>Categories</h4>
+                        <ul class="list-unstyled">
+                            <li>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="category" value="All" id="categoryAll" checked>
+                                    <label class="form-check-label" for="categoryAll">All</label>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="category" value="crops" id="categoryCrops">
+                                    <label class="form-check-label" for="categoryCrops">Crops</label>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="category" value="seeds" id="categorySeeds">
+                                    <label class="form-check-label" for="categorySeeds">Seeds</label>
+                                </div>
+                            </li>
+                        </ul>
+
+                        <!-- Subcategories -->
+                        <h4>Subcategories</h4>
+                        <ul class="list-unstyled">
+                            <li>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="subcategory" value="All" id="subcategoryAll" checked>
+                                    <label class="form-check-label" for="subcategoryAll">All</label>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="subcategory" value="vegetables" id="subcategoryVegetables">
+                                    <label class="form-check-label" for="subcategoryVegetables">Vegetables</label>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="subcategory" value="fruits" id="subcategoryFruits">
+                                    <label class="form-check-label" for="subcategoryFruits">Fruits</label>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="subcategory" value="flowers" id="subcategoryFlowers">
+                                    <label class="form-check-label" for="subcategoryFlowers">Flowers</label>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="subcategory" value="cereals" id="subcategoryCereals">
+                                    <label class="form-check-label" for="subcategoryCereals">Cereals</label>
+                                </div>
+                            </li>
+                        </ul>
+
+                    </div>
+                </div>
+                <!-- End Sidebar -->
+
+
+                <div class="col-md-9">
+                    <div class="row" id="filteredProducts">
+                        {% for product in page %}
+                        <div class="col-md-4">
+                            <div class="card mb-4 shadow-sm">
+                                <img src="{{ product.product_image.url }}" class="card-img-top" alt="{{ product.product_name }}" style="height: 250px; object-fit: cover;">
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ product.product_name }}</h5>
+                                    <p class="card-text">Price: Rs.{{ product.price }}</p>
+                                    <div class="justify-content-between align-items-center">
+                                        <div>
+                                            <span class="badge bg-success text-white">In Stock</span>
+                                        </div>
+                                        <div class="mt-2">
+                                            <a href="{% url 'customer_ProductView' product.id %}" class="btn" style="background-color: #B7950B; color: #ffffff;">View Product</a>
+                                            <a href="#" onclick="addToWishlist('{{ product.id }}')" class="btn btn-outline-danger"><i class="fas fa-heart"></i></a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>                
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="col-md-12 text-center">
+                            <ul class="pagination">
+                                {% if page.has_previous %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page=1">First</a>
+                                    </li>
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ page.previous_page_number }}">Previous</a>
+                                    </li>
+                                {% endif %}
+                                
+                                {% for num in page.paginator.page_range %}
+                                    <li class="page-item {% if num == page.number %}active{% endif %}">
+                                        <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                                    </li>
+                                {% endfor %}
+                                
+                                {% if page.has_next %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ page.next_page_number }}">Next</a>
+                                    </li>
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ page.paginator.num_pages }}">Last</a>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
 
         <!-- Footer -->
@@ -218,6 +273,7 @@
     </footer>
   <!-- Footer -->
 
+ 
   <script>
     function addToWishlist(productId) {
         // Get the CSRF token from the cookies
@@ -259,51 +315,53 @@
         return cookieValue;
     }
 </script>
+  <!-- Include jQuery library -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-<script>
-    $(document).ready(function() {
-        // Handle the form submission
-        $("#search-form").submit(function(event) {
-            event.preventDefault(); // Prevent the default form submission
-    
-            // Get the search query from the input field
-            var query = $("#inputModalSearch").val();
-    
-            // Send an AJAX request to the Django view
-            $.ajax({
-                type: "GET",
-                url: "/search/", // URL should match the URL pattern in your urls.py
-                data: {'q': query},
-                dataType: "json",
-                success: function(response) {
-                    // Handle the response and update the search results container
-                    var results = response.results;
-                    console.log(results)
-                    var resultHtml = '';
-    
-                    if (results.length === 0) {
-                        resultHtml = '<p>No results found.</p>';
-                    } else {
-                        for (var i = 0; i < results.length; i++) {
-                            // Construct the URLs for product name and category
-    
-                            console.log(results[i])
-                            var productNameUrl = "/customer_ProductView/" + results[i].id+ "/";
-                            var categoryUrl = "/customer_allProducts/?category=" + results[i].product_category;
-                            
-                            // Create clickable links for product name and category
-                            resultHtml += '<a style="z-index:7" href="' + productNameUrl + '">' + results[i].product_name + '</a> - <a href="' + categoryUrl + '">' + results[i].product_category + '</a><br>';
-                        }
-                    }
-    
-                    // Update the search results container
-                    $("#search-results").html(resultHtml);
-                }
-            });
-        });
-    });
-    
-    </script>
+  <script>
+  $(document).ready(function() {
+      // Handle the form submission
+      $("#search-form").submit(function(event) {
+          event.preventDefault(); // Prevent the default form submission
+  
+          // Get the search query from the input field
+          var query = $("#inputModalSearch").val();
+  
+          // Send an AJAX request to the Django view
+          $.ajax({
+              type: "GET",
+              url: "/search/", // URL should match the URL pattern in your urls.py
+              data: {'q': query},
+              dataType: "json",
+              success: function(response) {
+                  // Handle the response and update the search results container
+                  var results = response.results;
+                  console.log(results)
+                  var resultHtml = '';
+  
+                  if (results.length === 0) {
+                      resultHtml = '<p>No results found.</p>';
+                  } else {
+                      for (var i = 0; i < results.length; i++) {
+                          // Construct the URLs for product name and category
+  
+                          console.log(results[i])
+                          var productNameUrl = "/customer_ProductView/" + results[i].id+ "/";
+                          var categoryUrl = "/customer_allProducts/?category=" + results[i].product_category;
+                          
+                          // Create clickable links for product name and category
+                          resultHtml += '<a style="z-index:7" href="' + productNameUrl + '">' + results[i].product_name + '</a> - <a href="' + categoryUrl + '">' + results[i].product_category + '</a><br>';
+                      }
+                  }
+  
+                  // Update the search results container
+                  $("#search-results").html(resultHtml);
+              }
+          });
+      });
+  });
+  
+  </script>
     
     <!-- Start Script -->
     <script src="{% static 'js/jquery-1.11.0.min.js' %}"></script>

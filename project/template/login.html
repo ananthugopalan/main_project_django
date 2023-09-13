@@ -55,11 +55,12 @@
               </div>
               <a href="{% url 'password_reset' %}" class="text-body">Forgot password?</a>
             </div>
-  
+            {% load socialaccount %}
             <div class="text-center mt-4">
               <button type="submit" class="btn btn-success" style="padding-left: 2.5rem; padding-right: 2.5rem;">Sign in</button>
               <!-- <p class="small mt-2">New User? Create your account here <a href="{% url 'customer_Registration' %}" class="link-danger">Register</a></p> -->
-              <hr><a href="#" class="btn btn-outline-danger mt-2" style="padding-left: 2rem; padding-right: 2rem;">
+              <hr>
+              <a href="{% provider_login_url 'google'%}" class="btn btn-outline-danger mt-2" style="padding-left: 2rem; padding-right: 2rem;">
                 <i class="fab fa-google me-2"></i> Sign in with Google
               </a>
               {% if error_message %}

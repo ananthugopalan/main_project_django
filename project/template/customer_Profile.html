@@ -105,8 +105,8 @@
     </nav>
     <!-- Close Header -->
 
-    <!-- Modal -->
-    <div class="modal fade bg-white" id="templatemo_search" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+       <!-- Modal -->
+       <div class="modal fade bg-white" id="templatemo_search" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg" role="document">
             <div class="w-100 pt-1 mb-5 text-right">
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -220,9 +220,11 @@
                 </div>
 
             <!-- Address Form Card Template (hidden) -->
-            <div id="address-form-card-template" style="display: none">                
-                <button type="button" class="btn btn-primary mt-5 ms-3" id="show-address-form-button">Add Address</button>
-                <div class=" flex-wrap" style="margin-left: 15px;" id="address-card-display">                    
+            <div id="address-form-card-template" style="display: none">
+                <div class="flex-wrap" style="margin-left: 15px;" id="add-address-btn">
+                    <button type="button" class="btn btn-primary mt-5 ms-3 me-2" id="show-address-form-button">Add Address</button>
+                </div>           
+                <div class="flex-wrap" style="margin-left: 15px;" id="address-card-display"> 
                     {% block content %}
                     {% for i in addresses %}
                     <div class="card mt-3" style="width: 200px; margin-right: 20px;" id="address-card-{{ i.id }}">
@@ -234,6 +236,7 @@
                             Zip Code: {{ i.zip_code }}<br>
                             <div class="mt-3 d-flex">
                                 <button class="btn btn-primary btn-sm me-4 edit-address-button"
+                                data-address-id="{{ i.id }}"
                                 data-building-name="{{ i.building_name }}"
                                 data-address-type="{{ i.address_type }}"
                                 data-street="{{ i.street }}"
@@ -253,9 +256,9 @@
                 <div class="card mt-2" style="max-width: 400px; margin: 0 auto; display: none;" id="edit-address-form">
                     <div class="card-body" >
                         <h5>Edit Address</h5>
-                        <form method="post">
+                        <form method="post" id="update-form">
                             {% csrf_token %}
-                            <input type="hidden" name="address_id" value="{{ address.id }}">
+                            <input type="hidden" id="address_id" name="address_id" value="{{ address.id }}" />
                             <div class="mb-1">
                                 <label for="building_name" class="form-label">Building Name</label>
                                 <input type="text" class="form-control" id="building_name" name="building_name" value="{{ address.building_name }}" required>
@@ -329,7 +332,7 @@
                                 </div>
                                 <div class="mb-1">
                                     <label for="zip_code" class="form-label">ZIP Code</label>
-                                    <input type="text" class="form-control" id="zip_code" name="zip_code" required pattern="[0-9]{6}">
+                                    <input type="text" class="form-control" id="zip_code" name="zip_code" required>
                                     <span id="zipCodeError" class="text-danger" style="font-size: 10px;"></span>
                                 </div>
                             </div>
@@ -364,17 +367,21 @@
   <!-- Footer -->
  
 <!-- Add this JavaScript code to your template -->
+
+
+
 <script>
     // Function to show the edit address form and populate it with data
     function showEditAddressForm(addressData) {
         // Hide the address card display
         document.getElementById("address-card-display").style.display = "none";
-        
+        document.getElementById("add-address-btn").style.display = "none";
         // Show the edit address form
         var editAddressForm = document.getElementById("edit-address-form");
         editAddressForm.style.display = "block";
 
         // Populate the form fields with address data
+        document.getElementById("address_id").value = addressData.address_id;
         document.getElementById("building_name").value = addressData.building_name;
         document.getElementById("address_type").value = addressData.address_type;
         document.getElementById("street").value = addressData.street;
@@ -389,6 +396,7 @@
         button.addEventListener('click', function() {
             // Extract the address data from the data attributes
             var addressData = {
+                address_id: button.getAttribute('data-address-id'),
                 building_name: button.getAttribute('data-building-name'),
                 address_type: button.getAttribute('data-address-type'),
                 street: button.getAttribute('data-street'),
@@ -399,6 +407,7 @@
             showEditAddressForm(addressData);
         });
     });
+    
 </script>
 
 
@@ -573,145 +582,130 @@
         updateButton.disabled = true;
     }
 }
-
 </script>
 
-<script>
-    const buildingNameInput = document.getElementById('building_name');
-    const streetInput = document.getElementById('street');
-    const cityInput = document.getElementById('city');
-    const stateInput = document.getElementById('state');
-    const zipCodeInput = document.getElementById('zip_code');
+  <!-- Include jQuery library -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-    const buildingNameError = document.getElementById('buildingNameError');
-    const streetError = document.getElementById('streetError');
-    const cityError = document.getElementById('cityError');
-    const stateError = document.getElementById('stateError');
-    const zipCodeError = document.getElementById('zipCodeError');
-
-    buildingNameInput.addEventListener('input', validateBuildingName);
-    streetInput.addEventListener('input', validateStreet);
-    cityInput.addEventListener('input', validateCity);
-    stateInput.addEventListener('input', validateState);
-    zipCodeInput.addEventListener('input', validateZipCode);
-
-    function validateBuildingName() {
-        const buildingName = buildingNameInput.value;
-
-        if (buildingName.length <= 20) {
-            buildingNameError.textContent = '';
-            return true;
-        } else {
-            buildingNameError.textContent = 'Building name must be 20 characters or less.';
-            return false;
-        }
-    }
-
-    function validateStreet() {
-        const street = streetInput.value;
-
-        if (street.length <= 20) {
-            streetError.textContent = '';
-            return true;
-        } else {
-            streetError.textContent = 'Street must be 20 characters or less.';
-            return false;
-        }
-    }
-
-    function validateCity() {
-        const city = cityInput.value;
-
-        if (city.length <= 20) {
-            cityError.textContent = '';
-            return true;
-        } else {
-            cityError.textContent = 'City must be 20 characters or less.';
-            return false;
-        }
-    }
-
-    function validateState() {
-        const state = stateInput.value;
-
-        if (state.length <= 20) {
-            stateError.textContent = '';
-            return true;
-        } else {
-            stateError.textContent = 'State must be 20 characters or less.';
-            return false;
-        }
-    }
-
-    function validateZipCode() {
-        const zipCode = zipCodeInput.value;
-        const zipCodePattern = /^[0-9]{6}$/;
-
-        if (zipCodePattern.test(zipCode)) {
-            zipCodeError.textContent = '';
-            return true;
-        } else {
-            zipCodeError.textContent = 'ZIP code must be 6 digits.';
-            return false;
-        }
-    }
-
-    const addressForm = document.getElementById('address-form');
-
-    addressForm.addEventListener('submit', function (event) {
-        if (!validateBuildingName() || !validateStreet() || !validateCity() || !validateState() || !validateZipCode()) {
-            event.preventDefault();
-        }
-    });
-</script>
-
-
-<script>
-    $(document).ready(function() {
-        // Handle the form submission
-        $("#search-form").submit(function(event) {
-            event.preventDefault(); // Prevent the default form submission
+  <script>
+  $(document).ready(function() {
+      // Handle the form submission
+      $("#search-form").submit(function(event) {
+          event.preventDefault(); // Prevent the default form submission
+  
+          // Get the search query from the input field
+          var query = $("#inputModalSearch").val();
+  
+          // Send an AJAX request to the Django view
+          $.ajax({
+              type: "GET",
+              url: "/search/", // URL should match the URL pattern in your urls.py
+              data: {'q': query},
+              dataType: "json",
+              success: function(response) {
+                  // Handle the response and update the search results container
+                  var results = response.results;
+                  console.log(results)
+                  var resultHtml = '';
+  
+                  if (results.length === 0) {
+                      resultHtml = '<p>No results found.</p>';
+                  } else {
+                      for (var i = 0; i < results.length; i++) {
+                          // Construct the URLs for product name and category
+  
+                          console.log(results[i])
+                          var productNameUrl = "/customer_ProductView/" + results[i].id+ "/";
+                          var categoryUrl = "/customer_allProducts/?category=" + results[i].product_category;
+                          
+                          // Create clickable links for product name and category
+                          resultHtml += '<a style="z-index:7" href="' + productNameUrl + '">' + results[i].product_name + '</a> - <a href="' + categoryUrl + '">' + results[i].product_category + '</a><br>';
+                      }
+                  }
+  
+                  // Update the search results container
+                  $("#search-results").html(resultHtml);
+              }
+          });
+      });
+  });
+  
+  </script>
     
-            // Get the search query from the input field
-            var query = $("#inputModalSearch").val();
+
+<!-- 
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Get references to form elements and error spans
+            const form = document.getElementById('address-form');
+            const buildingNameInput = document.getElementById('building_name');
+            const streetInput = document.getElementById('street');
+            const cityInput = document.getElementById('city');
+            const stateInput = document.getElementById('state');
+            const zipCodeInput = document.getElementById('zip_code');
+            const buildingNameError = document.getElementById('buildingNameError');
+            const streetError = document.getElementById('streetError');
+            const cityError = document.getElementById('cityError');
+            const stateError = document.getElementById('stateError');
+            const zipCodeError = document.getElementById('zipCodeError');
     
-            // Send an AJAX request to the Django view
-            $.ajax({
-                type: "GET",
-                url: "/search/", // URL should match the URL pattern in your urls.py
-                data: {'q': query},
-                dataType: "json",
-                success: function(response) {
-                    // Handle the response and update the search results container
-                    var results = response.results;
-                    console.log(results)
-                    var resultHtml = '';
-    
-                    if (results.length === 0) {
-                        resultHtml = '<p>No results found.</p>';
-                    } else {
-                        for (var i = 0; i < results.length; i++) {
-                            // Construct the URLs for product name and category
-    
-                            console.log(results[i])
-                            var productNameUrl = "/customer_ProductView/" + results[i].id+ "/";
-                            var categoryUrl = "/customer_allProducts/?category=" + results[i].product_category;
-                            
-                            // Create clickable links for product name and category
-                            resultHtml += '<a style="z-index:7" href="' + productNameUrl + '">' + results[i].product_name + '</a> - <a href="' + categoryUrl + '">' + results[i].product_category + '</a><br>';
-                        }
-                    }
-    
-                    // Update the search results container
-                    $("#search-results").html(resultHtml);
+            // Add event listeners to input fields for "input" event
+            buildingNameInput.addEventListener('input', validateBuildingName);
+            streetInput.addEventListener('input', validateStreet);
+            cityInput.addEventListener('input', validateCity);
+            stateInput.addEventListener('input', validateState);
+            zipCodeInput.addEventListener('input', validateZipCode);
+            function validateBuildingName() {
+                const buildingName = buildingNameInput.value.trim();
+                if (buildingName.length > 25) {
+                    buildingNameError.textContent = 'Building name should be less than 25 characters.';
+                } else {
+                    buildingNameError.textContent = '';
                 }
-            });
+            }
+    
+            function validateStreet() {
+                const street = streetInput.value.trim();
+                if (street.length > 25) {
+                    streetError.textContent = 'Street name should be less than 25 characters.';
+                } else {
+                    streetError.textContent = '';
+                }
+            }
+    
+            function validateCity() {
+                const city = cityInput.value.trim();
+                const alphabetPattern = /^[A-Za-z]+$/;
+                if (!alphabetPattern.test(city)) {
+                    cityError.textContent = 'City should contain only alphabets.';
+                } else {
+                    cityError.textContent = '';
+                }
+            }
+    
+            function validateState() {
+                const state = stateInput.value.trim();
+                const alphabetPattern = /^[A-Za-z]+$/;
+                if (!alphabetPattern.test(state)) {
+                    stateError.textContent = 'State should contain only alphabets.';
+                } else {
+                    stateError.textContent = '';
+                }
+            }
+    
+            function validateZipCode() {
+                const zipCode = zipCodeInput.value.trim();
+                const zipCodePattern = /^[0-9]{6}$/;
+                if (!zipCodePattern.test(zipCode)) {
+                    zipCodeError.textContent = 'ZIP code should contain 6 digits.';
+                } else {
+                    zipCodeError.textContent = '';
+                }
+            }
         });
-    });
-    
     </script>
+     -->
     
-
     <!-- Start Script -->
     <script src="{% static 'js/jquery-1.11.0.min.js' %}"></script>
     <script src="{% static 'js/jquery-migrate-1.2.1.min.js' %}"></script>

@@ -24,7 +24,7 @@ def search_products(request):
     return JsonResponse(response_data)
 
 
-def customer_allProducts(request, category='All'):
+def customer_allProducts(request, category='All', subcategory='All'):
     if category == 'All':
         products = Product.objects.all()
     else:
@@ -37,7 +37,7 @@ def customer_allProducts(request, category='All'):
 
 def customer_Profile(request):
     user_profile, created = Customer_Profile.objects.get_or_create(customer=request.user)
-    addresses = Address.objects.filter(user=request.user)
+    addresses = Address.objects.filter(user_id=request.user.id)
     if request.method == 'POST':
         # Check which form was submitted based on the button clicked
         if 'profile_save_button' in request.POST:
@@ -52,7 +52,8 @@ def customer_Profile(request):
             user_profile.mobile_number = mobile_number
             user_profile.save()
 
-            messages.success(request, 'Profile added successfully')  # Display a success message
+            messages.success(request, 'Profile added successfully') 
+            return redirect('customer_Profile')  # Display a success message
 
         elif 'address_save_button' in request.POST:
             # Handle address form submission
@@ -73,25 +74,23 @@ def customer_Profile(request):
                 zip_code=zip_code
             )
             address.save()
-            messages.success(request, 'Address added successfully')  # Display a success message
-        
-        elif 'update_address_form' in request.POST:
-            address_id = request.POST.get('address_id')  # Retrieve the address_id from POST data
-            address = get_object_or_404(Address, id=address_id) 
+            messages.success(request, 'Address added successfully')
+            return redirect('customer_Profile') 
 
-            # Update the address fields
+        elif 'update_address_form' in request.POST:
+            # Handle address form submission
+            address_id = request.POST.get('address_id')
+            address = get_object_or_404(Address, id=address_id)
             address.building_name = request.POST.get('building_name')
             address.address_type = request.POST.get('address_type')
             address.street = request.POST.get('street')
             address.city = request.POST.get('city')
             address.state = request.POST.get('state')
-            address.zip_code = request.POST.get('zip_code')
-
-            # Save the updated address record
+            address.zip_code = request.POST.get('zip_code')            
+            
             address.save()
-
-            messages.success(request, 'Address updated successfully')  # Display a success message
-            return redirect('customer_Profile')  # Replace 'profile' with the URL name of your profile page
+            messages.success(request, 'Address updated successfully')   # Display a success message
+            return redirect('customer_Profile') 
 
     context = {
         'user_profile': user_profile,
@@ -112,7 +111,11 @@ def delete_address(request, address_id):
 def customer_Wishlist(request):
     if request.user.is_authenticated:
         user_wishlist, created = Wishlist.objects.get_or_create(user=request.user)
-        return render(request, 'customer_Wishlist.html', {'user': request.user, 'wishlist': user_wishlist})
+        products = user_wishlist.products.all()
+        paginator = Paginator(products, 6)
+        page_number = request.GET.get('page')
+        page = paginator.get_page(page_number)
+        return render(request, 'customer_Wishlist.html', {'user': request.user, 'wishlist': user_wishlist, 'page': page})
     else:
         return render(request, 'customer_Wishlist.html', {'user': None, 'wishlist': None})
 
