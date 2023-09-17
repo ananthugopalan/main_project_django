@@ -51,9 +51,13 @@
       <form class="m-3" autocomplete="off" id="registerForm" method="POST"> <!-- Add id="registerForm" to the form element -->
         {%csrf_token%}
         <!-- Name input -->
+        <div class="mb-3">  
+          <input type="text" name="first_name" id="first_name" class="form-control" placeholder="Enter your first name" data-toggle="tooltip" data-placement="right" title="" />
+          <div class="error" id="firstnameError"></div>
+        </div>
         <div class="mb-3">
-          <input type="text" name="name" id="name" class="form-control" placeholder="Enter your name" data-toggle="tooltip" data-placement="right" title="" />
-          <div class="error" id="nameError"></div>
+          <input type="text" name="last_name" id="last_name" class="form-control" placeholder="Enter your last name" data-toggle="tooltip" data-placement="right" title="" />
+          <div class="error" id="lastnameError"></div>
         </div>
 
         <!-- Email input -->
@@ -134,32 +138,6 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
   </script>
-  
-  <!-- <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      var registerBtn = document.getElementById('registerBtn');
-      registerBtn.addEventListener('click', function(event) {
-        event.preventDefault(); // Prevent default form submission
-        var delayInMilliseconds = 2000; // Delay in milliseconds (2 seconds)
-  
-        // Disable the button during the delay
-        registerBtn.disabled = true;
-  
-        // Show the button again, display the message, and perform the form submission after the delay
-        setTimeout(function() {
-          registerBtn.disabled = false;
-  
-          // Display the message using an alert or a modal
-          // Example using an alert:
-          alert("Registration successful! Sign in to your account.");
-  
-          // Perform the form submission after the message is displayed
-          document.getElementById('registerForm').submit();
-        }, delayInMilliseconds);
-      });
-    });
-  </script> -->
-  
   
 
 <!-- Bootstrap and other scripts -->

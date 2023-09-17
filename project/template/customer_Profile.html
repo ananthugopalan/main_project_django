@@ -75,7 +75,7 @@
                         <i class="fa fa-fw fa-search text-dark mr-2"></i>
                     </a>
                     {% if user.is_authenticated %}
-                    <a class="nav-icon position-relative text-decoration-none" href="#">
+                    <a class="nav-icon position-relative text-decoration-none" href="{% url 'cart' %}">
                         <i class="fa fa-fw fa-shopping-cart text-dark mr-1"></i>
                     </a>
                     {%else%}
@@ -88,7 +88,7 @@
                     </a>
                     <div class="dropdown-menu" aria-labelledby="userDropdown">
                         {% if request.user.is_authenticated %}
-                            <a class="dropdown-item" href="#">{{ request.user.name }}</a>
+                            <a class="dropdown-item text-success" href="#">{{ request.user.first_name }}</a>
                             <a class="dropdown-item" href="{% url 'customer_Profile' %}">Profile</a>
                             <a class="dropdown-item" href="{% url 'customer_Wishlist' %}">Wishlist</a>
                             <a class="dropdown-item" href="{% url 'user_logout' %}" onclick="return confirm('Are you sure you want to sign out?')">Sign out</a>
@@ -169,14 +169,14 @@
                                     <!-- First Name -->
                                     <div class="col-md-6">
                                         <label class="form-label">First Name *</label>
-                                        <input type="text" class="form-control" id="first_name" name="first_name" placeholder="Enter your First Name" value="{% if form_submitted %}{{ request.POST.first_name }}{% else %}{{ user_profile.first_name }}{% endif %}" {% if not form_submitted %}disabled{% endif %} oninput="validateName(this)">
+                                        <input type="text" class="form-control" id="first_name" name="first_name" placeholder="Enter your First Name" value="{% if request.user.is_authenticated %}{{ request.user.first_name }}{% endif %}" disabled>
                                         <div id="first_name_error" class="text-danger"></div>
                                     </div>
                 
                                     <!-- Last Name -->
                                     <div class="col-md-6">
                                         <label class="form-label">Last Name *</label>
-                                        <input type="text" class="form-control" id="last_name" name="last_name" placeholder="Enter your Last Name" value="{% if form_submitted %}{{ request.POST.last_name }}{% else %}{{ user_profile.last_name }}{% endif %}" {% if not form_submitted %}disabled{% endif %} oninput="validateName(this)">
+                                        <input type="text" class="form-control" id="last_name" name="last_name" placeholder="Enter your Last Name" value="{% if request.user.is_authenticated %}{{ request.user.last_name }}{% endif %}" disabled>
                                         <div id="last_name_error" class="text-danger"></div>
                                     </div>
                                 </div> <!-- Row 1 END -->
@@ -230,10 +230,10 @@
                     <div class="card mt-3" style="width: 200px; margin-right: 20px;" id="address-card-{{ i.id }}">
                         <div class="card-body">                            
                             <strong>{{ i.address_type }}</strong><br>
-                            Building: {{ i.building_name }}<br>
-                            Street: {{ i.street }}<br>
-                            City: {{ i.city }}<br>
-                            Zip Code: {{ i.zip_code }}<br>
+                            <p id="card_building" style="margin-bottom: 2px;">Building: {{ i.building_name }}</p>
+                            <p id="card_street" style="margin-bottom: 2px;">Street: {{ i.street }}</p>
+                            <p id="card_city" style="margin-bottom: 2px;">City: {{ i.city }}</p>
+                            <p id="card_zip-code" style="margin-bottom: 2px;">Zip Code: {{ i.zip_code }}</p>
                             <div class="mt-3 d-flex">
                                 <button class="btn btn-primary btn-sm me-4 edit-address-button"
                                 data-address-id="{{ i.id }}"
@@ -253,10 +253,10 @@
                     {% endblock %}
                 </div>
                 
-                <div class="card mt-2" style="max-width: 400px; margin: 0 auto; display: none;" id="edit-address-form">
+                <div class="card mt-5" style="max-width: 400px; margin: 0 auto; display: none;" id="edit-address-form">
                     <div class="card-body" >
                         <h5>Edit Address</h5>
-                        <form method="post" id="update-form">
+                        <form method="post" action="{% url 'update_address' %}" id="update-form" onsubmit="return updateAddress()">
                             {% csrf_token %}
                             <input type="hidden" id="address_id" name="address_id" value="{{ address.id }}" />
                             <div class="mb-1">
@@ -271,13 +271,15 @@
                                     <option value="Other" {% if address.address_type == 'Other' %}selected{% endif %}>Other</option>
                                 </select>
                             </div>
-                            <div class="mb-1">
-                                <label for="street" class="form-label">Street</label>
-                                <input type="text" class="form-control" id="street" name="street" value="{{ address.street }}" required>
-                            </div>
-                            <div class="mb-1">
-                                <label for="city" class="form-label">City</label>
-                                <input type="text" class="form-control" id="city" name="city" value="{{ address.city }}" required>
+                            <div class="d-flex">
+                                <div class="mb-1 me-2">
+                                    <label for="street" class="form-label">Street</label>
+                                    <input type="text" class="form-control" id="street" name="street" value="{{ address.street }}" required>
+                                </div>
+                                <div class="mb-1">
+                                    <label for="city" class="form-label">City</label>
+                                    <input type="text" class="form-control" id="city" name="city" value="{{ address.city }}" required>
+                                </div>
                             </div>
                             <div class="mb-1">
                                 <label for="state" class="form-label">State</label>
@@ -296,7 +298,7 @@
                 <div class="card mt-2" style="max-width: 400px; margin: 0 auto; display: none;" id="address-cards-container">
                     <div class="card-body" >
                         <h5 class="card-title">Add New Address</h5>
-                        <form method="post" id="address-form">
+                        <form method="post" id="address-form" onsubmit="return addAddress()">
                             {% csrf_token %}
                             <div class="mb-1">
                                 <label for="building_name" class="form-label">Building Name</label>
@@ -435,6 +437,136 @@
         });
     }
 </script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    // Function to send an AJAX request to update the address
+    function updateAddressViaAjax(formData) {
+        $.ajax({
+            type: 'POST',
+            url: '{% url "update_address" %}', // Replace with the URL of your update_address view
+            data: formData,
+            dataType: 'json',
+            success: function (response) {
+                if (response.success) {
+                    // Address updated successfully, close the edit form
+                    document.getElementById("edit-address-form").style.display = "none";
+                    document.getElementById("address-card-display").style.display = "flex"; 
+                    document.getElementById("add-address-btn").style.display = "flex";
+                    // The URL-encoded form data string
+
+                    // Split the string into key-value pairs
+                    var keyValuePairs = formData.split('&');
+
+                    // Initialize an empty JSON object
+                    var formDataRes = {};
+
+                    // Loop through the key-value pairs and add them to the JSON object
+                    for (var i = 0; i < keyValuePairs.length; i++) {
+                        var keyValue = keyValuePairs[i].split('=');
+                        var key = decodeURIComponent(keyValue[0]);
+                        var value = decodeURIComponent(keyValue[1]);
+                        formDataRes[key] = value;
+                    }
+
+
+                    // Parse the response JSON data
+                    var updatedData = response.updated_data;
+                    console.log(updatedData);
+                    // Update the content of the address card on the page
+                    var addressCard = document.getElementById("address-card-" + formDataRes.address_id);
+                    addressCard.querySelector("strong").textContent = formDataRes.address_type;
+                    addressCard.querySelector("#card_building").textContent = "Building: " + formDataRes.building_name;
+                    addressCard.querySelector("#card_street").textContent = "Street: " + formDataRes.street;
+                    addressCard.querySelector("#card_city").textContent = "City: " + formDataRes.city;
+                    addressCard.querySelector("#card_zip-code").textContent = "Zip Code: " + formDataRes.zip_code;
+                } else {
+                    // Handle errors if needed
+                    console.error('Error updating address');
+                }
+            },
+            error: function () {
+                // Handle errors if needed
+                console.error('Error updating address');
+            },
+        });
+    }
+
+    // Attach a submit event listener to the update form
+    var updateForm = document.getElementById('update-form');
+    updateForm.addEventListener('submit', function (e) {
+        e.preventDefault(); // Prevent the default form submission
+        var formData = $(this).serialize(); // Serialize the form data
+        updateAddressViaAjax(formData); // Send the AJAX request to update the address
+    });
+});
+
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Function to send an AJAX request to update the address
+        function addAddressViaAjax(formData) {
+            $.ajax({
+                type: 'POST',
+                url: '{% url "update_address" %}', // Replace with the URL of your update_address view
+                data: formData,
+                dataType: 'json',
+                success: function (response) {
+                    if (response.success) {
+                        // Address updated successfully, close the edit form
+                        document.getElementById("edit-address-form").style.display = "none";
+                        document.getElementById("address-card-display").style.display = "flex"; 
+                        document.getElementById("add-address-btn").style.display = "flex";
+                        // The URL-encoded form data string
+    
+                        // Split the string into key-value pairs
+                        var keyValuePairs = formData.split('&');
+    
+                        // Initialize an empty JSON object
+                        var formDataRes = {};
+    
+                        // Loop through the key-value pairs and add them to the JSON object
+                        for (var i = 0; i < keyValuePairs.length; i++) {
+                            var keyValue = keyValuePairs[i].split('=');
+                            var key = decodeURIComponent(keyValue[0]);
+                            var value = decodeURIComponent(keyValue[1]);
+                            formDataRes[key] = value;
+                        }
+    
+    
+                        // Parse the response JSON data
+                        var updatedData = response.updated_data;
+                        console.log(updatedData);
+                        // Update the content of the address card on the page
+                        var addressCard = document.getElementById("address-card-" + formDataRes.address_id);
+                        addressCard.querySelector("strong").textContent = formDataRes.address_type;
+                        addressCard.querySelector("#card_building").textContent = "Building: " + formDataRes.building_name;
+                        addressCard.querySelector("#card_street").textContent = "Street: " + formDataRes.street;
+                        addressCard.querySelector("#card_city").textContent = "City: " + formDataRes.city;
+                        addressCard.querySelector("#card_zip-code").textContent = "Zip Code: " + formDataRes.zip_code;
+                    } else {
+                        // Handle errors if needed
+                        console.error('Error updating address');
+                    }
+                },
+                error: function () {
+                    // Handle errors if needed
+                    console.error('Error updating address');
+                },
+            });
+        }
+    
+        // Attach a submit event listener to the update form
+        var updateForm = document.getElementById('update-form');
+        updateForm.addEventListener('submit', function (e) {
+            e.preventDefault(); // Prevent the default form submission
+            var formData = $(this).serialize(); // Serialize the form data
+            updateAddressViaAjax(formData); // Send the AJAX request to update the address
+        });
+    });  
+    
+    </script>
 
 
 <script>

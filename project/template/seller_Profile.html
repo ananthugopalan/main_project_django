@@ -72,7 +72,7 @@
                     </a>
                     <div class="dropdown-menu" aria-labelledby="userDropdown">
                         {% if user.is_authenticated %}
-                            <a class="dropdown-item" href="#"><b>{{ request.user.name }}</b></a>
+                            <a class="dropdown-item text-success" href="#">{{ request.user.first_name }}</a>
                             <a class="dropdown-item" href="#">Profile</a>
                             <a class="dropdown-item" href="{% url 'user_logout' %}" onclick="return confirm('Are you sure you want to sign out?')">Sign out</a>
                         {% endif %}
@@ -101,117 +101,146 @@
     </div>
     <!--nav ends -->
 
+    {% if messages %}
+    <div class="messages">
+      {% for message in messages %}
+        <div class="alert alert-success">{{ message }}</div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
     <!-- seller_profile_form.html -->
     <div class="container shadow p-4 mt-5 mb-5">
-    <form method="post" enctype="multipart/form-data" class="p-4">
-        {% csrf_token %}
         
-        <!-- Seller Information -->
-        <h2 class="mb-4">Seller Information</h2>
-        <div class="row mb-3">
-            <div class="col-md-6">
-                <div class="form-floating">
-                    <input type="text" class="form-control" id="seller_name" name="seller_name" placeholder="Seller Name"  required>
-                    <label for="seller_name">Seller Name</label>
-                </div>
-                <p id="seller_name_error" class="text-danger"></p>
-            </div>
-            <div class="col-md-6">
-                <div class="form-floating">
-                    <input type="email" class="form-control" id="email" name="email" placeholder="Email" required>
-                    <label for="email">Email</label>
-                </div>
-                <p id="email_error" class="text-danger"></p>
-            </div>
-        </div>
-        <div class="row mb-3">
-            <div class="col-md-6">
-                <div class="form-floating">
-                    <input type="tel" class="form-control" id="phone_number" name="phone_number" placeholder="Phone Number" value="{{phone_number|default:'' }}" required>
-                    <label for="phone_number">Phone Number</label>
-                </div>
-                <p id="phone_number_error" class="text-danger"></p>
-            </div>
-            <div class="col-md-6">
-                <div class="form-floating">
-                    <textarea class="form-control" id="address" name="address" placeholder="Address" rows="4" required></textarea>
-                    <label for="address">Address</label>
+        <form method="POST" class="register-form" id="profile-update-form" action="{% url 'seller_Profile' %}">
+            {% csrf_token %}
+            
+            <!-- Account Details -->
+            <h4 class="form-title">Account Details</h4>
+            <div class="mb-3">
+                <!-- First Name -->
+                <div class="input-group">
+                    <input type="text" class="form-control" name="first_name" id="first_name" placeholder="Enter your First Name" required value="{{ seller_details.user.first_name }}">
+                    <span id="firstnameError" class="error-message"></span>
                 </div>
             </div>
-        </div>
-        
-        <!-- Business Information -->
-        <h2 class="mb-4">Business Information</h2>
-        <div class="row mb-3">
-            <div class="col-md-6">
-                <div class="form-floating">
-                    <input type="text" class="form-control" id="business_name" name="business_name" placeholder="Business Name (if applicable)">
-                    <label for="business_name">Business Name (if applicable)</label>
+            <div class="mb-3">
+                <!-- Last Name -->
+                <div class="input-group">
+                    <input type="text" class="form-control" name="last_name" id="last_name" placeholder="Enter your Last Name" required value="{{ seller_details.user.last_name }}">
+                    <span id="lastnameError" class="error-message"></span>
                 </div>
             </div>
-            <div class="col-md-6">
-                <div class="form-floating">
-                    <input type="text" class="form-control" id="registration_number" name="registration_number" placeholder="Business Registration Number (if applicable)">
-                    <label for="registration_number">Business Registration Number (if applicable)</label>
+            <div class="mb-3">
+                <!-- PAN Number -->
+                <div class="input-group">
+                    <input type="text" class="form-control" name="pan_number" id="pan_number" placeholder="Enter your PAN Number" required value="{{ seller_details.user.pan_number }}" disabled>
+                    <span id="panError" class="error-message"></span>
                 </div>
             </div>
-        </div>
+            <div class="mb-3">
+                <!-- Email -->
+                <div class="input-group">
+                    <input type="email" class="form-control" name="email" id="email" placeholder="Enter your Email ID" required value="{{ seller_details.user.email }}" disabled>
+                    <span id="emailError" class="error-message"></span>
+                </div>
+            </div>
+            
+            
+            <!-- Seller Store and Address -->
+            <h4 class="form-title">Seller Store and Address</h4>
+            <div class="mb-3">
+                <!-- Store Name -->
+                <label for="store-name">Store Name:</label>
+                <div class="input-group">
+                    <input type="text" class="form-control" name="store-name" id="store-name" placeholder="Enter Store Name" required value="{{ seller_details.store_name }}">
+                </div>
+            </div>
+            <div class="mb-3">
+                <!-- Mobile Number -->
+                <label for="phone-number">Mobile:</label>
+                <div class="input-group">
+                    <input type="tel" class="form-control" name="phone-number" id="phone-number" placeholder="Enter Phone Number" required value="{{ seller_details.phone_number }}">
+                    <span id="phoneError" class="error-message"></span>
+                </div>
+            </div>
+            
+            <!-- Seller Address -->
+            <div class="mb-3">
+                <!-- Shipping Address -->
+                <label for="pickup-address">Shipping Address:</label>
+                <div class="input-group">
+                    <input type="text" class="form-control" name="pickup-building" id="pickup-building" placeholder="Enter Building Name" required value="{{ seller_details.building_name }}">
+                </div>
+            </div>
+            <div class="mb-3">
+                <div class="input-group">
+                    <input type="text" class="form-control" name="pickup-address" id="pickup-address" placeholder="Enter Street Name" required value="{{ seller_details.pickup_address }}">
+                </div>
+            </div>
+            <div class="mb-3">
+                <div class="input-group">
+                    <input type="text" class="form-control" name="city" id="city" placeholder="Enter City" required value="{{ seller_details.city }}">
+                </div>
+            </div>
+            <div class="mb-3">
+                <div class="input-group">
+                    <input type="text" class="form-control" name="state" id="state" placeholder="Enter State" required value="{{ seller_details.state }}">
+                </div>
+            </div>
+            <div class="mb-3">
+                <!-- Zipcode -->
+                <div class="input-group">
+                    <input type="text" class="form-control" name="pincode" id="pincode" placeholder="Enter Zipcode" required value="{{ seller_details.pincode }}">
+                    <span id="pincodeError" class="error-message"></span>
+                </div>
+            </div>
+            
+            <!-- Bank Details -->
+            <h4 class="form-title">Bank Details</h4>
+            <div class="mb-3">
+                <!-- Account Holder Name -->
+                <div class="input-group">
+                    <input type="text" class="form-control" name="account-holder-name" id="account-holder-name" placeholder="Account Holder Name" value="{{ seller_details.pickup_address }}">
+                    <span id="accountHolderNameError" class="error-message"></span>
+                </div>
+            </div>
+            <div class="mb-3">
+                <!-- Account Number -->
+                <div class="input-group">
+                    <input type="text" class="form-control" name="account-number" id="account-number" placeholder="Enter Account Number" value="{{ seller_details.account_holder_name }}">
+                    <span id="accountNumberError" class="error-message"></span>
+                </div>
+            </div>
+            <div class="mb-3">
+                <!-- Bank Name -->
+                <div class="input-group">
+                    <input type="text" class="form-control" name="bank-name" id="bank-name" placeholder="Enter Bank Name" value="{{ seller_details.bank_name }}">
+                    <span id="bankNameError" class="error-message"></span>
+                </div>
+            </div>
+            <div class="mb-3">
+                <!-- Branch -->
+                <div class="input-group">
+                    <input type="text" class="form-control" name="branch" id="branch" placeholder="Enter Branch" value="{{ seller_details.branch }}">
+                    <span id="branchNameError" class="error-message"></span>
+                </div>
+            </div>
+            <div class="mb-3">
+                <!-- IFSC Code -->
+                <div class="input-group">
+                    <input type="text" class="form-control" name="ifsc-code" id="ifsc-code" placeholder="Enter IFSC Code" value="{{ seller_details.ifsc_code }}">
+                    <span id="ifscCodeError" class="error-message"></span>
+                </div>
+            </div>
+            
+            <!-- Save and Update Button -->
+            <div class="mb-3 form-button">
+                <button type="submit" class="form-submit btn-success me-3" id="save-button">Save</button>
+            </div>
+        </form>
         
-        <!-- Seller Logo/Avatar -->
-        <h2 class="mb-4">Seller Logo/Avatar</h2>
-        <div class="mb-3">
-            <label for="seller_logo" class="form-label">Upload Seller Logo/Avatar</label>
-            <input type="file" class="form-control" id="seller_logo" name="seller_logo" accept="image/jpeg, image/png">
-            <small class="form-text text-muted">Allowed formats: JPG, PNG.</small>
-            <p id="seller_logo_error" class="text-danger"></p>
-        </div>
-        
-        <!-- Payment Information -->
-        <h2 class="mb-4">Payment Information</h2>
-        <div class="form-floating mb-3">
-            <input type="text" class="form-control" id="bank_account_details" name="bank_account_details" placeholder="Bank Account Details">
-            <label for="bank_account_details">Bank Account Details</label>
-        </div>
-        <div class="form-floating">
-            <select class="form-select" id="payment_method" name="payment_method">
-                <option value="bank_transfer">Bank Transfer</option>
-                <option value="paypal">PayPal</option>
-                <option value="upi">UPI</option>
-            </select>
-            <label for="payment_method">Payment Method</label>
-        </div>
-        
-        <!-- Seller Description -->
-        <h2 class="mb-4">Seller Description</h2>
-        <div class="form-floating mb-3">
-            <textarea class="form-control" id="seller_description" name="seller_description" placeholder="Describe your business" rows="4"></textarea>
-            <label for="seller_description">Describe your business</label>
-        </div>
-        
-        <!-- Shipping Information -->
-        <h2 class="mb-4">Shipping Information</h2>
-        <div class="form-floating mb-3">
-            <input type="text" class="form-control" id="shipping_locations" name="shipping_locations" placeholder="Shipping Locations">
-            <label for="shipping_locations">Shipping Locations</label>
-        </div>
-        <div class="form-floating">
-            <textarea class="form-control" id="shipping_policies" name="shipping_policies" placeholder="Shipping Policies" rows="4"></textarea>
-            <label for="shipping_policies">Shipping Policies</label>
-        </div>
-        
-        <!-- Terms and Conditions -->
-        <div class="form-check mt-4">
-            <input class="form-check-input" type="checkbox" id="agree_terms" name="agree_terms" required>
-            <label class="form-check-label" for="agree_terms">I agree to the <a href="#">Terms and Conditions</a>.</label>
-        </div>
-        
-        <!-- Submit Button -->
-        <div class="text-center mt-4">
-            <button type="submit" class="btn btn-primary" id="save_button">Submit</button>
-            <button type="button" class="btn btn-secondary" id="update_button">Update</button>
-        </div>
-    </form>
-</div>
+    </div>
 
         <!-- Footer -->
     <footer class="footer mt-0 py-3 bg-dark">
@@ -232,99 +261,35 @@
     </footer>
   <!-- Footer -->
   
+  <!-- JavaScript for form submission -->
+<!-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $("#save-button").click(function (e) {
+            e.preventDefault(); // Prevent the default form submission
 
-  <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        // Get references to the seller_name, email, phone_number, seller_logo, and other input fields
-        var sellerNameInput = document.getElementById('seller_name');
-        var emailInput = document.getElementById('email');
-        var phoneNumberInput = document.getElementById('phone_number');
-        var sellerLogoInput = document.getElementById('seller_logo');
+            // Serialize the form data
+            var formData = $("#profile-update-form").serialize();
 
-        // Get references to the error message elements
-        var sellerNameError = document.getElementById('seller_name_error');
-        var emailError = document.getElementById('email_error');
-        var phoneNumberError = document.getElementById('phone_number_error');
-        var sellerLogoError = document.getElementById('seller_logo_error');
-
-        // Function to validate the seller name
-        function validateSellerName() {
-            var sellerName = sellerNameInput.value;
-            var regex = /^[a-zA-Z\s]+$/; // Regular expression for alphabets and spaces
-
-            if (!regex.test(sellerName)) {
-                sellerNameError.textContent = 'Only alphabets and spaces are allowed.';
-                sellerNameInput.classList.add('is-invalid'); // Add Bootstrap's "is-invalid" class for styling
-                return false;
-            } else {
-                sellerNameError.textContent = '';
-                sellerNameInput.classList.remove('is-invalid'); // Remove "is-invalid" class
-                return true;
-            }
-        }
-
-        // Function to validate the email
-        function validateEmail() {
-            var email = emailInput.value;
-            var regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Regular expression for valid email address
-
-            if (!regex.test(email)) {
-                emailError.textContent = 'Please enter a valid email address.';
-                emailInput.classList.add('is-invalid'); // Add Bootstrap's "is-invalid" class for styling
-                return false;
-            } else {
-                emailError.textContent = '';
-                emailInput.classList.remove('is-invalid'); // Remove "is-invalid" class
-                return true;
-            }
-        }
-
-        // Function to validate the phone number
-        function validatePhoneNumber() {
-            var phoneNumber = phoneNumberInput.value;
-            var regex = /^[6-9]\d{9}$/; // Regular expression for a 10-digit phone number starting with 6, 7, 8, or 9
-
-            if (!regex.test(phoneNumber)) {
-                phoneNumberError.textContent = 'Please enter a valid 10-digit phone number.';
-                phoneNumberInput.classList.add('is-invalid'); // Add Bootstrap's "is-invalid" class for styling
-                return false;
-            } else {
-                phoneNumberError.textContent = '';
-                phoneNumberInput.classList.remove('is-invalid'); // Remove "is-invalid" class
-                return true;
-            }
-        }
-
-        // Function to validate the seller logo
-        function validateSellerLogo() {
-            var sellerLogo = sellerLogoInput.value;
-            var allowedExtensions = /(\.jpg|\.png)$/i; // Regular expression for JPG and PNG files
-
-            if (!allowedExtensions.exec(sellerLogo)) {
-                sellerLogoError.textContent = 'Only JPG and PNG files are allowed.';
-                sellerLogoInput.classList.add('is-invalid'); // Add Bootstrap's "is-invalid" class for styling
-                return false;
-            } else {
-                sellerLogoError.textContent = '';
-                sellerLogoInput.classList.remove('is-invalid'); // Remove "is-invalid" class
-                return true;
-            }
-        }
-
-        // Attach input event listeners to the seller_name, email, phone_number, and seller_logo inputs
-        sellerNameInput.addEventListener('input', validateSellerName);
-        emailInput.addEventListener('input', validateEmail);
-        phoneNumberInput.addEventListener('input', validatePhoneNumber);
-        sellerLogoInput.addEventListener('input', validateSellerLogo);
-
-        // Add form submit event listener for final validation
-        document.querySelector('#seller_profile_form').addEventListener('submit', function (event) {
-            if (!validateSellerName() || !validateEmail() || !validatePhoneNumber() || !validateSellerLogo()) {
-                event.preventDefault(); // Prevent form submission if validation fails
-            }
+            $.ajax({
+                type: "POST",
+                url: "{% url 'seller_Profile' %}", // Specify your Django view URL here
+                data: formData,
+                success: function (data) {
+                    // Handle success (e.g., show a success message)
+                    alert("Profile updated successfully!");
+                },
+                error: function (data) {
+                    // Handle errors (e.g., display error messages)
+                    alert("An error occurred while updating the profile.");
+                }
+            });
         });
     });
 </script>
+ -->
+
+  
 
     
 

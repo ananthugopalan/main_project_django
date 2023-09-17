@@ -24,6 +24,7 @@
     {% endfor %}
   </div>
 {% endif %}
+
   <section class="min-vh-100 d-flex flex-column">
     <div class="container">
       <div class="row justify-content-center align-items-center min-vh-100">
@@ -55,7 +56,7 @@
               </div>
               <a href="{% url 'password_reset' %}" class="text-body">Forgot password?</a>
             </div>
-            {% load socialaccount %}
+            {% load socialaccount %}
             <div class="text-center mt-4">
               <button type="submit" class="btn btn-success" style="padding-left: 2.5rem; padding-right: 2.5rem;">Sign in</button>
               <!-- <p class="small mt-2">New User? Create your account here <a href="{% url 'customer_Registration' %}" class="link-danger">Register</a></p> -->

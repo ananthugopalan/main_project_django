@@ -1,0 +1,474 @@
+{% load static %}
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Seller Register</title>
+  <link rel="icon" href="{% static 'img/Agriselect1.png' %}" width='30' height='30'>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.19.0/font/bootstrap-icons.css" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+
+.form-submit {
+    /* Existing styles */
+
+    /* Add hover and transition styles */
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.form-submit:hover {
+    background-color: #4CAF50; /* Change to your desired hover color */
+    color: white; /* Change to your desired hover text color */
+}
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="tel"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+/* Add focus styles for input fields */
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[type="tel"]:focus {
+    outline: none;
+    border-color: #4CAF50; /* Change to your desired focus color */
+    box-shadow: 0 0 5px #4CAF50; /* Change to your desired focus box shadow */
+}
+
+        *, *:before, *:after {
+               margin: 0;
+               padding: 0;
+               box-sizing: border-box;
+            }
+           
+           html, body {
+               height: 100%;
+            }
+           
+            body {
+            font-family: Arial, Helvetica, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+        }
+           h1 {
+            padding: 50px 0;
+            font-weight: 400;
+            text-align: center;
+            }
+            
+            p {
+                margin: 0 0 20px;
+                line-height: 1.5;
+            }
+            
+            main {
+                min-width: 320px;
+                padding-left: 100px;
+                padding-right: 100px;
+                padding-bottom: 100px;
+                background: #fff;
+            }
+            
+            section {
+                display: none;
+                padding: 20px 0 0;
+                border-top: 1px solid #ddd;
+            }
+            input[name="tabs"] {
+            display: none;
+            }
+            
+            label {
+                display: inline-block;
+                margin: 0;
+                padding: 15px 0; /* Adjust padding to center the tabs */
+                width: 20%; /* Set each tab to occupy 20% of the viewport width */
+                font-weight: 600;
+                text-align: center;
+                color: #bbb;
+                border: 1px solid transparent;
+            }
+            
+            label:before {
+                font-family: fontawesome;
+                font-weight: normal;
+                margin-right: 10px;
+            }
+
+            label:hover {
+            color: #888;
+            cursor: pointer;
+            }
+            input [type="radio"][name="delivery-type"]:checked {
+                border: 2px solid orange; /* Add a border around the radio button content */
+                padding: 8px; /* Optional: Add some padding to visually separate it */
+            }
+            input[name="tabs"]:checked + label {
+                color: #555;
+                border: 1px solid #ddd;
+                border-top: 3px  solid orange;
+                border-bottom: 1px solid #fff;
+            }
+            
+            #tab1:checked ~ #content1,
+            #tab2:checked ~ #content2,
+            #tab3:checked ~ #content3,
+            #tab4:checked ~ #content4 {
+                display: block;
+            }
+            
+            @media screen and (max-width: 650px) {
+                label {
+                    font-size: 0;
+                }
+                label:before {
+                margin: 0;
+                font-size: 18px;
+                }
+            }
+            
+            @media screen and (max-width: 400px) {
+                label {
+                    padding: 15px;
+                }
+            }
+            .tabcontent {
+                display: none; 
+            }
+
+        
+            .active {
+                display: block;
+            }
+
+            .invalid-tooltip {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                z-index: 5;
+                width: 100%;
+                margin-top: .1rem;
+                font-size: 0.875rem;
+                color: #dc3545;
+                }
+                .error-message {
+                font-size: 0.75rem; /* Smaller font size for error messages */
+                padding-top: 0.1rem; /* Reduce top padding for error messages */
+                color: #dc3545; /* Error message text color */
+            }
+            
+    </style>
+    </head>
+    <body>
+        {% if messages %}
+            <div class="messages">
+            {% for message in messages %}
+                <div class="alert alert-success">{{ message }}</div>
+            {% endfor %}
+            </div>
+        {% endif %}
+
+        <div class="row d-flex justify-content-center align-items-start bg-white">
+            <div class="container d-flex justify-content-center mt-4">
+                <a class="navbar-brand" href="#">
+                    <img src="{% static 'img/Agriselect1.png'%}" width='100' height='auto' class='logo'>
+                </a>
+            </div>
+        </div>
+
+        <main class="shadow-lg bg-body rounded">                      
+            <h2 class="mb-3">Seller Account Creation</h2>
+            <input id="tab1" type="radio" name="tabs" checked>
+            <label for="tab1" class="fs-6">Step 1</label>
+    
+            <input id="tab2" type="radio" name="tabs" >
+            <label for="tab2" class="fs-6">Step 2</label>
+    
+            <input id="tab3" type="radio" name="tabs" >
+            <label for="tab3" class="fs-6">Step 3</label>
+    
+            <input id="tab4" type="radio" name="tabs">
+            <label for="tab4" class="fs-6">Step 4</label> 
+    
+            <section id="content1" class="shadow border-3 rounded bg-secondary">
+                <div class="container mt-2 pt-1 bg-white">
+                    <div class="row justify-content-center"> <!-- Center align the row -->
+                        <!-- Form Fields with Specific Width -->
+                        <div class="col-md-6 mt-2">
+                            <div class="signup-content">
+                                <div class="signup-form">
+                                    <h4 class="form-title">Account Details</h4>
+                                    <form method="POST" class="register-form active" id="register-form" action="{% url 'seller_Registration' %}" data-form="step1">
+                                        {% csrf_token %}
+                                        <div class="mb-3">
+                                            <div class="input-group">
+                                                <input type="text" class="form-control" name="first_name" id="first_name" placeholder="Enter your First Name" required style="width: 100%">                                                
+                                                <span id="firstnameError" class="error-message"></span>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <div class="input-group">
+                                                <input type="text" class="form-control" name="last_name" id="last_name" placeholder="Enter your Last Name" required style="width: 100%">
+                                                <span id="lastnameError" class="error-message"></span>
+                                            </div>                                            
+                                        </div>                                      
+                                        <div class="mb-3">
+                                            <div class="input-group">
+                                                <input type="text" class="form-control" name="pan_number" id="pan_number" placeholder="Enter your PAN Number" required style="width: 100%">
+                                                <span id="panError" class="error-message"></span>
+                                            </div>                                            
+                                        </div>
+                                        <div class="mb-3">
+                                            <div class="input-group">
+                                                <input type="email" class="form-control" name="email" id="email" placeholder="Enter your Email ID" required style="width: 100%">
+                                                <span id="emailError" class="error-message"></span>
+                                            </div>
+                                            
+                                        </div>
+                                        <div class="mb-3">
+                                            <div class="input-group">
+                                                <input type="password" class="form-control" name="password" id="password" placeholder="Password" required style="width: 100%">                                                
+                                                <span id="passwordError" class="error-message"></span>                                                
+                                            </div>                                            
+                                        </div>
+                                        <div class="mb-3">
+                                            <div class="input-group">
+                                                <input type="password" class="form-control" name="confirm_password" id="confirm_password" placeholder="Confirm password" required style="width: 100%">                                                
+                                                <span id="confirmPasswordError" class="error-message"></span>                                                
+                                            </div>                                            
+                                        </div>
+                                        <input type="hidden" name="step" value="1">
+
+                                        <div class="mb-3 form-button">
+                                            <input type="hidden" name="current_step" value="step1">
+                                            <button type="button" name="submit_step1" id="btn1" class="form-submit btn-success" value="Register" style="border: none; padding: 15px 25px; border-radius: 5px; cursor: pointer;" >Save and Next</button>                                    
+                                            </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>      
+                        
+                        
+ 
+            <section id="content2" class="shadow border-3 p-3 rounded">                
+                <form method="POST" class="register-form" id="form-step2" action="{% url 'seller_Registration' %}" data-form="step2">
+                    {% csrf_token %}                    
+                    <div class="row" style="margin-left: 30px;">
+                        <h4 class="form-title">Seller Store and Address</h4>
+                        <div class="col-md-6 mt-2">
+                            <div class="mb-3">
+                                <!-- Label for Store Name -->
+                                <label for="store-name">Store Name:</label>
+                                <div class="input-group" style="width: 80%">
+                                    <input type="text" class="form-control" name="store-name" id="store-name" placeholder="Enter Store Name" required style="width: 100%">
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <!-- Label for Phone Number -->
+                                <label for="phone-number">Mobile:</label>
+                                <div class="input-group" style="width: 80%">
+                                    <input type="tel" class="form-control" name="phone-number" id="phone-number" placeholder="Enter Phone Number" required style="width: 100%">
+                                    <span id="phoneError" class="error-message"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <!-- Label for Pickup Address -->
+                            <label for="pickup-address">Shipping Address:</label>
+                            <div class="mb-3">
+                                <div class="input-group" style="width: 80%">
+                                    <input type="text" class="form-control" name="pickup-building" id="pickup-building" placeholder="Enter Building Name" required>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <div class="input-group" style="width: 80%">
+                                    <input type="text" class="form-control" name="pickup-address" id="pickup-address" placeholder="Enter Street Name" required>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <div class="input-group" style="width: 80%">
+                                    <input type="text" class="form-control" name="city" id="city" placeholder="Enter City" required>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <div class="input-group" style="width: 80%">
+                                    <input type="text" class="form-control" name="state" id="state" placeholder="Enter State" required>
+                                </div>
+                            </div>
+                            <div class="mb-0">
+                                
+                                <div class="input-group" style="width: 80%">
+                                    <input type="text" class="form-control" name="pincode" id="pincode" placeholder="Enter Zipcode" required>
+                                    <span id="pincodeError" class="error-message"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3 form-button">
+                            <input type="hidden" name="current_step" value="step2">
+                            <button type="button" name="submit_step2" class="form-submit btn-success" style="border: none; padding: 15px 25px; border-radius: 5px; cursor: pointer;">Save and Next</button>
+                        </div>
+                    </div>
+                    <input type="hidden" name="step" value="2">
+    
+                    
+                </form>
+            </section>
+        
+
+            <section id="content3" class="shadow border-3 p-3 rounded">
+                <h4 class="form-title">Bank Details</h4>
+                <form method="POST" class="register-form" id="form-step3" action="{% url 'seller_Registration' %}" data-form="step3">
+                    {% csrf_token %}
+            
+                    <div class="row">
+                        <div class="col-md-6 mt-2">
+                            <div class="mb-3">
+                                <div class="input-group">                                    
+                                    <input type="text" class="form-control" name="account-holder-name" id="account-holder-name" placeholder="Account Holder Name" style="width: 100%">
+                                    <span id="accountHolderNameError" class="error-message"></span>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" name="account-number" id="account-number" placeholder="Enter Account Number" style="width: 100%">
+                                    <span id="accountNumberError" class="error-message"></span>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" name="bank-name" id="bank-name" placeholder="Enter Bank Name" style="width: 100%">
+                                    <span id="bankNameError" class="error-message"></span>
+                                </div>
+                            </div>
+                        </div>
+            
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" name="branch" id="branch" placeholder="Enter Branch" style="width: 100%">
+                                    <span id="branchNameError" class="error-message"></span>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" name="ifsc-code" id="ifsc-code" placeholder="Enter IFSC Code" style="width: 100%">
+                                    <span id="ifscCodeError" class="error-message"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <input type="hidden" name="step" value="3">
+    
+                    <div class="d-flex justify-content-end">
+                        <div class="mb-3 ps-2">
+                            <input type="hidden" name="current_step" value="step2">
+                            <button type="button" name="submit_step3" class="form-submit btn-success" style="border: none; padding: 15px 25px; border-radius: 5px; cursor: pointer;">Save and Next</button>
+                        </div>
+                    </form>
+                </section>                            
+                
+                
+                <section id="content4">
+                    <div class="text-center">
+                        <!-- <i class="fas fa-check-circle fa-5x" style="color: green;"></i> -->
+                        <h2>Registration Completed</h2>
+                        <p>Congratulations, you can Sell your Products.</p>
+                        <a href="#" class="btn btn-primary">Add Products and Start Selling</a>                        
+                    </div>
+                </section>
+                
+            </main>
+            <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+            <script src="{% static 'js/seller_reg_validation.js' %}"></script>
+            {% comment %} ---------------------------original------------------------- {% endcomment %}
+            
+            
+            
+            
+            
+            
+            <script>
+                $(document).ready(function () {
+                    const tabs = document.querySelectorAll('input[type="radio"]');
+                    const saveButtons = document.querySelectorAll('.form-submit');
+                    let currentTab = 0;
+            
+                    // Disable all tabs except the first one initially
+                    for (let i = 1; i < tabs.length; i++) {
+                        tabs[i].disabled = true;
+                    }
+                    
+                    
+
+                    // Add event listeners to the "Save" buttons
+                    for (let i = 0; i < saveButtons.length; i++) {
+                        saveButtons[i].addEventListener("click", function (event) {
+                            event.preventDefault(); // Prevent the default form submission
+                            // Check if the form is valid (you can add your form validation logic here)
+                            const isFormValid = true; // Replace with your validation logic
+
+                            if (isFormValid) {  
+                                // Serialize the form data
+                                const formData = $(this).closest('form').serialize();
+
+                                // Get the CSRF token from the page
+                                const csrfToken = $('input[name=csrfmiddlewaretoken]').val();
+
+                                // Send an AJAX POST request to your Django view
+                                $.ajax({
+                                    type: 'POST',
+                                    url: '{% url "seller_Registration" %}', // Replace with your Django view URL
+                                    data: formData,
+                                    headers: {
+                                        'X-CSRFToken': csrfToken, // Include the CSRF token in the request headers
+                                    },
+                                    success: function (response) {
+                                        // Handle the response here if needed
+                                        console.log(response);
+
+                                        tabs[currentTab].disabled = true;
+
+                                        // Enable the next tab (if available)
+                                        if (currentTab < tabs.length - 1) {
+                                            currentTab++;
+
+                                            // Switch to the next tab
+                                            tabs[currentTab].disabled = false;
+                                            tabs[currentTab].checked = true;
+                                        }
+                                    },
+                                    error: function (xhr, textStatus, errorThrown) {
+                                        // Handle errors if needed
+                                        console.error(xhr.responseText);
+                                    },
+                                });
+                            }
+                        });
+                    }
+                });
+            </script>
+            
+</body>
+</html>                                                        
+        
+
+
+
+   

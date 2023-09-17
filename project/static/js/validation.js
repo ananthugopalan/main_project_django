@@ -3,7 +3,8 @@ document.addEventListener('DOMContentLoaded', function () {
   const emailInput = document.getElementById('email');
   const passwordInput = document.getElementById('password');
   const confirmPasswordInput = document.getElementById('confirmPassword');
-  const nameInput = document.getElementById('name');
+  const firstnameInput = document.getElementById('first_name');
+  const lastnameInput = document.getElementById('last_name');
 
   // Function to validate email
   function validateEmail() {
@@ -64,17 +65,31 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   }
 
-  function validateName() {
-    const nameError = document.getElementById('nameError');
-    const name = nameInput.value.trim();
+  function validateFirstName() {
+    const firstnameError = document.getElementById('firstnameError');
+    const name = firstnameInput.value.trim();
+    const namePattern = /^[a-zA-Z]+$/;
+
+    if (!namePattern.test(name)) {
+      firstnameInput.classList.add('is-invalid');
+      firstnameError.innerText = 'Name should contain only alphabets.';
+    } else {
+      firstnameInput.classList.remove('is-invalid');
+      firstnameError.innerText = '';
+    }
+  }
+
+  function validateLastName() {
+    const lastnameError = document.getElementById('lastnameError');
+    const name = lastnameInput.value.trim();
     const namePattern = /^[a-zA-Z ]+$/;
 
     if (!namePattern.test(name)) {
-      nameInput.classList.add('is-invalid');
-      nameError.innerText = 'Name should contain only alphabets.';
+      lastnameInput.classList.add('is-invalid');
+      lastnameError.innerText = 'Name should contain only alphabets.';
     } else {
-      nameInput.classList.remove('is-invalid');
-      nameError.innerText = '';
+      lastnameInput.classList.remove('is-invalid');
+      lastnameError.innerText = '';
     }
   }
 
@@ -91,38 +106,6 @@ document.addEventListener('DOMContentLoaded', function () {
     return /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(text);
   }
 
-  // function isValidEmail(email) {
-  //   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-z]+\.[a-zA-Z]+(?:\.[a-zA-Z]+)?$/;
-  //   return emailRegex.test(email);
-  // }
-
-  // function isValidEmail(email) {
-  //   const validProviders = [
-  //     "gmail", "yahoo", "outlook", "hotmail", "aol", "icloud", "protonmail", "zoho"
-  //     // Add more valid providers
-  //   ];
-  
-  //   const validTLDs = [
-  //     "com", "org", "net", "edu", "gov", "mil", "co", "info", "io", "uk", "in"
-  //     // Add more valid TLDs
-  //   ];
-  
-  //   const emailParts = email.split("@");
-  //   if (emailParts.length !== 2) {
-  //     return false; // Email should have exactly one @ symbol
-  //   }
-  
-  //   const provider = emailParts[1].split(".")[0].toLowerCase();
-  //   const tld = emailParts[1].split(".").pop().toLowerCase();
-  
-  //   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+$/;
-  //   return (
-  //     emailRegex.test(email) &&
-  //     validProviders.includes(provider) &&
-  //     validTLDs.includes(tld)
-  //   );
-  // }
-  
   function isValidEmail(email) {
     const validProviders = [
       "gmail", "yahoo", "outlook", "hotmail", "aol", "icloud", "protonmail", "zoho"
@@ -142,7 +125,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const provider = emailParts[1].split(".")[0].toLowerCase();
     const tld = emailParts[1].split(".").pop().toLowerCase();
   
-    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+$/;
+    const emailRegex = /^[a-z0-9._%+-]+@[a-z.-]+$/;
   
     // Check for more than two periods following characters
     const afterTLD = emailParts[1].split(".").slice(1).join(".");
@@ -165,16 +148,18 @@ document.addEventListener('DOMContentLoaded', function () {
   emailInput.addEventListener('input', validateEmail);
   passwordInput.addEventListener('input', validatePassword);
   confirmPasswordInput.addEventListener('input', validateConfirmPassword);
-  nameInput.addEventListener('input', validateName);
+  firstnameInput.addEventListener('input', validateFirstName);
+  lastnameInput.addEventListener('input', validateLastName);
 
   // Form submit event listener for final validation before submission
   form.addEventListener('submit', function (event) {
     validateEmail();
     validatePassword();
     validateConfirmPassword();
-    validateName();
+    validateFirstName();
+    validateLastName();
 
-    if (emailInput.classList.contains('is-invalid') || passwordInput.classList.contains('is-invalid') || nameInput.classList.contains('is-invalid')){
+    if (emailInput.classList.contains('is-invalid') || passwordInput.classList.contains('is-invalid') || firstnameInput.classList.contains('is-invalid') || lastnameInput.classList.contains('is-invalid')){
       event.preventDefault();
     }
   });

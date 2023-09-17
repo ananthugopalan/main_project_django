@@ -1,17 +1,27 @@
 from django.shortcuts import render,redirect,get_object_or_404
 from django.http import JsonResponse
 from .forms import ProductForm
-from .models import Customer_Profile,Product, SellerProfile,Wishlist, Address
+from .models import Customer_Profile,Product, Wishlist, Address, CartItem
+from userapp.models import CustomUser,SellerDetails
 from django.contrib import messages
 from django.core.paginator import Paginator
 # Create your views here.
 
+
+#Customer
+
 def index(request):
-    return render(request,'index.html')
+    user = request.user
+    if user.is_anonymous:
+        return render(request, 'index.html')
+    elif user.role == CustomUser.SELLER:
+        return redirect('seller_home')
+    else:
+        return render(request,'index.html')
 
 def search_products(request):
     query = request.GET.get('q', '')
-    results = []
+    results = [] 
 
     if query:
         # Perform your search query here, for example, by filtering products based on the search query
@@ -52,7 +62,7 @@ def customer_Profile(request):
             user_profile.mobile_number = mobile_number
             user_profile.save()
 
-            messages.success(request, 'Profile added successfully') 
+            messages.success(request, 'Profile added successfully', extra_tags='profile_tag') 
             return redirect('customer_Profile')  # Display a success message
 
         elif 'address_save_button' in request.POST:
@@ -74,22 +84,7 @@ def customer_Profile(request):
                 zip_code=zip_code
             )
             address.save()
-            messages.success(request, 'Address added successfully')
-            return redirect('customer_Profile') 
-
-        elif 'update_address_form' in request.POST:
-            # Handle address form submission
-            address_id = request.POST.get('address_id')
-            address = get_object_or_404(Address, id=address_id)
-            address.building_name = request.POST.get('building_name')
-            address.address_type = request.POST.get('address_type')
-            address.street = request.POST.get('street')
-            address.city = request.POST.get('city')
-            address.state = request.POST.get('state')
-            address.zip_code = request.POST.get('zip_code')            
-            
-            address.save()
-            messages.success(request, 'Address updated successfully')   # Display a success message
+            messages.success(request, 'Address added successfully', extra_tags='add_address_tag')
             return redirect('customer_Profile') 
 
     context = {
@@ -98,6 +93,35 @@ def customer_Profile(request):
         'form_submitted': request.method == 'POST',
     }
     return render(request, 'customer_Profile.html', context)
+    
+
+def update_address(request):
+    if request.method == 'POST':
+        # Extract the data sent via AJAX
+        address_id = request.POST.get('address_id')
+        building_name = request.POST.get('building_name')
+        address_type = request.POST.get('address_type')
+        street = request.POST.get('street')
+        city = request.POST.get('city')
+        state = request.POST.get('state')
+        zip_code = request.POST.get('zip_code')
+
+        # Update the address
+        address = get_object_or_404(Address, id=address_id)
+        address.building_name = building_name
+        address.address_type = address_type
+        address.street = street
+        address.city = city
+        address.state = state
+        address.zip_code = zip_code
+        address.save()
+
+        # You can return a JSON response to indicate a successful update
+        return JsonResponse({'success': True})
+
+    # If the request is not a POST request or not an AJAX request, return an error response
+    return JsonResponse({'success': False, 'error': 'Invalid request'})
+
 
 def delete_address(request, address_id):
     try:
@@ -157,11 +181,69 @@ def customer_ProductView(request,product_id):
 
     return render(request, 'customer_ProductView.html', context)
 
-def customer_Cart(request):
-    return render(request, 'customer_Cart.html')
+
+#cart
+
+def add_to_Cart(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+    cart_item, created = CartItem.objects.get_or_create(user=request.user, product_id=product.id)
+
+    if not created:
+        cart_item.quantity += 1
+        cart_item.save()
+    return redirect('http://127.0.0.1:8000/customer_ProductView/'+str(product_id)+'/')
+
+def add_to_cart(request, product_id):
+    if request.user.is_authenticated:
+        product = get_object_or_404(Product, id=product_id)
+        cart_item, created = CartItem.objects.get_or_create(user=request.user, product_id=product.id)
+
+        if not created:
+            cart_item.quantity += 1
+            cart_item.save()
+        return JsonResponse({'success': True})
+    else:
+        return JsonResponse({'success': False})
+
+def cart(request): 
+    cart_items = CartItem.objects.filter(user=request.user) 
+    total_price = sum(item.product.price * item.quantity for item in cart_items)
+    total_items = sum(item.quantity for item in cart_items) 
+    context = { 
+        'cart_items': cart_items, 
+        'total_items': total_items, 
+        'total_price': total_price, 
+        # ... other context variables ... 
+    } 
+    return render(request, 'customer_Cart.html',context) 
+ 
+def remove_from_cart(request, product_id): 
+    cart_item = get_object_or_404(CartItem, user=request.user, id=product_id) 
+    print(f"Received product_id: {product_id}")  #Fixed the typo here 
+    cart_item.delete() 
+    return redirect('cart')
+
+def decrease_item(request, item_id): 
+    try: 
+        cart_item = CartItem.objects.get(id=item_id) 
+        if cart_item.quantity > 1: 
+            cart_item.quantity -= 1 
+            cart_item.save() 
+    except CartItem.DoesNotExist: 
+        pass  # Handle the case when the item does not exist in the cart 
+    return redirect('cart')  # Redirect back to the cart page after decreasing the item quantity 
+ 
+def increase_item(request, item_id): 
+    try: 
+        cart_item = CartItem.objects.get(id=item_id) 
+        cart_item.quantity += 1 
+        cart_item.save() 
+    except CartItem.DoesNotExist: 
+        pass  # Handle the case when the item does not exist in the cart 
+    return redirect('cart')
 
 
-
+#Seller
 
 def seller_home(request):
     return render(request,'seller_home.html')
@@ -177,7 +259,7 @@ def seller_addProducts(request):
             product.product_subcategory = form.cleaned_data['subcategory']
             
             product.save()  # Save the complete Product instance
-            messages.success(request, "Product added successfully.")
+            messages.success(request, "Product added successfully.", extra_tags='seller_product_add')
             return redirect('seller_addProducts')  # Redirect back to the add products page
     else:
         form = ProductForm()
@@ -218,45 +300,45 @@ def seller_updateProduct(request, product_id):
     return render(request, 'seller_updateProduct.html', {'form': form, 'product': product})
 
 def seller_Profile(request):
-    if request.method == 'POST':
-        # Get the currently logged-in user
-        user = request.user
+    user = request.user  # Get the current logged-in user
+    try:
+        seller_details = SellerDetails.objects.get(user=user)  # Retrieve the seller's details
+    except SellerDetails.DoesNotExist:
+        seller_details = None
 
-        # Get data from the form
-        seller_name = request.POST.get('seller_name')
-        email = request.POST.get('email')
-        phone_number = request.POST.get('phone_number')
-        address = request.POST.get('address')
-        business_name = request.POST.get('business_name')
-        registration_number = request.POST.get('registration_number')
-        seller_logo = request.FILES.get('seller_logo')  # Handle file upload
-        bank_account_details = request.POST.get('bank_account_details')
-        payment_method = request.POST.get('payment_method')
-        seller_description = request.POST.get('seller_description')
-        shipping_locations = request.POST.get('shipping_locations')
-        shipping_policies = request.POST.get('shipping_policies')
+    if request.method == "POST":
+        # Update the CustomUser fields
+        user.first_name = request.POST.get("first_name")
+        user.last_name = request.POST.get("last_name")
+        # You can update other CustomUser fields here if needed
 
-        # Check if seller_name is provided (it's a required field)
-        if not seller_name:
-            return render(request, 'seller_Profile.html', {'error_message': 'Seller Name is required'})
+        # Update the SellerDetails fields
+        if seller_details is None:
+            # Create a new SellerDetails instance if it doesn't exist
+            seller_details = SellerDetails(user=user)
 
-        # Create a SellerProfile instance and save it
-        seller_profile = SellerProfile(
-            seller=user,  # Assign the currently logged-in user
-            seller_name=seller_name,
-            email=email,
-            phone_number=phone_number,
-            address=address,
-            business_name=business_name,
-            registration_number=registration_number,
-            seller_logo=seller_logo,  # Save the uploaded file
-            bank_account_details=bank_account_details,
-            payment_method=payment_method,
-            seller_description=seller_description,
-            shipping_locations=shipping_locations,
-            shipping_policies=shipping_policies
-        )
-        seller_profile.save()
-        return redirect('seller_home')
-    return render(request,'seller_Profile.html')
+        seller_details.store_name = request.POST.get("store-name")
+        seller_details.phone_number = request.POST.get("phone-number")
+        seller_details.pincode = request.POST.get("pincode")
+        seller_details.building_name = request.POST.get("pickup-building")
+        seller_details.pickup_address = request.POST.get("pickup-address")
+        seller_details.city = request.POST.get("city")
+        seller_details.state = request.POST.get("state")
+        seller_details.account_holder_name = request.POST.get("account-holder-name")
+        seller_details.account_number = request.POST.get("account-number")
+        seller_details.bank_name = request.POST.get("bank-name")
+        seller_details.branch = request.POST.get("branch")
+        seller_details.ifsc_code = request.POST.get("ifsc-code")
+
+        # Save both the CustomUser and SellerDetails instances
+        user.save()
+        seller_details.save()
+
+        messages.success(request, "Profile updated successfully!") 
+        return redirect('seller_Profile')  # Redirect back to the profile page after successful update
+
+    context = {
+        'seller_details': seller_details,  # Pass the seller details to the template
+    }
+    return render(request, 'seller_Profile.html', context)
 

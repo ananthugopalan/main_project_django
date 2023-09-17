@@ -100,7 +100,7 @@
                     </a>
                     <div class="dropdown-menu" aria-labelledby="userDropdown">
                         {% if user.is_authenticated %}
-                            <a class="dropdown-item" href="#">{{ request.user.name }}</a>
+                            <a class="dropdown-item text-success" href="#">{{ request.user.first_name }}</a>
                             <a class="dropdown-item" href="#">Profile</a>
                             <a class="dropdown-item" href="{% url 'user_logout' %}" onclick="return confirm('Are you sure you want to sign out?')">Sign out</a>
                        
@@ -170,20 +170,18 @@
                                 <div class="mb-3">
                                     <label for="category" class="form-label" style="margin-bottom: 10px;">Product Category:</label>
                                     <select class="form-control" id="category" name="category" required>
-                                        <option value="" disabled selected>--select--</option>
-                                        <option value="crops">Crops</option>
-                                        <option value="seeds">Seeds</option>
+                                        <option value="crops" {% if product.product_category == 'crops' %}selected{% endif %}>Crops</option>
+                                        <option value="seeds" {% if product.product_category == 'seeds' %}selected{% endif %}>Seeds</option>
                                     </select>
                                 </div>
                                 
                                     <div class="mb-3">
                                         <label for="subcategory" class="form-label" style="margin-bottom: 10px;">Product Subcategory:</label>
                                         <select class="form-control" id="subcategory" name="subcategory" required>
-                                            <option value="" disabled selected>--select--</option>
-                                            <option value="vegetables">Vegetables</option>
-                                            <option value="fruits">Fruits</option>
-                                            <option value="flowers">Flowers</option>
-                                            <option value="grains">Cereals</option>
+                                            <option value="vegetables" {% if product.product_subcategory == 'vegetables' %}selected{% endif %}>Vegetables</option>
+                                            <option value="fruits" {% if product.product_subcategory == 'fruits' %}selected{% endif %}>Fruits</option>
+                                            <option value="flowers" {% if product.product_subcategory == 'flowers' %}selected{% endif %}>Flowers</option>
+                                            <option value="cereals" {% if product.product_subcategory == 'cereals' %}selected{% endif %}>Cereals</option>
                                         </select>
                                     </div>
                                 
@@ -199,7 +197,7 @@
                                 
                                 <div class="mb-3">
                                     <label for="product_image" class="form-label" style="margin-bottom: 10px;">Product Image:</label>
-                                    <input type="file" class="form-control" id="product_image" name="product_image" accept="image/jpeg, image/png" required value="{{ product.product_image }}">
+                                    <input type="file" class="form-control" id="product_image" name="product_image" accept="image/jpeg, image/png" required value="{{ product.product_image.url }}">
                                     <small class="text-muted">Allowed formats: JPG, PNG.</small>
                                     <p class="text-danger" id="imageError" style="display: none;">Only JPG and PNG formats are allowed.</p>
                                 </div>

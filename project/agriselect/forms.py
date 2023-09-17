@@ -1,5 +1,5 @@
 from django import forms
-from .models import Product, SellerProfile, Address
+from .models import Product, Address
 
 class ProductForm(forms.ModelForm):
     CATEGORY_CHOICES = [
@@ -38,12 +38,6 @@ class ProductForm(forms.ModelForm):
             field.widget.attrs['class'] = 'form-control'
             field.widget.attrs['style'] = 'margin-bottom: 10px;'
 
-
-
-class SellerProfileForm(forms.ModelForm):
-    class Meta:
-        model = SellerProfile
-        fields = '__all__'
 
 
 class AddressForm(forms.ModelForm):

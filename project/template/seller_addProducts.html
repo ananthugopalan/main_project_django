@@ -100,7 +100,7 @@
                     </a>
                     <div class="dropdown-menu" aria-labelledby="userDropdown">
                         {% if user.is_authenticated %}
-                            <a class="dropdown-item" href="#">{{ request.user.name }}</a>
+                            <a class="dropdown-item text-success" href="#">{{ request.user.first_name }}</a>
                             <a class="dropdown-item" href="#">Profile</a>
                             <a class="dropdown-item" href="{% url 'user_logout' %}" onclick="return confirm('Are you sure you want to sign out?')">Sign out</a>
                        
@@ -130,9 +130,9 @@
     </div>
     <!--nav ends -->
        
-    {% if messages %}
+    {% if messages%}
     <div class="messages">
-      {% for message in messages %}
+      {% for message in messages%}
         <div class="alert alert-success">{{ message }}</div>
       {% endfor %}
     </div>
@@ -183,7 +183,7 @@
                                     <div class="mb-3">
                                         <label for="{{ form.price.id_for_label }}" class="form-label" style="margin-bottom: 10px;">Price:</label>
                                         <div class="input-group">
-                                            <span class="input-group-text" style="width: 40px; height: 40px">Rs.</span>
+                                            <span class="input-group-text" style="width: 40px; height: 40px">₹</span>
                                             <input type="text" class="form-control" id="{{ form.price.id_for_label }}" name="{{ form.price.name }}" oninput="validatePrice(this)" required>
                                         </div>
                                     </div>

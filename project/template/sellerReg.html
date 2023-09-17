@@ -11,7 +11,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
   <link rel="stylesheet" href="{% static 'css/style.css' %}">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-APkiNv6V6Zzv5SZ/gO4if/XvJ21foE94OcC96vgt1z3xJlZnuB+KqYfhmG1tY2NqCfyWQZC53GoN3R9kbbDvQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="{% static 'css/custom.css' %}">
+  <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-APkiNv6V6Zzv5SZ/gO4if/XvJ21foE94OcC96vgt1z3xJlZnuB+KqYfhmG1tY2NqCfyWQZC53GoN3R9kbbDvQ==" crossorigin="anonymous" referrerpolicy="no-referrer" /> -->
   <style>
     .invalid-tooltip {
       display: none;
@@ -62,29 +63,46 @@
                   <li class="nav-item" role="presentation">
                     <button class="nav-link" id="step4-tab" data-bs-toggle="tab" data-bs-target="#step4" type="button" role="tab" aria-controls="step4" aria-selected="false">Step 4</button>
                   </li>
+                  <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="step5-tab" data-bs-toggle="tab" data-bs-target="#step5" type="button" role="tab" aria-controls="step5" aria-selected="false">Step 5</button>
+                  </li>
                   <!-- Add more tabs as needed -->
                 </ul>
                 
                 <div class="tab-content" id="registrationTabContent">
                   <!-- Step 1 Content -->
                   <div class="tab-pane fade show active" id="step1" role="tabpanel" aria-labelledby="step1-tab">
+                    <h5>Personal Information</h5>
+                    <div class="mb-3">
+                      <input type="text" name="first_name" id="first_name" class="form-control" placeholder="Enter your first name" />
+                      <div class="error" id="firstNameError"></div>
+                    </div>
+                    <div class="mb-3">
+                      <input type="text" name="last_name" id="last_name" class="form-control" placeholder="Enter your last name" />
+                      <div class="error" id="lastNameError"></div>
+                    </div>                             
+                    <div class="mb-3">
+                      <input type="text" name="pan_number" id="pan_number" class="form-control" placeholder="Enter your PAN number" />
+                      <div class="error" id="panNumberError"></div>
+                    </div>           
                     <div class="mb-3">
                       <input type="email" name="email" id="email" class="form-control" placeholder="Enter a valid email address" />
                       <div class="error" id="emailError"></div>
                     </div>
                     <div class="mb-3">
-                      <input type="text" name="pan_number" id="pan_number" class="form-control" placeholder="Enter your PAN number" />
-                      <div class="error" id="panNumberError"></div>
+                      <input type="password" name="password" id="password" class="form-control" placeholder="Enter your password" />
+                      <div class="error" id="passwordError"></div>
+                    </div>
+                    <div class="mb-3">
+                      <input type="password" name="confirm_password" id="confirm_password" class="form-control" placeholder="Confirm your password" />
+                      <div class="error" id="confirmPasswordError"></div>
                     </div>
                     <!-- Add more fields for step 1 -->
                   </div>
                   
                   <!-- Step 2 Content -->
                   <div class="tab-pane fade" id="step2" role="tabpanel" aria-labelledby="step2-tab">
-                    <div class="mb-3">
-                      <input type="text" name="name" id="seller_name" class="form-control" placeholder="Enter your name" />
-                      <div class="error" id="sellerNameError"></div>
-                    </div>
+                    <h5>Seller Shop Name</h5>
                     <div class="mb-3">
                       <input type="text" name="shop_name" id="shop_name" class="form-control" placeholder="Enter your shop name" />
                       <div class="error" id="shopNameError"></div>
@@ -94,6 +112,7 @@
 
                   <!-- Step 3 Content -->
                   <div class="tab-pane fade" id="step3" role="tabpanel" aria-labelledby="step3-tab">
+                    <h5>Seller Location Details</h5>
                     <div class="mb-3">
                       <input type="text" name="building_name" id="building_name" class="form-control" placeholder="Enter Building Name" />
                       <div class="error" id="buildingNameError"></div>
@@ -124,39 +143,79 @@
                   <div class="tab-pane fade" id="step4" role="tabpanel" aria-labelledby="step4-tab">
                     <h5>Selling Preferences</h5>
                     <div class="mb-3">
-                      <label for="selling_preference">Select Selling Preference:</label>
                       <select name="selling_preference" id="selling_preference" class="form-select">
-                        <option value="" disabled selected>--Select Preference--</option>
+                        <option value="" disabled selected>--Select Selling Preference--</option>
                         <option value="store_and_ship_yourself">Store and Ship Yourself</option>
                         <option value="store_yourself_ship_by_agri_select">Store Yourself and Ship by AgriSelect</option>
                       </select>
                     </div>
 
                     <h5>Shipping Fee Preferences</h5>
-                    <div class="mb-3">
+                    <div class="mb-2">
                       <p>Shipping fees (per order):</p>
-                      <p><strong>Local:</strong> Rs. 45</p>
-                      <p><strong>Regional:</strong> Rs. 55</p>
-                      <p><strong>National:</strong> Rs. 65</p>
+                      <div class="d-flex p-3 justify-content-center">
+                        <p class="me-5 p-2" style="border: 1px solid;"><strong>Local:</strong> Rs. 45</p>
+                        <p class="me-5 p-2" style="border: 1px solid;"><strong>Regional:</strong> Rs. 55</p>
+                        <p class="me-5 p-2" style="border: 1px solid;"><strong>National:</strong> Rs. 65</p>
+                      </div>
                     </div>
 
                     <div class="mb-3">
                       <select name="shipping_fee_preference" id="shipping_fee_preference" class="form-select">
-                        <option value="" disabled selected>--Select Fee Preference--</option>
+                        <option value="" disabled selected>--Select Shipping Fee Preference--</option>
                         <option value="pay_by_yourself">Pay by Yourself (Free delivery for customers)</option>
                         <option value="pay_by_customer">Pay by Customer (Provide delivery charges for customers)</option>
                       </select>
                     </div>
-                  </div>
 
-
+                    <!-- Boxes for providing delivery charges (Initially hidden) -->
+                    <div id="deliveryChargesBoxes" style="display: none;">
+                      <p>Delivery Charges:</p>
+                      <div class="d-flex">
+                        <div class="mb-3 me-5">
+                          <label for="local_charges">Local (Rs.):</label>
+                          <input type="number" name="local_charges" id="local_charges" class="form-control" style="width: 120px;" placeholder="Local" />
+                        </div>
+                        <div class="mb-3 me-5">
+                          <label for="regional_charges">Regional (Rs.):</label>
+                          <input type="number" name="regional_charges" id="regional_charges" class="form-control" style="width: 120px;" placeholder="Regional" />
+                        </div>
+                        <div class="mb-3">
+                          <label for="national_charges">National (Rs.):</label>
+                          <input type="number" name="national_charges" id="national_charges" class="form-control" style="width: 120px;" placeholder="National" />
+                        </div>
+                      </div>
+                    </div>  
+                  </div>   
                   
+                  <!-- Step 5 Content (Seller Bank Details) -->
+                  <div class="tab-pane fade" id="step5" role="tabpanel" aria-labelledby="step5-tab">
+                    <h5>Seller Bank Details</h5>
+                    <div class="mb-3">
+                      <input type="text" name="bank_name" id="bank_name" class="form-control" placeholder="Enter Bank Name" />
+                      <div class="error" id="bankNameError"></div>
+                    </div>
+                    <div class="mb-3">
+                      <input type="text" name="branch" id="branch" class="form-control" placeholder="Enter Branch" />
+                      <div class="error" id="branchError"></div>
+                    </div>
+                    <div class="mb-3">
+                      <input type="text" name="account_number" id="account_number" class="form-control" placeholder="Enter Account Number" />
+                      <div class="error" id="accountNumberError"></div>
+                    </div>
+                    <div class="mb-3">
+                      <input type="text" name="ifsc_code" id="ifsc_code" class="form-control" placeholder="Enter IFSC Code" />
+                      <div class="error" id="ifscCodeError"></div>
+                    </div>
+                  </div>
+                    
                   <!-- Add more tab content sections as needed -->
                 </div>
                 
                 <div class="text-center mt-4">
                   <button type="button" id="prevBtn" class="btn btn-secondary">Previous</button>
                   <button type="button" id="nextBtn" class="btn btn-primary">Next</button>
+                  <div id="submitBtnContainer" style="display: none;"></div>
                   <button type="submit" id="registerBtn" class="btn btn-success" style="display: none;">Sign Up</button>
                   <p class="small mt-2">Already have an account? <a href="{% url 'user_login' %}" class="link-danger">Login</a></p>
                 </div>
@@ -187,28 +246,134 @@
 
 <script>
   document.addEventListener('DOMContentLoaded', function() {
-    var currentTab = 0;
-    var registrationForm = document.getElementById('sellerRegistrationForm');
-    var prevButton = document.getElementById('prevBtn');
-    var nextButton = document.getElementById('nextBtn');
-    var registerButton = document.getElementById('registerBtn');
-    var tabs = document.querySelectorAll('.nav-link');
-    
+  var shippingFeePreferenceInput = document.getElementById('shipping_fee_preference');
+  var deliveryChargesBoxes = document.getElementById('deliveryChargesBoxes');
+
+  // Function to toggle the visibility of delivery charges boxes
+  function toggleDeliveryChargesBoxes() {
+    if (shippingFeePreferenceInput.value === 'pay_by_customer') {
+      deliveryChargesBoxes.style.display = 'block';
+    } else {
+      deliveryChargesBoxes.style.display = 'none';
+    }
+  }
+
+  // Initial state
+  toggleDeliveryChargesBoxes();
+
+  // Listen for changes in the shipping fee preference
+  shippingFeePreferenceInput.addEventListener('change', toggleDeliveryChargesBoxes);
+});
+</script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const tabs = document.querySelectorAll('.nav-link');
+    const prevButton = document.getElementById('prevBtn');
+    const nextButton = document.getElementById('nextBtn');
+    const signUpButton = document.getElementById('registerBtn'); 
+    const registrationTabContent = document.getElementById('registrationTabContent');
+    let currentTab = 0;
+
     function showTab(n) {
-      tabs[n].classList.add('active');
-      tabs[n].setAttribute('aria-selected', 'true');
-      tabs[n].removeAttribute('disabled');
+      tabs.forEach((tab, index) => {
+        if (index === n) {
+          tab.classList.add('active');
+          tab.removeAttribute('disabled'); // Enable the nav link
+        } else {
+          tab.classList.remove('active');
+          tab.setAttribute('disabled', 'true'); // Disable the nav link
+        }
+      });
+      registrationTabContent.children[n].classList.add('show', 'active');
     }
-    
+
     function hideTab(n) {
-      tabs[n].classList.remove('active');
-      tabs[n].setAttribute('aria-selected', 'false');
-      tabs[n].setAttribute('disabled', 'true');
+      tabs.forEach((tab, index) => {
+        if (index === n) {
+          tab.classList.remove('active');
+          tab.setAttribute('disabled', 'true'); // Disable the nav link
+        }
+      });
+      registrationTabContent.children[n].classList.remove('show', 'active');
     }
+
+    // function showTab(n) {
+    //   tabs[n].classList.add('active');
+    //   tabs[n].setAttribute('aria-selected', 'true');
+    //   tabs[n].removeAttribute('disabled');
+    // }
+
+    // function hideTab(n) {
+    //   tabs[n].classList.remove('active');
+    //   tabs[n].setAttribute('aria-selected', 'false');
+    //   tabs[n].setAttribute('disabled', 'true');
+    // }
     
     function validateTab() {
       // Validate PAN number
       if (currentTab === 0) {
+        var firstNameInput = document.getElementById('first_name');
+        var firstNameError = document.getElementById('firstNameError');
+
+        if (firstNameInput.value.trim() === '') {
+          firstNameError.textContent = 'First name is required';
+          firstNameError.style.display = 'block';
+          return false;
+        } else {
+          firstNameError.style.display = 'none';
+        }
+
+        // Validate last name
+        var lastNameInput = document.getElementById('last_name');
+        var lastNameError = document.getElementById('lastNameError');
+
+        if (lastNameInput.value.trim() === '') {
+          lastNameError.textContent = 'Last name is required';
+          lastNameError.style.display = 'block';
+          return false;
+        } else {
+          lastNameError.style.display = 'none';
+        }
+
+        // // Validate password
+        // var passwordInput = document.getElementById('password');
+        // var passwordError = document.getElementById('passwordError');
+
+        // if (passwordInput.value.length < 8) {
+        //   passwordError.textContent = 'Password must be at least 8 characters';
+        //   passwordError.style.display = 'block';
+        //   return false;
+        // } else {
+        //   passwordError.style.display = 'none';
+        // }
+
+        // // Validate confirm password
+        // var confirmPasswordInput = document.getElementById('confirm_password');
+        // var confirmPasswordError = document.getElementById('confirmPasswordError');
+
+        // if (confirmPasswordInput.value !== passwordInput.value) {
+        //   confirmPasswordError.textContent = 'Passwords do not match';
+        //   confirmPasswordError.style.display = 'block';
+        //   return false;
+        // } else {
+        //   confirmPasswordError.style.display = 'none';
+        // }
+
+        // Validate email
+        var emailInput = document.getElementById('email');
+        var emailError = document.getElementById('emailError');
+        var emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+
+        if (!emailInput.value.match(emailRegex)) {
+          emailError.textContent = 'Invalid email format';
+          emailError.style.display = 'block';
+          return false;
+        } else {
+          emailError.style.display = 'none';
+        }
+
+        // Validate PAN number
         var panNumberInput = document.getElementById('pan_number');
         var panNumberError = document.getElementById('panNumberError');
         var panNumberRegex = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/; // Modify the regex pattern as needed
@@ -222,17 +387,7 @@
         }
       }
       else if (currentTab === 1) {
-        var sellerNameInput = document.getElementById('seller_name');
-        var sellerNameError = document.getElementById('sellerNameError');
-
-        if (sellerNameInput.value.trim() === '') {
-          sellerNameError.textContent = 'Name is required';
-          sellerNameError.style.display = 'block';
-          return false;
-        } else {
-          sellerNameError.style.display = 'none';
-        }
-
+        
         // Validate shop name
         var shopNameInput = document.getElementById('shop_name');
         var shopNameError = document.getElementById('shopNameError');
@@ -318,124 +473,165 @@
           pincodeError.style.display = 'none';
         }
       }
-      else if (currentTab === 3) {
-        // Validate selling preferences (step 4)
-        var sellingPreferenceInput = document.getElementById('selling_preference');
-        var sellingPreferenceError = document.getElementById('sellingPreferenceError');
+      // else if (currentTab === 3) {
+      //   // Validate selling preferences (step 4)
+      //   var sellingPreferenceInput = document.getElementById('selling_preference');
+      //   var sellingPreferenceError = document.getElementById('sellingPreferenceError');
 
-        if (sellingPreferenceInput.value === '') {
-          sellingPreferenceError.textContent = 'Please select a selling preference';
-          sellingPreferenceError.style.display = 'block';
-          return false;
-        } else {
-          sellingPreferenceError.style.display = 'none';
-        }
-      } 
+      //   if (sellingPreferenceInput.value === '') {
+      //     sellingPreferenceError.textContent = 'Please select a selling preference';
+      //     sellingPreferenceError.style.display = 'block';
+      //     return false;
+      //   } else {
+      //     sellingPreferenceError.style.display = 'none';
+      //   }
+      //   var shippingFeePreferenceInput = document.getElementById('shipping_fee_preference');
+      //   var shippingFeePreferenceError = document.getElementById('shippingFeePreferenceError');
+
+      //   if (shippingFeePreferenceInput.value === '') {
+      //     shippingFeePreferenceError.textContent = 'Please select a shipping fee preference';
+      //     shippingFeePreferenceError.style.display = 'block';
+      //     return false;
+      //   } else {
+      //     shippingFeePreferenceError.style.display = 'none';
+      //   }
+      // }
+      // Add the following code to your existing JavaScript
       else if (currentTab === 4) {
-        // Validate shipping fee preference (step 4)
-        var shippingFeePreferenceInput = document.getElementById('shipping_fee_preference');
-        var shippingFeePreferenceError = document.getElementById('shippingFeePreferenceError');
+        // Validate bank details (step 5)
+        var bankNameInput = document.getElementById('bank_name');
+        var bankNameError = document.getElementById('bankNameError');
 
-        if (shippingFeePreferenceInput.value === '') {
-          shippingFeePreferenceError.textContent = 'Please select a shipping fee preference';
-          shippingFeePreferenceError.style.display = 'block';
+        if (bankNameInput.value.trim() === '') {
+          bankNameError.textContent = 'Bank Name is required';
+          bankNameError.style.display = 'block';
           return false;
         } else {
-          shippingFeePreferenceError.style.display = 'none';
+          bankNameError.style.display = 'none';
+        }
+
+        // Validate branch
+        var branchInput = document.getElementById('branch');
+        var branchError = document.getElementById('branchError');
+
+        if (branchInput.value.trim() === '') {
+          branchError.textContent = 'Branch is required';
+          branchError.style.display = 'block';
+          return false;
+        } else {
+          branchError.style.display = 'none';
+        }
+
+        // Validate account number
+        var accountNumberInput = document.getElementById('account_number');
+        var accountNumberError = document.getElementById('accountNumberError');
+
+        if (accountNumberInput.value.trim() === '') {
+          accountNumberError.textContent = 'Account Number is required';
+          accountNumberError.style.display = 'block';
+          return false;
+        } else {
+          accountNumberError.style.display = 'none';
+        }
+
+        // Validate IFSC code
+        var ifscCodeInput = document.getElementById('ifsc_code');
+        var ifscCodeError = document.getElementById('ifscCodeError');
+
+        if (ifscCodeInput.value.trim() === '') {
+          ifscCodeError.textContent = 'IFSC Code is required';
+          ifscCodeError.style.display = 'block';
+          return false;
+        } else {
+          ifscCodeError.style.display = 'none';
         }
       }
-
+ 
       // Add your other validation logic for step 1 here
       return true; // Return true if validation passes, false otherwise
     }
 
     
-    function updateButtons() {
-      if (currentTab === 0) {
-        prevButton.style.display = 'none';
-      } else {
-        prevButton.style.display = 'inline-block';
-      }
-      
-      if (currentTab === tabs.length - 1) {
-        nextButton.style.display = 'none';
-        registerButton.style.display = 'inline-block';
-      } else {
-        nextButton.style.display = 'inline-block';
-        registerButton.style.display = 'none';
-      }
-    }
-
     function navigateTab(direction) {
       if (direction === 1) {
+        // If moving to the next tab, validate the current tab first
         if (!validateTab()) {
           return;
         }
       }
-      
-      hideTab(currentTab);
+
+      hideTab(currentTab); // Hide the previous step's fields
       currentTab += direction;
-      showTab(currentTab);
-      updateButtons();
-    }
-
     
-    prevButton.addEventListener('click', function() {
-      navigateTab(-1);
-    });
-    
-    nextButton.addEventListener('click', function() {
-      navigateTab(1);
-    });
-  });
-  </script>
-  
 
-  
-  <script src="{% static 'js/validation.js' %}"></script>
-  <script>
-document.addEventListener('DOMContentLoaded', function() {
-  var confirmPasswordInput = document.getElementById('confirmPassword');
-  var confirmPasswordIcon = document.getElementById('confirmPasswordIcon');
-  
-  confirmPasswordInput.addEventListener('input', function() {
-    if (confirmPasswordInput.value === document.getElementById('password').value) {
-      confirmPasswordIcon.classList.remove('d-none');
-    } else {
-      confirmPasswordIcon.classList.add('d-none');
-    }
-  });
-  
-  // Rest of your JavaScript code...
-});
+      // Update button visibility based on currentTab
+      prevButton.disabled = currentTab === 0;
+      nextButton.style.display = currentTab === tabs.length - 1; 
 
-  </script>
-  
-  <!-- <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      var registerBtn = document.getElementById('registerBtn');
-      registerBtn.addEventListener('click', function(event) {
-        event.preventDefault(); // Prevent default form submission
-        var delayInMilliseconds = 2000; // Delay in milliseconds (2 seconds)
-  
-        // Disable the button during the delay
-        registerBtn.disabled = true;
-  
-        // Show the button again, display the message, and perform the form submission after the delay
-        setTimeout(function() {
-          registerBtn.disabled = false;
-  
-          // Display the message using an alert or a modal
-          // Example using an alert:
-          alert("Registration successful! Sign in to your account.");
-  
-          // Perform the form submission after the message is displayed
-          document.getElementById('registerForm').submit();
-        }, delayInMilliseconds);
+      // Show/hide tabs based on currentTab
+      tabs.forEach((tab, index) => {
+        if (index === currentTab) {
+          tab.classList.add('active');
+          tab.removeAttribute('disabled'); // Enable the nav link
+        } else {
+          tab.classList.remove('active');
+          tab.setAttribute('disabled', 'true'); // Disable the nav link
+        }
       });
+      
+      registrationTabContent.children[currentTab].classList.add('show', 'active');
+    }
+
+    function toggleButtons() {
+    if (currentTab === tabs.length - 1) {
+      nextButton.style.display = 'none'; // Hide the Next button
+      signUpButton.style.display = 'inline-block'; // Show the Submit button
+    } else {
+      nextButton.style.display = 'inline-block'; // Show the Next button
+      signUpButton.style.display = 'none'; // Hide the Submit button
+    }
+  }
+
+  // Initialize the form by showing the first tab and toggling buttons
+  showTab(currentTab);
+  toggleButtons();
+
+    prevButton.addEventListener('click', function () {
+      navigateTab(-1);
+      toggleButtons();
     });
-  </script> -->
+
+    nextButton.addEventListener('click', function () {
+      navigateTab(1);
+      toggleButtons();
+    });
+
+    // Initialize the form by showing the first tab
+    showTab(currentTab);
+    prevButton.disabled = true;
+  });
+  </script>
   
+<!-- 
+  
+  <script src="{% static 'js/validation.js' %}"></script> -->
+  <!-- <script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var confirmPasswordInput = document.getElementById('confirmPassword');
+    var confirmPasswordIcon = document.getElementById('confirmPasswordIcon');
+    
+    confirmPasswordInput.addEventListener('input', function() {
+      if (confirmPasswordInput.value === document.getElementById('password').value) {
+        confirmPasswordIcon.classList.remove('d-none');
+      } else {
+        confirmPasswordIcon.classList.add('d-none');
+      }
+    });
+    
+    // Rest of your JavaScript code...
+  });
+
+</script> -->
   
 
 <!-- Bootstrap and other scripts -->
