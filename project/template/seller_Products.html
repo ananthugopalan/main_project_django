@@ -111,6 +111,9 @@
                 <div class="card-body">
                     <h5 class="card-title">{{ product.product_name }}</h5>
                     <strong class="card-text">₹{{ product.price }}</strong>
+                    {% if product.product_category == "seeds" %}
+                            /100gm
+                        {% endif %}
                     <p class="card-text">Stock:{{ product.stock }}</p>
                     <div class="d-flex justify-content-between align-items-center">
                         <a href="{% url 'seller_updateProduct' product.id %}">

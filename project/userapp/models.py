@@ -2,13 +2,13 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 class CustomUser(AbstractUser):
-    CUSTOMER = 1
-    SELLER = 2
+    # CUSTOMER = 1
+    # SELLER = 2
 
-    ROLE_CHOICE = (
-        (SELLER, 'Seller'),
-        (CUSTOMER, 'Customer'),
-    )
+    # ROLE_CHOICE = (
+    #     (SELLER, 'Seller'),
+    #     (CUSTOMER, 'Customer'),
+    # )
     username = None
     USERNAME_FIELD  = 'email'
     # username = models.CharField(max_length=100,unique=True, default='')
@@ -16,8 +16,11 @@ class CustomUser(AbstractUser):
     last_name   = models.CharField(max_length=100, default='')
     email = models.EmailField(unique=True)
     password = models.CharField(max_length=128)
-    role = models.PositiveSmallIntegerField(choices=ROLE_CHOICE, blank=True, null=True,default=CUSTOMER)
+    # role = models.PositiveSmallIntegerField(choices=ROLE_CHOICE, blank=True, null=True,default=CUSTOMER)
+    is_customer = models.BooleanField(default=False)
+    is_seller = models.BooleanField(default=False)
     pan_number = models.CharField(max_length=25, null=True)
+    
     REQUIRED_FIELDS = []
     def __str__(self):
         return self.first_name

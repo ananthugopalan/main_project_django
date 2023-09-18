@@ -145,9 +145,12 @@
                         <img class="card-img-top mb-5 mb-md-0 shadow" src="{{ product.product_image.url }}" alt="{{ product.product_name }}" style="height: 350px; object-fit: cover; border-radius: 10px;">
                     </div>
                     <div class="col-md-6">
-                        <h1 class="display-5 fw-bolder text-warning">{{ product.product_name }}</h1>
+                        <h1 class="display-5 fw-bolder" style="color: #B4045F">{{ product.product_name }}</h1>
                         <div class="fs-5 mb-3">
-                            <strong class="text-danger">₹{{ product.price }}</strong><br>
+                            <strong style="color: #151515">₹{{ product.price }}</strong><br>
+                            <p>{% if product.product_category == "seeds" %}
+                                        per 100gm
+                            {% endif %}</p>
                             <span class="badge bg-success text-white">In Stock</span>
                         </div>
                         <p class="lead text-muted">{{ product.description }}</p>
@@ -156,7 +159,7 @@
                             <input id="inputQuantity" class="form-control text-center me-3" id="inputQuantity" type="number" value="1" min="1" style="max-width: 4rem;" />
                         </div>
                         <div class="mt-4">
-                            <a href="{% url 'add_to_Cart' product_id=product.id %}"><button class="btn btn-primary flex-shrink-0"><i class="bi-cart-fill me-1"></i>
+                            <a href="{% url 'add_to_Cart' product_id=product.id %}"><button class="btn flex-shrink-0" style="background-color:#FE9A2E; color: white;"><i class="bi-cart-fill me-1"></i>
                                 Add to cart
                             </button></a>
                             <a href="#" onclick="addToWishlist('{{ product.id }}')" class="btn btn-outline-danger"><i class="fas fa-heart"></i></a>

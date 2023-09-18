@@ -42,8 +42,9 @@ def customerReg(request):
         elif password != confirm_password:
             messages.error(request, "Passwords do not match.")
         elif first_name and last_name and email and password:
-            user = CustomUser(first_name=first_name,last_name=last_name, email=email, role=CustomUser.CUSTOMER) 
+            user = CustomUser(first_name=first_name,last_name=last_name, email=email) 
             user.set_password(password)
+            user.is_customer = True
             user.is_active = False
             user.save()
 
@@ -91,9 +92,10 @@ def seller_registration(request):
                 messages.error(request, "Email already exists.", extra_tags='seller_reg') 
             else: 
                 # Create a new user and set the password 
-                user = CustomUser(first_name=first_name,last_name=last_name, pan_number=pan_number, email=email, role=CustomUser.SELLER)  
+                user = CustomUser(first_name=first_name,last_name=last_name, pan_number=pan_number, email=email)  
                 user.set_password(password)  # Hash the password
                 user.is_active = False 
+                user.is_seller = True
                 user.save() 
  
                 # Store the user ID in the session for future steps 
@@ -157,16 +159,7 @@ def seller_registration(request):
                 seller_details.branch = branch 
                 seller_details.ifsc_code = ifsc_code 
                 seller_details.save() 
- 
-                messages.success(request, "Step 3 completed successfully.", extra_tags='seller_reg') 
-                # Redirect to confirmation page or other steps 
-        
-        else: 
-            print("four") 
-            # Step 4 Data (Registration Completed) 
-            user_id = request.session.get('user_id') 
-            if user_id: 
-                user = CustomUser.objects.get(id=user_id) 
+
                 user.is_active = True  # Activate the user 
                 user.save() 
  
@@ -189,11 +182,10 @@ def seller_registration(request):
                     fail_silently=False,
                 )
  
-                messages.success(request, "Registration completed successfully. Please check your email to verify your account.", extra_tags='seller_reg') 
- 
+                messages.success(request, "Registration completed successfully. Please check your email to verify your account.", extra_tags='seller_reg')
                 # Clear the user ID from the session as registration is complete
-                del request.session['user_id']
- 
+                del request.session['user_id']              
+
     return render(request, 'seller_registration.html')
 
 def user_login(request):
@@ -204,13 +196,14 @@ def user_login(request):
             user = authenticate(request, email=email, password=password)
             if user is not None:
                 auth_login(request, user) 
-                if user.role == CustomUser.SELLER:       
+                if user.is_seller:      
                     return redirect('seller_home')
-                else:
+                elif user.is_customer: 
                     return redirect('/')
             else:
                 error_message = "Invalid login credentials."
                 return render(request, 'login.html', {'error_message': error_message})
+            
     return render(request,'login.html')
 
 

@@ -184,7 +184,10 @@
                                         <label for="{{ form.price.id_for_label }}" class="form-label" style="margin-bottom: 10px;">Price:</label>
                                         <div class="input-group">
                                             <span class="input-group-text" style="width: 40px; height: 40px">₹</span>
-                                            <input type="text" class="form-control" id="{{ form.price.id_for_label }}" name="{{ form.price.name }}" oninput="validatePrice(this)" required>
+                                            <input type="text" class="form-control" id="{{ form.price.id_for_label }}" name="{{ form.price.name }}" min="0" oninput="validatePrice(this)" required>
+                                            {% if form.category.value == "seeds" %}
+                                                <span class="input-group-text">/100gm</span>
+                                            {% endif %}
                                         </div>
                                     </div>
                                 </div>
@@ -228,6 +231,7 @@
 
     <!-- Add this script at the end of your HTML body -->
     
+    
   <script>
     const productNameInput = document.getElementById("{{ form.product_name.id_for_label }}");
     const productNameError = document.getElementById("productNameError");
@@ -253,13 +257,13 @@
     descriptionInput.addEventListener("input", function () {
         const value = this.value.trim();
         const words = value.split(/\s+/).filter(word => word !== "");
-        const isValid = words.length <= 20;
+        const isValid = words.length <= 30;
 
         if (isValid) {
             descriptionError.textContent = "";
             descriptionInput.classList.remove("is-invalid");
         } else {
-            descriptionError.textContent = "Description cannot exceed 20 words";
+            descriptionError.textContent = "Description cannot exceed 30 words";
             descriptionInput.classList.add("is-invalid");
         }
     });

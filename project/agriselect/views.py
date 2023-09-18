@@ -14,8 +14,8 @@ def index(request):
     user = request.user
     if user.is_anonymous:
         return render(request, 'index.html')
-    elif user.role == CustomUser.SELLER:
-        return redirect('seller_home')
+    elif user.is_seller:
+        return render(request, 'seller_home.html')
     else:
         return render(request,'index.html')
 
@@ -34,7 +34,7 @@ def search_products(request):
     return JsonResponse(response_data)
 
 
-def customer_allProducts(request, category='All', subcategory='All'):
+def customer_allProducts(request, category='All'):
     if category == 'All':
         products = Product.objects.all()
     else:

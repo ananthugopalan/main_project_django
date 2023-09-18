@@ -14,6 +14,7 @@ class ProductForm(forms.ModelForm):
         ('fruits', 'Fruits'),
         ('flowers', 'Flowers'),
         ('cereals', 'Cereals'),
+        ('herbs', 'Herbs'),
     ]
     category = forms.ChoiceField(choices=CATEGORY_CHOICES)
     subcategory = forms.ChoiceField(choices=SUBCATEGORY_CHOICES)
