@@ -1,5 +1,5 @@
 {%load static%}
-
+{% load cart_tags %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -77,6 +77,9 @@
                     {% if user.is_authenticated %}
                     <a class="nav-icon position-relative text-decoration-none" href="{% url 'cart' %}">
                         <i class="fa fa-fw fa-shopping-cart text-dark mr-1"></i>
+                        <span class="badge bg-danger position-absolute top-0 start-100 translate-middle">
+                            {% cart_item_count request.user %}
+                        </span>
                     </a>
                     {%else%}
                     <a class="nav-icon position-relative text-decoration-none" href="{% url 'user_login' %}">
@@ -313,6 +316,7 @@
                                     <option value="Work">Work</option>
                                     <option value="Other">Other</option>
                                 </select>
+                                <span id="addressTypeError" class="text-danger" style="font-size: 10px;"></span>
                             </div>
                             <div class="d-flex">
                                 <div class="mb-1 me-2">
@@ -339,6 +343,7 @@
                                 </div>
                             </div>
                             <button type="submit" class="btn btn-primary mt-3" name="address_save_button">Save Address</button>
+
                         </form>
                     </div>
                 </div>
@@ -369,6 +374,56 @@
   <!-- Footer -->
  
 <!-- Add this JavaScript code to your template -->
+<script>
+    // Function to validate the input fields
+    function validateInput(event) {
+        const buildingNameInput = document.getElementById('building_name');
+        const addressTypeInput = document.getElementById('address_type');
+        const streetInput = document.getElementById('street');
+        const cityInput = document.getElementById('city');
+        const stateInput = document.getElementById('state');
+        const zipCodeInput = document.getElementById('zip_code');
+
+        const buildingNameError = document.getElementById('buildingNameError');
+        const addressTypeError = document.getElementById('addressTypeError');
+        const streetError = document.getElementById('streetError');
+        const cityError = document.getElementById('cityError');
+        const stateError = document.getElementById('stateError');
+        const zipCodeError = document.getElementById('zipCodeError');
+
+        // Check if any of the fields are empty or contain only spaces
+        if (
+            buildingNameInput.value.trim() === '' ||
+            addressTypeInput.value === '' ||
+            streetInput.value.trim() === '' ||
+            cityInput.value.trim() === '' ||
+            stateInput.value.trim() === '' ||
+            zipCodeInput.value.trim() === ''
+        ) {
+            // Display error messages
+            buildingNameError.textContent = 'Building Name is required';
+            addressTypeError.textContent = 'Address Type is required';
+            streetError.textContent = 'Street is required';
+            cityError.textContent = 'City is required';
+            stateError.textContent = 'State is required';
+            zipCodeError.textContent = 'ZIP Code is required';
+
+            // Prevent form submission
+            event.preventDefault();
+        } else {
+            // Clear error messages
+            buildingNameError.textContent = '';
+            addressTypeError.textContent = '';
+            streetError.textContent = '';
+            cityError.textContent = '';
+            stateError.textContent = '';
+            zipCodeError.textContent = '';
+        }
+    }
+
+    // Add the event listener to the form submission
+    document.getElementById('address-form').addEventListener('submit', validateInput);
+</script>
 
 
 
@@ -763,81 +818,7 @@ document.addEventListener('DOMContentLoaded', function () {
   });
   
   </script>
-    
 
-<!-- 
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            // Get references to form elements and error spans
-            const form = document.getElementById('address-form');
-            const buildingNameInput = document.getElementById('building_name');
-            const streetInput = document.getElementById('street');
-            const cityInput = document.getElementById('city');
-            const stateInput = document.getElementById('state');
-            const zipCodeInput = document.getElementById('zip_code');
-            const buildingNameError = document.getElementById('buildingNameError');
-            const streetError = document.getElementById('streetError');
-            const cityError = document.getElementById('cityError');
-            const stateError = document.getElementById('stateError');
-            const zipCodeError = document.getElementById('zipCodeError');
-    
-            // Add event listeners to input fields for "input" event
-            buildingNameInput.addEventListener('input', validateBuildingName);
-            streetInput.addEventListener('input', validateStreet);
-            cityInput.addEventListener('input', validateCity);
-            stateInput.addEventListener('input', validateState);
-            zipCodeInput.addEventListener('input', validateZipCode);
-            function validateBuildingName() {
-                const buildingName = buildingNameInput.value.trim();
-                if (buildingName.length > 25) {
-                    buildingNameError.textContent = 'Building name should be less than 25 characters.';
-                } else {
-                    buildingNameError.textContent = '';
-                }
-            }
-    
-            function validateStreet() {
-                const street = streetInput.value.trim();
-                if (street.length > 25) {
-                    streetError.textContent = 'Street name should be less than 25 characters.';
-                } else {
-                    streetError.textContent = '';
-                }
-            }
-    
-            function validateCity() {
-                const city = cityInput.value.trim();
-                const alphabetPattern = /^[A-Za-z]+$/;
-                if (!alphabetPattern.test(city)) {
-                    cityError.textContent = 'City should contain only alphabets.';
-                } else {
-                    cityError.textContent = '';
-                }
-            }
-    
-            function validateState() {
-                const state = stateInput.value.trim();
-                const alphabetPattern = /^[A-Za-z]+$/;
-                if (!alphabetPattern.test(state)) {
-                    stateError.textContent = 'State should contain only alphabets.';
-                } else {
-                    stateError.textContent = '';
-                }
-            }
-    
-            function validateZipCode() {
-                const zipCode = zipCodeInput.value.trim();
-                const zipCodePattern = /^[0-9]{6}$/;
-                if (!zipCodePattern.test(zipCode)) {
-                    zipCodeError.textContent = 'ZIP code should contain 6 digits.';
-                } else {
-                    zipCodeError.textContent = '';
-                }
-            }
-        });
-    </script>
-     -->
-    
     <!-- Start Script -->
     <script src="{% static 'js/jquery-1.11.0.min.js' %}"></script>
     <script src="{% static 'js/jquery-migrate-1.2.1.min.js' %}"></script>

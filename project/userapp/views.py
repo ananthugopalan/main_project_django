@@ -9,7 +9,8 @@ from django.utils.http import urlsafe_base64_encode
 from django.utils.http import urlsafe_base64_decode
 from django.utils.encoding import force_bytes
 from .models import CustomUser, SellerDetails
-from django.contrib.auth import authenticate, login as auth_login
+from django.contrib.auth import authenticate, login as auth_login 
+
 
 # Create your views here.
 
@@ -86,7 +87,7 @@ def seller_registration(request):
             email = request.POST.get('email') 
             password = request.POST.get('password')  
             pan_number = request.POST.get('pan_number') 
- 
+        
             # Check for existing user with the same email 
             if CustomUser.objects.filter(email=email).exists(): 
                 messages.error(request, "Email already exists.", extra_tags='seller_reg') 

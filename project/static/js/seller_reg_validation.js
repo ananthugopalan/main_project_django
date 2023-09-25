@@ -13,13 +13,15 @@ document.addEventListener('DOMContentLoaded', function () {
     const branchNameInput = document.getElementById('branch');
     const ifscCodeInput = document.getElementById('ifsc-code');
 
-    // Function to validate first name
     function validateFirstName() {
         const firstnameError = document.getElementById('firstnameError');
         const name = firstnameInput.value.trim();
         const namePattern = /^[a-zA-Z]+$/;
-
-        if (!namePattern.test(name)) {
+    
+        if (name === '') {
+            firstnameInput.classList.add('is-invalid');
+            firstnameError.innerText = 'Name is required.';
+        } else if (!namePattern.test(name)) {
             firstnameInput.classList.add('is-invalid');
             firstnameError.innerText = 'Name should contain only alphabets.';
         } else {
@@ -279,6 +281,7 @@ document.addEventListener('DOMContentLoaded', function () {
     branchNameInput.addEventListener('input', validateBranchName);
     ifscCodeInput.addEventListener('input', validateIFSCCode);
 
+    // Event listeners for section 1 submission
     const submitStep1Button = document.getElementById('submit_step1');
     submitStep1Button.addEventListener('click', function (event) {
         validateFirstName();
@@ -288,15 +291,22 @@ document.addEventListener('DOMContentLoaded', function () {
         validatePassword();
         validateConfirmPassword();
 
+        // Check for empty fields
         if (
             firstnameInput.classList.contains('is-invalid') ||
             lastnameInput.classList.contains('is-invalid') ||
             panInput.classList.contains('is-invalid') ||
             emailInput.classList.contains('is-invalid') ||
             passwordInput.classList.contains('is-invalid') ||
-            confirmPasswordInput.classList.contains('is-invalid')
+            confirmPasswordInput.classList.contains('is-invalid') ||
+            firstnameInput.value.trim() === '' ||
+            lastnameInput.value.trim() === '' ||
+            panInput.value.trim() === '' ||
+            emailInput.value.trim() === '' ||
+            passwordInput.value.trim() === '' ||
+            confirmPasswordInput.value.trim() === ''
         ) {
-            event.preventDefault(); // Prevent submission if there are errors in section 1
+            event.preventDefault(); // Prevent submission if there are errors or empty fields in section 1
         }
     });
 
@@ -306,11 +316,14 @@ document.addEventListener('DOMContentLoaded', function () {
         validatePhoneNumber();
         validatePincode();
 
+        // Check for empty fields
         if (
             phoneInput.classList.contains('is-invalid') ||
-            pincodeInput.classList.contains('is-invalid')
+            pincodeInput.classList.contains('is-invalid') ||
+            isEmpty(phoneInput.value) ||
+            isEmpty(pincodeInput.value)
         ) {
-            event.preventDefault(); // Prevent submission if there are errors in section 2
+            event.preventDefault(); // Prevent submission if there are errors or empty fields in section 2
         }
     });
 
@@ -323,16 +336,28 @@ document.addEventListener('DOMContentLoaded', function () {
         validateBranchName();
         validateIFSCCode();
 
+        // Check for empty fields
         if (
             accountHolderNameInput.classList.contains('is-invalid') ||
             accountNumberInput.classList.contains('is-invalid') ||
             bankNameInput.classList.contains('is-invalid') ||
             branchNameInput.classList.contains('is-invalid') ||
-            ifscCodeInput.classList.contains('is-invalid')
+            ifscCodeInput.classList.contains('is-invalid') ||
+            isEmpty(accountHolderNameInput.value) ||
+            isEmpty(accountNumberInput.value) ||
+            isEmpty(bankNameInput.value) ||
+            isEmpty(branchNameInput.value) ||
+            isEmpty(ifscCodeInput.value)
         ) {
-            event.preventDefault(); // Prevent submission if there are errors in section 3
+            event.preventDefault(); // Prevent submission if there are errors or empty fields in section 3
         }
     });
+
+    // Helper function to check if a value is empty
+    function isEmpty(value) {
+        return value.trim() === '';
+    }
+
 });
 
 

@@ -78,7 +78,6 @@ TEMPLATES = [
 ]
 
 
-
 WSGI_APPLICATION = 'project.wsgi.application'
 
 AUTHENTICATION_BACKENDS = (
@@ -91,6 +90,7 @@ ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 ACCOUNT_USERNAME_REQUIRED = False
+SOCIALACCOUNT_LOGIN_ON_GET=True
 
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
@@ -99,6 +99,10 @@ SOCIALACCOUNT_PROVIDERS = {
         'FIELDS': ['id', 'email', 'name'], 
     }
 }
+
+ACCOUNT_ADAPTER = 'userapp.adapters.CustomAccountAdapter'
+
+SOCIALACCOUNT_EMAIL_VERIFICATION = 'none'
 
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL ='/'
@@ -165,3 +169,6 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'agriselect1@gmail.com'  
 EMAIL_HOST_PASSWORD = 'cywbqjkxaffnonnh'  
 DEFAULT_FROM_EMAIL = 'agriselect1@gmail.com'
+
+RAZOR_KEY_ID = 'rzp_test_jTMQxQDS3uc311'
+RAZOR_KEY_SECRET = 'TGgEWV7SCDVtGwsRxQs9gn4J'

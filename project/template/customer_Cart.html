@@ -1,5 +1,5 @@
 {%load static%}
-
+{% load cart_tags %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -77,6 +77,9 @@
                     {% if user.is_authenticated %}
                     <a class="nav-icon position-relative text-decoration-none" href="{% url 'cart' %}">
                         <i class="fa fa-fw fa-shopping-cart text-dark mr-1"></i>
+                        <span class="badge bg-danger position-absolute top-0 start-100 translate-middle">
+                            {% cart_item_count request.user %}
+                        </span>
                     </a>
                     {%else%}
                     <a class="nav-icon position-relative text-decoration-none" href="{% url 'user_login' %}">
@@ -123,13 +126,13 @@
     </div>
     <!--nav ends -->
 
-    <section class="h-100 gradient-custom" style="background: #00A99D; background: linear-gradient(to right, rgba(0, 169, 157, 0.8), rgba(37, 157, 252, 0.8));">
+    <section class="h-100 gradient-custom" style="background-color: #F7F9F9;">
         <div class="container py-5">
             <div class="row d-flex justify-content-center my-4">
                 <div class="col-md-8">
                     <div class="card mb-4">
-                        <div class="card-header py-3">
-                            <h5 class="mb-0">Cart</h5>
+                        <div class="card-header py-3 bg-success">
+                            <h5 class="mb-0 text-white">Cart</h5>
                         </div>
                         <div class="card-body">
                             {% for cart_item in cart_items %}
@@ -138,7 +141,7 @@
                                 <div class="col-lg-3 col-md-12 mb-4 mb-lg-0">
                                     <!-- Image -->
                                     <div class="bg-image hover-overlay hover-zoom ripple rounded" data-mdb-ripple-color="light">
-                                        <img src="{{ cart_item.product.product_image.url }}" class="w-100" alt="{{ cart_item.product.product_name }}" />
+                                        <img src="{{ cart_item.product.product_image.url }}" class="w-100" alt="{{ cart_item.product.product_name }}" style="height: 120px;"/>
                                         <a href="#!">
                                             <div class="mask" style="background-color: rgba(251, 251, 251, 0.2)"></div>
                                         </a>
@@ -149,23 +152,24 @@
                                 <div class="col-lg-5 col-md-6 mb-4 mb-lg-0">
                                     <!-- Data -->
                                     <p><strong>{{ cart_item.product.product_name }}</strong></p>
-                                    <a href="{% url 'remove_from_cart' cart_item.id %}" class="btn btn-primary btn-sm me-1 mb-2" data-mdb-toggle="tooltip" title="Remove item">
+                                    <a href="{% url 'remove_from_cart' cart_item.id %}" class="btn btn-light btn-sm me-1 mb-2" data-mdb-toggle="tooltip" title="Remove item" onclick="return confirmRemove()">
                                         <i class="fas fa-trash"></i>
                                     </a>
+                                    
                                     <!-- Data -->
                                 </div>
     
                                 <div class="col-lg-4 col-md-6 mb-4 mb-lg-0">
                                     <!-- Quantity -->
                                     <div class="d-flex mb-4" style="max-width: 300px">
-                                        <a href="{% url 'decrease_item' cart_item.id %}"><button class="btn btn-primary px-3 me-2">
+                                        <a href="{% url 'decrease_item' cart_item.id %}"><button class="btn btn-secondary px-3 me-2">
                                             <i class="fas fa-minus"></i>
                                         </button></a>
                                         <div class="form-outline">
                                             <input id="quantity-{{ cart_item.id }}" min="1" name="quantity" value="{{ cart_item.quantity }}" type="number" class="form-control">
                                             <label class="form-label" for="quantity-{{ cart_item.id }}">Quantity</label>
                                         </div>
-                                        <a href="{% url 'increase_item' cart_item.id %}"><button class="btn btn-primary px-3 ms-2">
+                                        <a href="{% url 'increase_item' cart_item.id %}"><button class="btn btn-secondary px-3 ms-2">
                                             <i class="fas fa-plus"></i>
                                         </button></a>
                                     </div>
@@ -179,55 +183,56 @@
                                 </div>
                             </div>
                             <!-- Single item -->
+                            <hr> 
+                            {% endfor %}
+                            <!-- Your existing template code for displaying individual items -->
+
+                            <!-- Summary -->
                             
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <h5>Summary</h5>
+                                    <ul class="list-group list-group-flush">
+                                        <li class="list-group-item d-flex justify-content-between align-items-center border-0 px-0 pb-0">
+                                            Items:
+                                            <span>{{ total_items }}</span>
+                                        </li>
+                                        <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                            Price:
+                                            <span>₹{{ total_price }}</span>
+                                        </li>
+                                        <li class="list-group-item d-flex justify-content-between align-items-center border-0 px-0 mb-3">
+                                            <div>
+                                                <strong>Total amount</strong>
+                                            </div>
+                                            <span><strong>₹{{ total_price }}</strong></span>
+                                        </li>
+                                    </ul>
+                                    <a href="{% url 'customer_Checkout' %}"><button type="button" class="btn btn-secondary btn-lg btn-block">
+                                        Go to checkout
+                                    </button></a>
+                                </div>
+                            </div>
+                       
                         </div>
                     </div>
               
                     <div class="card mb-4 mb-lg-0">
                         <div class="card-body">
-                        <p><strong>We accept</strong></p>
-                        <img class="me-2" width="45px"
-                            src="https://mdbcdn.b-cdn.net/wp-content/plugins/woocommerce-gateway-stripe/assets/images/visa.svg"
-                            alt="Visa" />
-                        <img class="me-2" width="45px"
-                            src="https://mdbcdn.b-cdn.net/wp-content/plugins/woocommerce-gateway-stripe/assets/images/amex.svg"
-                            alt="American Express" />
-                        <img class="me-2" width="45px"
-                            src="https://mdbcdn.b-cdn.net/wp-content/plugins/woocommerce-gateway-stripe/assets/images/mastercard.svg"
-                            alt="Mastercard" />
+                            <p><strong>We accept</strong></p>
+                            <img class="me-2" width="45px"
+                                src="https://mdbcdn.b-cdn.net/wp-content/plugins/woocommerce-gateway-stripe/assets/images/visa.svg"
+                                alt="Visa" />
+                            <img class="me-2" width="45px"
+                                src="https://mdbcdn.b-cdn.net/wp-content/plugins/woocommerce-gateway-stripe/assets/images/amex.svg"
+                                alt="American Express" />
+                            <img class="me-2" width="45px"
+                                src="https://mdbcdn.b-cdn.net/wp-content/plugins/woocommerce-gateway-stripe/assets/images/mastercard.svg"
+                                alt="Mastercard" />
                         </div>
                     </div>
-                    </div>
-                    <div class="col-md-4">
-                    <div class="card mb-4">
-                        <div class="card-header py-3">
-                        <h5 class="mb-0">Summary</h5>
-                        </div>
-                        <div class="card-body">
-                        <ul class="list-group list-group-flush">
-                            <li class="list-group-item d-flex justify-content-between align-items-center border-0 px-0 pb-0">
-                            Items:
-                            <span>{{ cart_item.total_items }}</span>
-                            </li>
-                            <li class="list-group-item d-flex justify-content-between align-items-center px-0">
-                            Price:
-                            <span>₹{{ cart_item.total_price }}</span>
-                            </li>
-                            <li class="list-group-item d-flex justify-content-between align-items-center border-0 px-0 mb-3">
-                            <div>
-                                <strong>Total amount</strong>
-                            </div>
-                            <span><strong>₹{{ cart_item.total_price }}</strong></span>
-                            </li>
-                        </ul>
-                  {% endfor %}
-                  <button type="button" class="btn btn-primary btn-lg btn-block">
-                    Go to checkout
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
+                </div>                    
+            </div>  
         </div>
       </section>    
 
@@ -250,6 +255,12 @@
         </div>
     </footer>
   <!-- Footer -->
+
+  <script>
+    function confirmRemove() {
+        return confirm('Are you sure you want to remove this item from the cart?');
+    }
+</script>
 
   
 

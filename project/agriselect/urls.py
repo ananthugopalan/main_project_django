@@ -6,7 +6,8 @@ urlpatterns = [
     path('',views.index,name='index'),
 
     #customer
-    path('search/', views.search_products, name='search_products'),
+    # path('search/', views.search_products, name='search_products'),
+    path('search/', views.search_view, name='search_view'),
     path('customer_allProducts/',views.customer_allProducts,name='customer_allProducts'),
     path('customer_ProductView/<int:product_id>/',views.customer_ProductView,name='customer_ProductView'),
     path('customer_Profile/', views.customer_Profile, name='customer_Profile'),
@@ -16,6 +17,7 @@ urlpatterns = [
     path('add_to_wishlist/<int:product_id>/', views.add_to_wishlist, name='add_to_wishlist'),
     path('remove_from_wishlist/<int:product_id>/', views.remove_from_wishlist, name='remove_from_wishlist'),
     path('customer_allProducts/<str:category>/', views.customer_allProducts, name='customer_allProducts'),
+    path('customer_Checkout/', views.customer_Checkout, name='customer_Checkout'),
 
     # Cart
     path('add_to_Cart/<int:product_id>/', views.add_to_Cart, name='add_to_Cart'),
@@ -33,4 +35,6 @@ urlpatterns = [
     path('seller_Products/',views.seller_Products,name='seller_Products'),
     path('delete_product/<int:product_id>/', views.delete_product, name='delete_product'),
 
+    path('homepage/', views.homepage, name='homepage'),
+    path('paymenthandler/', views.paymenthandler, name='paymenthandler'),
 ]

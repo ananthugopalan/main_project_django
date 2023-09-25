@@ -1,0 +1,295 @@
+{%load static%}
+{% load cart_tags %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>AgriSelect-All Products</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="{% static 'img/Agriselect1.png' %}" width='30' height='30'>
+
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/templatemo.css' %}">
+    <link rel="stylesheet" href="{% static 'css/custom.css' %}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+    <!-- Load fonts style after rendering the layout styles -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;200;300;400;500;700;900&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
+    <style>
+        body{
+            background-color: #F7F9F9;
+        }
+        main{
+            
+            margin-top: 30px;
+            padding-top: 10px;
+            padding-bottom: 30px;
+            padding-left: 30px;
+            padding-right: 40px;
+            margin: 30px;
+            background-color: #fff;
+        }
+
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <nav class="navbar navbar-expand-lg navbar-light shadow p-0 sticky-top">
+        <div class="container d-flex justify-content-between align-items-center">
+            
+            <img src="{% static 'img/Agriselect1.png'%}" width='100' height='auto' class='logo'>
+
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#templatemo_main_nav" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="align-self-center collapse navbar-collapse flex-fill  d-lg-flex justify-content-lg-between" id="templatemo_main_nav">
+                <div class="flex-fill">
+                    <ul class="nav navbar-nav d-flex justify-content-between mx-lg-auto custom-nav-links">
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'index' %}">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">About</a>
+                        </li>
+                        {% if user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'customer_allProducts' %}">All Products</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Orders</a>
+                        </li>
+                        {%else%}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'user_login' %}">All Products</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'user_login' %}">Orders</a>
+                        </li>         
+                        {% endif %}             
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Contact</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Gallery</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="navbar align-self-center d-flex">
+                    <div class="dropdown">
+                        <button class="btn dropdown-toggle" type="button" id="searchDropdownButton" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fa fa-search"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="searchDropdownButton">
+                            <li>
+                                <form class="px-4 py-3" style="width: 300px; height: 300px;">
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" id="searchInput" placeholder="Search ..." />
+                                        <button type="button" class="btn btn-success" id="searchButton">
+                                            <i class="fa fa-search"></i>
+                                        </button>
+                                    </div>
+                                    <div id="searchResults" class="dropdown-results"></div> <!-- Empty div for search results -->
+                                </form>
+                            </li>
+                        </ul>
+                    </div>                    
+                    
+                    <!-- <a class="nav-icon d-none d-lg-inline" href="#" data-bs-toggle="modal" data-bs-target="#templatemo_search">
+                        <i class="fa fa-fw fa-search text-dark mr-2"></i>
+                    </a> --> 
+                    {% if user.is_authenticated %}
+                    <a class="nav-icon position-relative text-decoration-none" href="{% url 'cart' %}">
+                        <i class="fa fa-fw fa-shopping-cart text-dark mr-1"></i>
+                        <span class="badge bg-danger position-absolute top-0 start-100 translate-middle">
+                            {% cart_item_count request.user %}
+                        </span>
+                    </a>
+                    {%else%}
+                    <a class="nav-icon position-relative text-decoration-none" href="{% url 'user_login' %}">
+                        <i class="fa fa-fw fa-shopping-cart text-dark mr-1"></i>
+                    </a>
+                    {% endif %}
+                    <a class="nav-icon position-relative text-decoration-none dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fa fa-fw fa-user text-dark mr-3"></i>
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="userDropdown">
+                        {% if request.user.is_authenticated %}
+                        <a class="dropdown-item text-success" href="#">{{ request.user.first_name }}</a>
+                            <a class="dropdown-item" href="{% url 'customer_Profile' %}">Profile</a>
+                            <a class="dropdown-item" href="{% url 'customer_Wishlist' %}">Wishlist</a>
+                            <a class="dropdown-item" href="{% url 'user_logout' %}" onclick="return confirm('Are you sure you want to sign out?')">Sign out</a>
+                        {% else %}  
+                            <a class="dropdown-item" href="{% url 'user_login' %}">Sign in</a>
+                            <a class="dropdown-item" href="{% url 'customer_Registration' %}">Register</a>
+                            <a class="dropdown-item" href="{% url 'seller_home' %}">Seller's Home</a>
+                        {% endif %}
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <!-- Close Header -->
+
+        <!--nav ends -->
+
+        <main class="shadow rounded">            
+            <div class="row g-5 mt-2 mb-3">
+                <div class="col-md-5 col-lg-4 order-md-last shadow" style="background-color: #FBFCFC;">
+                    
+                    <h5 class="mt-5">Order Summary</h5>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item d-flex justify-content-between align-items-center px-0 " style="background-color: #FBFCFC">
+                                Items:
+                                <span>{% cart_item_count request.user %}</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center px-0" style="background-color: #FBFCFC">
+                                Discount:
+                                <span>₹0.0</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center px-0" style="background-color: #FBFCFC">
+                                Delivery Charge:
+                                <span>₹0.0</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center px-0" style="background-color: #FBFCFC">
+                                Price:
+                                <span>₹{{ total_price }}</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center border-0  px-0 mb-3" style="background-color: #FBFCFC">
+                                <div>
+                                    <strong>Total amount</strong>
+                                </div>
+                                <span><strong>₹{{ total_price }}</strong></span>
+                            </li>
+                        </ul>
+                </div>
+
+                <div class="col-md-7 col-lg-8">
+                    <h4 class="mb-3">Shipping Address</h4>
+                    <form class="needs-validation" novalidate>
+                                    <!-- Address Form Card Template (hidden) -->
+                    <div id="address-form-card-template">         
+                        <div class="d-flex flex-wrap" style="margin-left: 15px;" id="address-card-display"> 
+                            {% block content %}
+                            {% for i in user_addresses %}
+                            <div class="card mt-3" style="width: 200px; margin-right: 20px;" id="address-card-{{ i.id }}">
+                                <div class="card-body"> 
+                                    <input type="checkbox" class="position-absolute top-0 end-0 mt-2 me-2" id="address-checkbox-{{ i.id }}">
+                           
+                                    <strong>{{ i.address_type }}</strong><br>
+                                    <p id="card_building" style="margin-bottom: 2px;">Building: {{ i.building_name }}</p>
+                                    <p id="card_street" style="margin-bottom: 2px;">Street: {{ i.street }}</p>
+                                    <p id="card_city" style="margin-bottom: 2px;">City: {{ i.city }}</p>
+                                    <p id="card_zip-code" style="margin-bottom: 2px;">Zip Code: {{ i.zip_code }}</p>
+                                    
+                                </div>
+                            </div>
+                            {% endfor %}
+                            <!-- Card for adding a new address -->
+                            <div class="card mt-3" style="width: 200px; margin-right: 20px;">
+                                <div class="card-body text-center mt-4">
+                                    <!-- Add icon and text -->
+                                    <a href="#"><i class="fas fa-plus-circle fa-3x mb-2 text-light"></i></a>
+                                    <p>Add Address</p>
+                                </div>
+                            </div>
+                            
+                            {% endblock %}
+                        </div>
+                    </div>
+        
+                        <hr class="my-4">
+        
+                        <div class="card mb-4 mb-lg-0">
+                            <div class="card-body">
+                                <p><strong>We accept</strong></p>
+                                <i class="fab fa-cc-mastercard fa-2x me-3 mb-2" title="Mastercard"></i>
+                                <i class="fab fa-cc-visa fa-2x me-3 mb-2" title="Visa"></i>
+                                <i class="fas fa-university fa-2x me-3 mb-2" title="Net Banking"></i>
+                                <i class="fas fa-mobile-alt fa-2x me-3 mb-2" title="UPI"></i>
+                            </div>
+                        </div>
+                        
+                        
+        
+                        <hr class="my-4">
+        
+                        <a href="{% url 'homepage' %}" class="w-100 btn btn-warning btn-lg">Continue to checkout</a>
+                    </form>
+                </div>
+            </div>
+        </main>
+
+
+
+         <!-- Footer -->
+    <footer class="footer mt-5 py-3 bg-dark">
+        <div class="container text-center">
+        <div class="row text-center text-md-left align-items-center">
+            <div class="col-md-5">
+            <p class="text-light">Copyright @2023 All rights are preserved</p>
+            </div>
+            <div class="col-md-7">
+            <a href="#" class="social-icons text-white"><i class="fab fa-facebook-f"></i></a>
+            <span class="mx-2"></span> <!-- Add space between icons using a span element with margin -->
+            <a href="#" class="social-icons text-white"><i class="fab fa-twitter"></i></a>
+            <span class="mx-2"></span> <!-- Add space between icons -->
+            <a href="#" class="social-icons text-white"><i class="fab fa-instagram"></i></a>
+            </div>
+        </div>
+        </div>
+    </footer>
+  <!-- Footer -->
+<script>
+function performSearch() {
+    const searchInput = document.getElementById('searchInput').value;
+    const searchResults = document.getElementById('searchResults');
+
+    // Make an AJAX request to your Django server to fetch search results
+    // Replace '/search/' with the actual URL pattern for your search view
+    $.ajax({
+        url: `/search/?query=${searchInput}`, // Modify the URL as needed
+        method: 'GET',
+        dataType: 'json',
+        success: function (data) {
+            // Clear previous search results
+            searchResults.innerHTML = '';
+
+            // Display search results in the dropdown
+            data.results.forEach((result) => {
+                const productLink = document.createElement('a');
+                productLink.href = result.url; // Replace with the actual URL
+                productLink.textContent = `${result.product_name} - ${result.category}`;
+
+                const listItem = document.createElement('li');
+                listItem.appendChild(productLink);
+                searchResults.appendChild(listItem);
+            });
+        },
+        error: function () {
+            console.error('An error occurred while fetching search results.');
+        },
+    });
+}
+
+// Attach a click event listener to the search button
+document.getElementById('searchButton').addEventListener('click', performSearch);
+
+</script>
+
+      
+      <!-- Start Script -->
+      <script src="{% static 'js/jquery-1.11.0.min.js' %}"></script>
+      <script src="{% static 'js/jquery-migrate-1.2.1.min.js' %}"></script>
+      <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+      <script src="{% static 'js/templatemo.js' %}"></script>
+      <script src="{% static 'js/custom.js' %}"></script>
+      <!-- End Script -->
+  </body>
+  
+  </html>

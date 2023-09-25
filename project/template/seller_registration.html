@@ -255,7 +255,7 @@ input[type="tel"]:focus {
 
                                         <div class="mb-3 form-button">
                                             <input type="hidden" name="current_step" value="step1">
-                                            <button type="button" name="submit_step1" id="btn1" class="form-submit btn-success" value="Register" style="border: none; padding: 15px 25px; border-radius: 5px; cursor: pointer;" >Save and Next</button>                                    
+                                            <button type="button" id="submit_step1" name="submit_step1" id="btn1" class="form-submit btn-success" value="Register" style="border: none; padding: 15px 25px; border-radius: 5px; cursor: pointer;" >Save and Next</button>                                    
                                             </div>
                                     </form>
                                 </div>
@@ -322,7 +322,7 @@ input[type="tel"]:focus {
                         </div>
                         <div class="mb-3 form-button">
                             <input type="hidden" name="current_step" value="step2">
-                            <button type="button" name="submit_step2" class="form-submit btn-success" style="border: none; padding: 15px 25px; border-radius: 5px; cursor: pointer;">Save and Next</button>
+                            <button type="button" id="submit_step2" name="submit_step2" class="form-submit btn-success" style="border: none; padding: 15px 25px; border-radius: 5px; cursor: pointer;">Save and Next</button>
                         </div>
                     </div>
                     <input type="hidden" name="step" value="2">
@@ -379,7 +379,7 @@ input[type="tel"]:focus {
                     <div class="d-flex justify-content-end">
                         <div class="mb-3 ps-2">
                             <input type="hidden" name="current_step" value="step2">
-                            <button type="button" name="submit_step3" class="form-submit btn-success" style="border: none; padding: 15px 25px; border-radius: 5px; cursor: pointer;">Save and Next</button>
+                            <button type="button" id="submit_step3" name="submit_step3" class="form-submit btn-success" style="border: none; padding: 15px 25px; border-radius: 5px; cursor: pointer;">Save and Next</button>
                         </div>
                     </form>
                 </section>                            
@@ -397,7 +397,55 @@ input[type="tel"]:focus {
             <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
             <script src="{% static 'js/seller_reg_validation.js' %}"></script>
             {% comment %} ---------------------------original------------------------- {% endcomment %}
-            
+  <!-- Include this script at the end of your HTML body -->
+<script>
+    $(document).ready(function () {
+        // Step 1 form validation
+        $('#submit_step1').click(function () {
+            let first_name = $('#first_name').val();
+            let last_name = $('#last_name').val();
+            let email = $('#email').val();
+            let password = $('#password').val();
+            let pan_number = $('#pan_number').val();
+
+            if (!first_name || !last_name || !email || !password || !pan_number) {
+                alert('Please fill in all required fields.');
+                return false; // Prevent form submission
+            }
+        });
+
+        // Step 2 form validation
+        $('#submit_step2').click(function () {
+            let store_name = $('#store-name').val();
+            let phone_number = $('#phone-number').val();
+            let pincode = $('#pincode').val();
+            let building_name = $('#pickup-building').val();
+            let pickup_address = $('#pickup-address').val();
+            let city = $('#city').val();
+            let state = $('#state').val();
+
+            if (!store_name || !phone_number || !pincode || !building_name || !pickup_address || !city || !state) {
+                alert('Please fill in all required fields.');
+                return false; // Prevent form submission
+            }
+        });
+
+        // Step 3 form validation
+        $('#submit_step3').click(function () {
+            let account_holder_name = $('#account-holder-name').val();
+            let account_number = $('#account-number').val();
+            let bank_name = $('#bank-name').val();
+            let branch = $('#branch').val();
+            let ifsc_code = $('#ifsc-code').val();
+
+            if (!account_holder_name || !account_number || !bank_name || !branch || !ifsc_code) {
+                alert('Please fill in all required fields.');
+                return false; // Prevent form submission
+            }
+        });
+    });
+</script>
+          
             
             
             

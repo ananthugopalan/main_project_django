@@ -3,8 +3,10 @@ from django.http import JsonResponse
 from .forms import ProductForm
 from .models import Customer_Profile,Product, Wishlist, Address, CartItem
 from userapp.models import CustomUser,SellerDetails
+from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.core.paginator import Paginator
+
 # Create your views here.
 
 
@@ -18,20 +20,38 @@ def index(request):
         return render(request, 'seller_home.html')
     else:
         return render(request,'index.html')
-
-def search_products(request):
-    query = request.GET.get('q', '')
-    results = [] 
+    
+def search_view(request):
+    query = request.GET.get('query', '')
+    results = []
 
     if query:
-        # Perform your search query here, for example, by filtering products based on the search query
-        results = Product.objects.filter(product_name__icontains=query)
+        # Perform a search query in your database based on the 'query' parameter
+        # Replace this with your actual search logic
+        products = Product.objects.filter(product_name__icontains=query)
 
-    # Prepare the search results as JSON data
-    search_results = [{'id':product.id,'product_name': product.product_name, 'product_category': product.product_category} for product in results]
+        for product in products:
+            results.append({
+                'product_name': product.product_name,
+                'category': product.product_category,
+                'url': product.get_absolute_url(),  # Replace with the actual URL
+            })
 
-    response_data = {'results': search_results}
-    return JsonResponse(response_data)
+    return JsonResponse({'results': results})
+
+# def search_products(request):
+#     query = request.GET.get('q', '')
+#     results = [] 
+
+#     if query:
+#         # Perform your search query here, for example, by filtering products based on the search query
+#         results = Product.objects.filter(product_name__icontains=query)
+
+#     # Prepare the search results as JSON data
+#     search_results = [{'id':product.id,'product_name': product.product_name, 'product_category': product.product_category} for product in results]
+
+#     response_data = {'results': search_results}
+#     return JsonResponse(response_data)
 
 
 def customer_allProducts(request, category='All'):
@@ -131,7 +151,8 @@ def delete_address(request, address_id):
     except Address.DoesNotExist:
         # Handle the case where the address does not exist
         return JsonResponse({'success': False})
-
+    
+@login_required(login_url='user_login')
 def customer_Wishlist(request):
     if request.user.is_authenticated:
         user_wishlist, created = Wishlist.objects.get_or_create(user=request.user)
@@ -143,6 +164,7 @@ def customer_Wishlist(request):
     else:
         return render(request, 'customer_Wishlist.html', {'user': None, 'wishlist': None})
 
+@login_required(login_url='user_login')
 def add_to_wishlist(request, product_id):
     if request.user.is_authenticated:
         product = get_object_or_404(Product, pk=product_id)
@@ -152,6 +174,7 @@ def add_to_wishlist(request, product_id):
     else:
         return JsonResponse({'success': False})
     
+
 def remove_from_wishlist(request, product_id):
     if request.user.is_authenticated:
         product = get_object_or_404(Product, pk=product_id)
@@ -161,7 +184,7 @@ def remove_from_wishlist(request, product_id):
     else:
         return JsonResponse({'success': False})
 
-
+@login_required(login_url='user_login')
 def customer_ProductView(request,product_id):
     product = get_object_or_404(Product, pk=product_id)
     product_category = product.product_category
@@ -183,15 +206,24 @@ def customer_ProductView(request,product_id):
 
 
 #cart
-
+@login_required(login_url='user_login')
 def add_to_Cart(request, product_id):
     product = get_object_or_404(Product, id=product_id)
-    cart_item, created = CartItem.objects.get_or_create(user=request.user, product_id=product.id)
+    
+    if request.method == 'POST':
+        quantity = int(request.POST.get('quantity', 1))
+        cart_item, created = CartItem.objects.get_or_create(user=request.user, product=product)
+        
+        if not created:
+            # Update the cart item's quantity
+            cart_item.quantity += quantity
+        else:
+            cart_item.quantity = quantity
 
-    if not created:
-        cart_item.quantity += 1
         cart_item.save()
-    return redirect('http://127.0.0.1:8000/customer_ProductView/'+str(product_id)+'/')
+    
+    return redirect('http://127.0.0.1:8000/customer_ProductView/' + str(product_id) + '/')
+
 
 def add_to_cart(request, product_id):
     if request.user.is_authenticated:
@@ -201,19 +233,17 @@ def add_to_cart(request, product_id):
         if not created:
             cart_item.quantity += 1
             cart_item.save()
-        return JsonResponse({'success': True})
-    else:
-        return JsonResponse({'success': False})
+        return redirect('cart')
 
 def cart(request): 
     cart_items = CartItem.objects.filter(user=request.user) 
-    total_price = sum(item.product.price * item.quantity for item in cart_items)
-    total_items = sum(item.quantity for item in cart_items) 
-    context = { 
-        'cart_items': cart_items, 
-        'total_items': total_items, 
-        'total_price': total_price, 
-        # ... other context variables ... 
+    total_items = sum(cart_item.quantity for cart_item in cart_items)
+    total_price = sum(cart_item.product.price * cart_item.quantity for cart_item in cart_items)
+    context = {
+        'cart_items': cart_items,
+        'total_items': total_items,
+        'total_price': total_price,
+            # ... other context variables ... 
     } 
     return render(request, 'customer_Cart.html',context) 
  
@@ -242,12 +272,29 @@ def increase_item(request, item_id):
         pass  # Handle the case when the item does not exist in the cart 
     return redirect('cart')
 
+def customer_Checkout(request):
+    user = request.user
+    # Fetch the user's addresses from the database
+    user_addresses = Address.objects.filter(user=user)
+    cart_items = CartItem.objects.filter(user=request.user) 
+    total_items = sum(cart_item.quantity for cart_item in cart_items)
+    total_price = sum(cart_item.product.price * cart_item.quantity for cart_item in cart_items)
+    context = {
+        'cart_items': cart_items,
+        'total_items': total_items,
+        'total_price': total_price,
+        'user_addresses': user_addresses,
+            # ... other context variables ... 
+    } 
+
+    return render(request,'customer_Checkout.html',context)
 
 #Seller
 
 def seller_home(request):
     return render(request,'seller_home.html')
 
+@login_required(login_url='user_login')
 def seller_addProducts(request):
     if request.method == 'POST':
         form = ProductForm(request.POST, request.FILES)
@@ -266,7 +313,7 @@ def seller_addProducts(request):
     context = {'form': form}
     return render(request, 'seller_addProducts.html', context)
 
-
+@login_required(login_url='user_login')
 def seller_Products(request):
     products = Product.objects.filter(seller=request.user)  # Fetch products associated with the currently logged-in seller
     paginator = Paginator(products, 6)
@@ -298,6 +345,7 @@ def seller_updateProduct(request, product_id):
         form = ProductForm(instance=product)
 
     return render(request, 'seller_updateProduct.html', {'form': form, 'product': product})
+
 
 def seller_Profile(request):
     user = request.user  # Get the current logged-in user
@@ -341,4 +389,100 @@ def seller_Profile(request):
         'seller_details': seller_details,  # Pass the seller details to the template
     }
     return render(request, 'seller_Profile.html', context)
+
+
+import razorpay
+from django.conf import settings
+from django.views.decorators.csrf import csrf_exempt
+from django.http import HttpResponseBadRequest
+from decimal import Decimal
+
+
+# authorize razorpay client with API Keys.
+razorpay_client = razorpay.Client(
+	auth=(settings.RAZOR_KEY_ID, settings.RAZOR_KEY_SECRET))
+
+
+def homepage(request):
+    cart_items = CartItem.objects.filter(user=request.user)
+    total_price = Decimal(sum(cart_item.product.price * cart_item.quantity for cart_item in cart_items))
+    
+    currency = 'INR'
+
+    # Set the 'amount' variable to 'total_price'
+    amount = int(total_price*100)
+
+    # Create a Razorpay Order
+    razorpay_order = razorpay_client.order.create(dict(
+        amount=amount,
+        currency=currency,
+        payment_capture='0'
+    ))
+
+    # Order id of the newly created order
+    razorpay_order_id = razorpay_order['id']
+    callback_url = 'paymenthandler/'
+
+    # Create a context dictionary with all the variables you want to pass to the template
+    context = {
+        'cart_items': cart_items,
+        'total_price': total_price,
+        'razorpay_order_id': razorpay_order_id,
+        'razorpay_merchant_key': settings.RAZOR_KEY_ID,
+        'razorpay_amount': amount,  # Set to 'total_price'
+        'currency': currency,
+        'callback_url': callback_url,
+    }
+
+    return render(request, 'homepage.html', context=context)
+
+
+# we need to csrf_exempt this url as
+# POST request will be made by Razorpay
+# and it won't have the csrf token.
+@csrf_exempt
+def paymenthandler(request):
+
+	# only accept POST request.
+	if request.method == "POST":
+		try:
+		
+			# get the required parameters from post request.
+			payment_id = request.POST.get('razorpay_payment_id', '')
+			razorpay_order_id = request.POST.get('razorpay_order_id', '')
+			signature = request.POST.get('razorpay_signature', '')
+			params_dict = {
+				'razorpay_order_id': razorpay_order_id,
+				'razorpay_payment_id': payment_id,
+				'razorpay_signature': signature
+			}
+
+			# verify the payment signature.
+			result = razorpay_client.utility.verify_payment_signature(
+				params_dict)
+			if result is not None:
+				amount = 20000 # Rs. 200
+				try:
+
+					# capture the payemt
+					razorpay_client.payment.capture(payment_id, amount)
+
+					# render success page on successful caputre of payment
+					return render(request, 'paymentsuccess.html')
+				except:
+
+					# if there is an error while capturing payment.
+					return render(request, 'paymentfail.html')
+			else:
+
+				# if signature verification fails.
+				return render(request, 'paymentfail.html')
+		except:
+
+			# if we don't find the required parameters in POST data
+			return HttpResponseBadRequest()
+	else:
+	# if other than POST request is made.
+		return HttpResponseBadRequest()
+
 
