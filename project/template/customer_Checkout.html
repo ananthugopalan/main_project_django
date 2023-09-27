@@ -213,12 +213,8 @@
                                 <i class="fas fa-university fa-2x me-3 mb-2" title="Net Banking"></i>
                                 <i class="fas fa-mobile-alt fa-2x me-3 mb-2" title="UPI"></i>
                             </div>
-                        </div>
-                        
-                        
-        
-                        <hr class="my-4">
-        
+                        </div>                           
+                        <hr class="my-4">        
                         <a href="{% url 'homepage' %}" class="w-100 btn btn-warning btn-lg">Continue to checkout</a>
                     </form>
                 </div>
@@ -245,42 +241,6 @@
         </div>
     </footer>
   <!-- Footer -->
-<script>
-function performSearch() {
-    const searchInput = document.getElementById('searchInput').value;
-    const searchResults = document.getElementById('searchResults');
-
-    // Make an AJAX request to your Django server to fetch search results
-    // Replace '/search/' with the actual URL pattern for your search view
-    $.ajax({
-        url: `/search/?query=${searchInput}`, // Modify the URL as needed
-        method: 'GET',
-        dataType: 'json',
-        success: function (data) {
-            // Clear previous search results
-            searchResults.innerHTML = '';
-
-            // Display search results in the dropdown
-            data.results.forEach((result) => {
-                const productLink = document.createElement('a');
-                productLink.href = result.url; // Replace with the actual URL
-                productLink.textContent = `${result.product_name} - ${result.category}`;
-
-                const listItem = document.createElement('li');
-                listItem.appendChild(productLink);
-                searchResults.appendChild(listItem);
-            });
-        },
-        error: function () {
-            console.error('An error occurred while fetching search results.');
-        },
-    });
-}
-
-// Attach a click event listener to the search button
-document.getElementById('searchButton').addEventListener('click', performSearch);
-
-</script>
 
       
       <!-- Start Script -->

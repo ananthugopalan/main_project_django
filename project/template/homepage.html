@@ -11,7 +11,6 @@
 		box-sizing: border-box;
 		padding: 0px;
 		margin: 0px;
-		font-family: cursive;
 	}
 	html,
 	body {
@@ -48,7 +47,7 @@
 		border-radius: 4px;
 		cursor: pointer;
 		padding: 4px 8px;
-		background-color: #ffaaa7;
+		background-color: green;
 		color: white;
 		font-size: 1.2em;
 		font-weight: 600;
@@ -58,14 +57,13 @@
 </head>
 <body>
 	<div class="card">
-	<h1 class="title">Buy Me a Chai </h1>
-	<small class="muted"
-		>If you like my work, you can support me by donating ₹200</small
-	>
-	<div class="btn_container">
-		<!-- Payment Button -->
-		<button class="btn" id="pay-btn">Donate</button>
-	</div>
+		<h1 class="title">Proceed to payment... </h1>
+		<p style="font-size: 22px; text-align: center; margin-top: 20px;">Amount: <span><strong>₹{{ total_price }}</strong></span></p>
+		<div class="btn_container">
+			<!-- Payment Button -->
+			<button class="btn" id="pay-btn">Pay</button>
+		</div>
+		
 	</div>
 </body>
 

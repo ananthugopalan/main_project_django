@@ -72,5 +72,20 @@ class CartItem(models.Model):
         
         super().save(*args, **kwargs)
 
+class Order(models.Model):
+    class PaymentStatusChoices(models.TextChoices):
+        PENDING = 'pending', 'Pending'
+        SUCCESSFUL = 'successful', 'Successful'
+        FAILED = 'failed', 'Failed'
+
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    products = models.ManyToManyField(Product)  # Assuming you have a Product model
+    total_price = models.DecimalField(max_digits=10, decimal_places=2)
+    order_date = models.DateTimeField(auto_now_add=True)
+    razorpay_order_id = models.CharField(max_length=255, default=None)
+    payment_status = models.CharField(
+        max_length=20, choices=PaymentStatusChoices.choices, default=PaymentStatusChoices.PENDING)
+    def __str__(self):
+        return self.user.email
 
 

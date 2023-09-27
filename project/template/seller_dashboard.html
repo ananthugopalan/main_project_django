@@ -1,0 +1,111 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seller Dashboard</title>
+    <!-- Add Bootstrap CSS Link -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="icon" href="{% static 'img/Agriselect1.png' %}" width='30' height='30'>
+
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;200;300;400;500;700;900&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <!-- Add your custom CSS styles here if needed -->
+    <style>
+        /* Your custom styles go here */
+    </style>
+</head>
+<body>
+    
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-md navbar-light bg-light ">
+        <a class="navbar-brand ms-5" href="#">
+            <img src="{% static 'img/Agriselect1.png'%}" width='100' height='auto' class='logo' alt="Your Site Logo">
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item dropdown">
+                    <a class="nav-icon position-relative text-decoration-none dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="margin-right: 100px;">
+                        <i class="fa fa-fw fa-user text-dark mr-3"></i>
+                    </a>
+                    <div class="dropdown-menu dropright" aria-labelledby="userDropdown">
+                        <a class="dropdown-item" href="#">Profile</a>
+                        <a class="dropdown-item" href="#">Logout</a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+
+       <!-- Main Content -->
+        <div class="container mt-4 ml-5" >
+            <div class="row">
+                <!-- Sidebar -->
+                <div class="col-md-3">
+                    <div class="list-group">
+                        <a href="#" class="list-group-item list-group-item-action active bg-dark">Dashboard</a>
+                        <a href="{% url 'seller_addProducts' %}" class="list-group-item list-group-item-action">Add Products</a>
+                        <a href="{% url 'seller_Products' %}" class="list-group-item list-group-item-action">View Products</a>
+                        <a href="#" class="list-group-item list-group-item-action">Orders</a>
+                    </div>
+                </div>
+
+                <!-- Dashboard Content -->
+                <div class="col-md-9">
+                    <h1>Welcome to Your Dashboard</h1>
+                    <!-- First Row -->
+                    <div class="row mt-5">
+                        <div class="col-md-6">
+                            <div class="card bg-primary text-white mb-3">
+                                <div class="card-body">
+                                    <h5 class="card-title">Products</h5>
+                                    <p class="card-text">Number of Products</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card bg-success text-white mb-3">
+                                <div class="card-body">
+                                    <h5 class="card-title">Orders</h5>
+                                    <p class="card-text">Number of Orders</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Second Row -->
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card bg-warning text-white mb-3">
+                                <div class="card-body">
+                                    <h5 class="card-title">Sold</h5>
+                                    <p class="card-text">Products Sold</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card bg-info text-white mb-3">
+                                <div class="card-body">
+                                    <h5 class="card-title">Revenue</h5>
+                                    <p class="card-text">Total Revenue</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Add your dashboard content here -->
+                </div>
+            </div>
+        </div>
+
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</body>
+</html>
