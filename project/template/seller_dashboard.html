@@ -12,6 +12,9 @@
     <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;200;300;400;500;700;900&display=swap">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <!-- Add your custom CSS styles here if needed -->
     <style>
         /* Your custom styles go here */
@@ -20,9 +23,9 @@
 <body>
     
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-md navbar-light bg-light ">
+    <nav class="navbar navbar-expand-md navbar-light bg-light" style="padding-top: 1px; padding-bottom: 1px;">
         <a class="navbar-brand ms-5" href="#">
-            <img src="{% static 'img/Agriselect1.png'%}" width='100' height='auto' class='logo' alt="Your Site Logo">
+            <img src="{% static 'img/Agriselect1.png'%}" width='80' height='80px' class='logo'>
         </a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -34,8 +37,11 @@
                         <i class="fa fa-fw fa-user text-dark mr-3"></i>
                     </a>
                     <div class="dropdown-menu dropright" aria-labelledby="userDropdown">
+                        {% if user.is_authenticated %}
+                        <a class="dropdown-item text-success" href="#">{{ request.user.first_name }}</a>
                         <a class="dropdown-item" href="#">Profile</a>
                         <a class="dropdown-item" href="#">Logout</a>
+                        {% endif %}
                     </div>
                 </li>
             </ul>
@@ -44,12 +50,12 @@
 
 
        <!-- Main Content -->
-        <div class="container mt-4 ml-5" >
+        <div class="container mt-4 ml-5 mb-5"  >
             <div class="row">
                 <!-- Sidebar -->
                 <div class="col-md-3">
                     <div class="list-group">
-                        <a href="#" class="list-group-item list-group-item-action active bg-dark">Dashboard</a>
+                        <a href="{% url 'seller_dashboard' %}" class="list-group-item list-group-item-action" style="background-color:     #4A235A; color: #fff;">Dashboard</a>
                         <a href="{% url 'seller_addProducts' %}" class="list-group-item list-group-item-action">Add Products</a>
                         <a href="{% url 'seller_Products' %}" class="list-group-item list-group-item-action">View Products</a>
                         <a href="#" class="list-group-item list-group-item-action">Orders</a>
@@ -62,18 +68,24 @@
                     <!-- First Row -->
                     <div class="row mt-5">
                         <div class="col-md-6">
-                            <div class="card bg-primary text-white mb-3">
-                                <div class="card-body">
-                                    <h5 class="card-title">Products</h5>
-                                    <p class="card-text">Number of Products</p>
+                            <div class="card text-white mb-3" style="background-color: #2471A3;">
+                                <div class="card-body d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h5 class="card-title">Products</h5>
+                                        <p class="card-text">Number of Products</p>
+                                    </div>
+                                    <i class="fas fa-box fa-2x"></i>
                                 </div>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="card bg-success text-white mb-3">
-                                <div class="card-body">
-                                    <h5 class="card-title">Orders</h5>
-                                    <p class="card-text">Number of Orders</p>
+                                <div class="card-body d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h5 class="card-title">Orders</h5>
+                                        <p class="card-text">Number of Orders</p>
+                                    </div>
+                                    <i class="fas fa-shopping-cart fa-2x"></i>
                                 </div>
                             </div>
                         </div>
@@ -82,20 +94,39 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="card bg-warning text-white mb-3">
-                                <div class="card-body">
-                                    <h5 class="card-title">Sold</h5>
-                                    <p class="card-text">Products Sold</p>
+                                <div class="card-body d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h5 class="card-title">Sold</h5>
+                                        <p class="card-text">Products Sold</p>
+                                    </div>
+                                    <i class="fas fa-check-circle fa-2x"></i>
                                 </div>
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <div class="card bg-info text-white mb-3">
-                                <div class="card-body">
-                                    <h5 class="card-title">Revenue</h5>
-                                    <p class="card-text">Total Revenue</p>
+                            <div class="card text-white mb-3" style="background-color: #D35400  ;">
+                                <div class="card-body d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h5 class="card-title">Revenue</h5>
+                                        <p class="card-text">Total Revenue</p>
+                                    </div>
+                                    <i class="fas fa-chart-line fa-2x"></i>
                                 </div>
                             </div>
                         </div>
+                    </div>
+                    <hr>
+                    <div class="row mt-5">
+                        <div class="col-md-6">
+                            <h3>Product Category Statistics</h3>
+                            <canvas id="categoryChart" width="400" height="200"></canvas>
+                        </div>
+                        <!-- Product Category Statistics Chart -->
+                        <!-- <div class="col-md-6">
+                            <h3>Product Sales Statistics</h3>
+                            <canvas id="productChart" width="400" height="200"></canvas>
+                        </div> -->
+                    
                     </div>
                     <!-- Add your dashboard content here -->
                 </div>
@@ -103,6 +134,100 @@
         </div>
 
 
+        <!-- Footer -->
+<footer class="footer mt-0 py-3 bg-dark">
+    <div class="container text-center">
+      <div class="row text-center text-md-left align-items-center">
+        <div class="col-md-5">
+          <p class="text-light">Copyright @2023 All rights are preserved</p>
+        </div>
+        <div class="col-md-7">
+          <a href="#" class="social-icons text-white"><i class="fab fa-facebook-f"></i></a>
+          <span class="mx-2"></span> <!-- Add space between icons using a span element with margin -->
+          <a href="#" class="social-icons text-white"><i class="fab fa-twitter"></i></a>
+          <span class="mx-2"></span> <!-- Add space between icons -->
+          <a href="#" class="social-icons text-white"><i class="fab fa-instagram"></i></a>
+        </div>
+      </div>
+    </div>
+  </footer>
+  <!-- Footer -->
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Function to fetch product statistics from the backend
+        function getProductStatistics() {
+            fetch('{% url "get_product_statistics" %}')
+                .then(response => response.json())
+                .then(data => updateProductStatisticsChart(data));
+        }
+
+        // Function to update the product statistics chart
+        function updateProductStatisticsChart(data) {
+            // Assuming you have two charts for category and subcategory
+            updateChart('categoryChart', data.category_statistics, 'Product Category Statistics');
+            updateChart('subcategoryChart', data.subcategory_statistics, 'Product Subcategory Statistics');
+        }
+
+        // Function to update a generic chart
+        function updateChart(canvasId, data, chartLabel) {
+            var canvas = document.getElementById(canvasId);
+            if (!canvas) {
+                console.error('Canvas element not found:', canvasId);
+                return;
+            }
+
+            var ctx = canvas.getContext('2d');
+            var chart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: data.map(item => item.product_category),
+                    datasets: [{
+                        label: chartLabel,
+                        data: data.map(item => item.product_count),
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        // Fetch product statistics and update the charts on page load
+        getProductStatistics();
+    });
+</script>
+
+<!-- 
+    <script>
+        // Sample data for product statistics (replace with your actual data)
+        var productData = {
+            labels: ['Category A', 'Category B', 'Category C'],
+            datasets: [{
+                data: [30, 40, 30],
+                backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56']
+            }]
+        };
+
+        // Get the canvas element
+        var ctxProduct = document.getElementById('productChart').getContext('2d');
+
+        // Create the doughnut chart
+        var productChart = new Chart(ctxProduct, {
+            type: 'doughnut',  // Specify the chart type
+            data: productData
+        });
+    </script> -->
+
+
+        
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>

@@ -319,8 +319,35 @@ def customer_Checkout(request):
     } 
     return render(request,'customer_Checkout.html',context)
 
+from django.http import HttpResponse
+from django.template.loader import get_template
+from django.views import View
+from xhtml2pdf import pisa
 
+class GeneratePDF(View):
+    template_name = 'invoice_template.html'
 
+    def get(self, request, *args, **kwargs):
+        # Fetch order details from the database based on the order_id
+        order_id = kwargs['order_id']
+        order = Order.objects.get(id=order_id)
+
+        # Render the template
+        template = get_template(self.template_name)
+        context = {'order': order}
+        html = template.render(context)
+
+        # Create a PDF response
+        response = HttpResponse(content_type='application/pdf')
+        response['Content-Disposition'] = f'filename=invoice_{order_id}.pdf'
+
+        # Generate PDF using ReportLab
+        pisa_status = pisa.CreatePDF(html, dest=response)
+
+        if pisa_status.err:
+            return HttpResponse('We had some errors <pre>' + html + '</pre>')
+
+        return response
 
 
 
@@ -436,8 +463,64 @@ def seller_Profile(request):
     }
     return render(request, 'seller_Profile.html', context)
 
+
+from django.db.models import Sum
+from django.db.models import Count
+
 def seller_dashboard(request):
     return render(request, 'seller_dashboard.html')
+
+# def get_sales_data(request):
+#     # Assuming your Order model has a date field named 'order_date'
+#     sales_data = Order.objects.filter(
+#         user=request.user,
+#         payment_status=Order.PaymentStatusChoices.SUCCESSFUL
+#     ).values('order_date__month').annotate(total_sales=Sum('total_price'))
+
+#     # Convert the QuerySet to a list of dictionaries
+#     sales_data_list = list(sales_data)
+
+#     return JsonResponse({'sales_data': sales_data_list})
+
+def get_product_statistics(request):
+    # Assuming your Product model has 'product_category' and 'product_subcategory' fields
+    category_statistics = Product.objects.filter(
+        seller=request.user
+    ).values('product_category').annotate(product_count=Count('id'))
+
+    subcategory_statistics = Product.objects.filter(
+        seller=request.user
+    ).values('product_subcategory').annotate(product_count=Count('id'))
+
+    return JsonResponse({
+        'category_statistics': list(category_statistics),
+        'subcategory_statistics': list(subcategory_statistics),
+    })
+
+from django.db.models import Count
+
+def sales_statistics(request):
+    # Calculate product sales data
+    product_sales_data = Product.objects.annotate(
+        total_sales=Count('order__id')
+    ).values('product_name', 'total_sales')
+
+    # Convert the queryset into a dictionary suitable for the chart
+    product_data = {
+        'labels': [entry['product_name'] for entry in product_sales_data],
+        'datasets': [{
+            'data': [entry['total_sales'] for entry in product_sales_data],
+            'backgroundColor': ['#FF6384', '#36A2EB', '#FFCE56']  # Adjust colors as needed
+        }]
+    }
+
+    # Pass data to the template context
+    context = {
+        'product_data': product_data,
+    }
+
+    return render(request, 'seller_dashboard.html', context)
+
 
 
 
@@ -537,7 +620,7 @@ def paymenthandler(request):
         result = razorpay_client.utility.verify_payment_signature(
             params_dict)
         if result is False:
-            # Signature verification failed.
+            # Signature verification failed.    
             return render(request, 'payment/paymentfail.html')
         else:
             # Signature verification succeeded.

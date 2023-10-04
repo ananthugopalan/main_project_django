@@ -58,7 +58,7 @@
             </div>
             {% load socialaccount %}
             <div class="text-center mt-4">
-              <button type="submit" class="btn btn-success" style="padding-left: 2.5rem; padding-right: 2.5rem;">Sign in</button>
+              <button id="login" type="submit" class="btn btn-success" style="padding-left: 2.5rem; padding-right: 2.5rem;">Sign in</button>
               <!-- <p class="small mt-2">New User? Create your account here <a href="{% url 'customer_Registration' %}" class="link-danger">Register</a></p> -->
               <hr>
               <a href="{% provider_login_url 'google'%}" class="btn btn-outline-danger mt-2" style="padding-left: 2rem; padding-right: 2rem;">
