@@ -5,6 +5,10 @@ from django.db import models
 CustomUser = get_user_model()
 
 class Product(models.Model):
+    class StatusChoices(models.TextChoices):
+        IN_STOCK = 'in_stock', 'In Stock'
+        DEACTIVATED = 'deactivated', 'Deactivated'
+        OUT_OF_STOCK = 'out_of_stock', 'Out of Stock'
     seller = models.ForeignKey(CustomUser, on_delete=models.CASCADE, default=None)
     product_name = models.CharField(max_length=100)
     description = models.TextField()
@@ -13,6 +17,9 @@ class Product(models.Model):
     product_category = models.CharField(max_length=100)
     product_subcategory = models.CharField(max_length=100)
     product_image = models.ImageField(upload_to='product_images/')
+    status = models.CharField(
+        max_length=20, choices=StatusChoices.choices, default=StatusChoices.IN_STOCK
+    )
 
     def __str__(self):
         return self.product_name
@@ -42,7 +49,7 @@ class Address(models.Model):
         ('Work', 'Work'),
         ('Other', 'Other'),
     ]
-
+    
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)  # Add a foreign key to CustomUser
     building_name = models.CharField(max_length=255)
     address_type = models.CharField(max_length=10, choices=ADDRESS_TYPE_CHOICES, default='home')
@@ -56,14 +63,20 @@ class Address(models.Model):
     
 
 class CartItem(models.Model):
+    class StatusChoices(models.TextChoices):
+        ACTIVE = 'active', 'Active'
+        CLEARED = 'cleared', 'Cleared'
+        ORDERED = 'ordered', 'Ordered'
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE) 
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(default=1)
     total_price = models.DecimalField(max_digits=10, decimal_places=2, default=0, null=True)
-    total_items = models.PositiveIntegerField(default=0, null=True)
+    status = models.CharField(
+        max_length=10,null=True, choices=StatusChoices.choices, default=StatusChoices.ACTIVE
+    )
 
     def __str__(self):
-        return f'{self.quantity} x {self.product.product_name}'
+        return f'{self.quantity} x {self.product.product_name} ({self.status})'
     
     def save(self, *args, **kwargs):
         # Calculate and set the total price and total items
@@ -79,7 +92,7 @@ class Order(models.Model):
         FAILED = 'failed', 'Failed'
 
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    products = models.ManyToManyField(Product)  # Assuming you have a Product model
+    cart_items = models.ManyToManyField('CartItem')  # Assuming the CartItem model has a reference to Product
     total_price = models.DecimalField(max_digits=10, decimal_places=2)
     order_date = models.DateTimeField(auto_now_add=True)
     razorpay_order_id = models.CharField(max_length=255, default=None)
@@ -89,3 +102,27 @@ class Order(models.Model):
         return self.user.email
 
 
+class Site_Logo(models.Model):
+    logo_img = models.ImageField(upload_to='images')
+
+class ShippingAddress(models.Model):
+    class StatusChoices(models.TextChoices):
+        PENDING = 'pending', 'Pending'
+        SHIPPED = 'shipped', 'Shipped'
+        DELIVERED = 'delivered', 'Delivered'
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    order = models.OneToOneField('Order', on_delete=models.CASCADE)
+    address = models.ForeignKey(Address, on_delete=models.CASCADE)
+    status = models.CharField(
+        max_length=20,
+        choices=StatusChoices.choices,
+        default=StatusChoices.PENDING
+    )
+
+    def __str__(self):
+        return f"{self.user.first_name} - Order ID: {self.order.id} - Status: {self.status}"
+
+
+class UploadedImage(models.Model):
+    image = models.ImageField(upload_to='uploads/')
+    predicted_disease = models.CharField(max_length=255, blank=True, null=True)

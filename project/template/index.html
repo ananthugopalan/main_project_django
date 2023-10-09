@@ -17,6 +17,12 @@
     <!-- Load fonts style after rendering the layout styles -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;200;300;400;500;700;900&display=swap">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        .custom-dropdown-width {
+            width: 300px; /* Adjust the width as needed */
+        }
+
+    </style>
 </head>
 
 <body>
@@ -63,17 +69,25 @@
                     </ul>
                 </div>
                 <div class="navbar align-self-center d-flex">
-                    <div class="d-lg-none flex-sm-fill mt-3 mb-4 col-7 col-sm-auto pr-3">
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="inputMobileSearch" placeholder="Search ...">
-                            <div class="input-group-text">
+                    <div class="flex-sm-fill mt-3 mb-4 col-7 col-sm-auto pr-3">
+                        <div class="dropdown" >
+                            <button class="btn border-0 mt-2" type="button" id="searchDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                                 <i class="fa fa-fw fa-search"></i>
-                            </div>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end custom-dropdown-width mt-3" id="searchDropdown" aria-labelledby="searchDropdown" >
+                                <li>
+                                    <form id="search-form" class="px-4 py-3">
+                                        <div class="mb-3 d-flex">
+                                            <input type="text" class="form-control me-2" id="inputModalSearch" name="q" placeholder="Search ...">
+                                        
+                                        <button type="submit" class="btn btn-primary"><i class="fa fa-fw fa-search"></i></button></div>
+                                        <div id="search-results"></div>
+                                    </form>
+                                </li>
+                            </ul>
                         </div>
                     </div>
-                    <a class="nav-icon d-none d-lg-inline" href="#" data-bs-toggle="modal" data-bs-target="#templatemo_search">
-                        <i class="fa fa-fw fa-search text-dark mr-2"></i>
-                    </a>
+                    
                     {% if user.is_authenticated %}
                     <a class="nav-icon position-relative text-decoration-none" href="{% url 'cart' %}">
                         <i class="fa fa-fw fa-shopping-cart text-dark mr-1"></i>
@@ -115,25 +129,6 @@
     </nav>
     <!-- Close Header -->
 
-    <!-- Modal -->
-<div class="modal fade bg-white" id="templatemo_search" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
-        <div class="w-100 pt-1 mb-5 text-right">
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="closeModal"></button>
-        </div>
-        <form id="search-form" class="modal-content modal-body border-0 p-0">
-            <div class="input-group mb-2">
-                <input type="text" class="form-control" id="inputModalSearch" name="q" placeholder="Search ...">
-                <button type="submit" class="input-group-text bg-success text-light">
-                    <i class="fa fa-fw fa-search text-white"></i>
-                </button>
-            </div>
-            <div id="search-results">
-            </div>
-        </form>
-        <!-- Display search results here -->
-    </div>
-</div>
 
     <!--nav ends -->
 
@@ -404,10 +399,19 @@ $(document).ready(function() {
             }
         });
     });
-    // Clear search results when the modal is hidden
-    $("#templatemo_search").on("hidden.bs.modal", function() {
+    // Clear search results and input when the modal is hidden
+    $("#templatemo_search").on("hidden.bs.modal", function () {
         $("#search-results").empty();
         $("#inputModalSearch").val('');
+    });
+
+    // Clear search input when the dropdown is closed or when clicking outside the dropdown
+    $(document).on('click', function (e) {
+        if (!$(e.target).closest('.dropdown-menu').length) {
+            // Clicked outside the dropdown
+            $("#inputModalSearch").val('');
+            $("#search-results").empty();
+        }
     });
 });
 

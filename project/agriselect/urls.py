@@ -1,13 +1,13 @@
 from django.contrib import admin
 from django.urls import path,include
 from .import views
-from .views import GeneratePDF
+from .views import GeneratePDF,CustomerOrderView
 
 urlpatterns = [
     path('',views.index,name='index'),
 
     #customer
-    # path('search/', views.search_products, name='search_products'),
+    path('search/', views.search_products, name='search_products'),
     # path('search/', views.search_view, name='search_view'),
     path('customer_allProducts/',views.customer_allProducts,name='customer_allProducts'),
     path('customer_ProductView/<int:product_id>/',views.customer_ProductView,name='customer_ProductView'),
@@ -19,7 +19,10 @@ urlpatterns = [
     path('remove_from_wishlist/<int:product_id>/', views.remove_from_wishlist, name='remove_from_wishlist'),
     path('customer_allProducts/<str:category>/', views.customer_allProducts, name='customer_allProducts'),
     path('customer_OrderView/',views.customer_OrderView,name='customer_OrderView'),
+    path('customer/order/view/', CustomerOrderView.as_view(), name='customer_order_view'),
+
     path('generate-pdf/<int:order_id>/', GeneratePDF.as_view(), name='generate_pdf'),
+    
 
 
     # Cart
@@ -47,4 +50,9 @@ urlpatterns = [
     #payment
     path('homepage/', views.homepage, name='homepage'),
     path('paymenthandler/', views.paymenthandler, name='paymenthandler'),
+
+
+    #predictions
+    path('upload/', views.upload_image, name='upload_image'),
+    path('result/', views.predict_disease, name='predict_disease'),
 ]

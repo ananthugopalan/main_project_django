@@ -21,8 +21,9 @@
         body {
             font-family: 'Arial', sans-serif; /* Use a web-safe font like Arial */
         }
-
-        /* Add more styles as needed */
+        .custom-dropdown-width {
+            width: 300px; /* Adjust the width as needed */
+        }
     </style>
 </head>
 
@@ -70,17 +71,24 @@
                     </ul>
                 </div>
                 <div class="navbar align-self-center d-flex">
-                    <div class="d-lg-none flex-sm-fill mt-3 mb-4 col-7 col-sm-auto pr-3">
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="inputMobileSearch" placeholder="Search ...">
-                            <div class="input-group-text">
+                    <div class="flex-sm-fill mt-3 mb-4 col-7 col-sm-auto pr-3">
+                        <div class="dropdown" >
+                            <button class="btn border-0 mt-2" type="button" id="searchDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                                 <i class="fa fa-fw fa-search"></i>
-                            </div>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end custom-dropdown-width mt-3" id="searchDropdown" aria-labelledby="searchDropdown" >
+                                <li>
+                                    <form id="search-form" class="px-4 py-3">
+                                        <div class="mb-3 d-flex">
+                                            <input type="text" class="form-control me-2" id="inputModalSearch" name="q" placeholder="Search ...">
+                                        
+                                        <button type="submit" class="btn btn-primary"><i class="fa fa-fw fa-search"></i></button></div>
+                                        <div id="search-results"></div>
+                                    </form>
+                                </li>
+                            </ul>
                         </div>
                     </div>
-                    <a class="nav-icon d-none d-lg-inline" href="#" data-bs-toggle="modal" data-bs-target="#templatemo_search">
-                        <i class="fa fa-fw fa-search text-dark mr-2"></i>
-                    </a>
                     {% if user.is_authenticated %}
                     <a class="nav-icon position-relative text-decoration-none" href="{% url 'cart' %}">
                         <i class="fa fa-fw fa-shopping-cart text-dark mr-1"></i>
@@ -122,30 +130,21 @@
     </nav>
     <!-- Close Header -->
 
-    <!-- Modal -->
-<div class="modal fade bg-white" id="templatemo_search" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
-        <div class="w-100 pt-1 mb-5 text-right">
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="closeModal"></button>
-        </div>
-        <form id="search-form" class="modal-content modal-body border-0 p-0">
-            <div class="input-group mb-2">
-                <input type="text" class="form-control" id="inputModalSearch" name="q" placeholder="Search ...">
-                <button type="submit" class="input-group-text bg-success text-light">
-                    <i class="fa fa-fw fa-search text-white"></i>
-                </button>
-            </div>
-            <div id="search-results">
-            </div>
-        </form>
-        <!-- Display search results here -->
-    </div>
-</div>
 
     <!--nav ends -->
-
+    
     <div class="container mt-5 shadow mb-5">
-        <br><h3>Your Order History</h3>
+        <br>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h3>Your Order History</h3>
+            <form method="get" action="{% url 'customer_order_view' %}" class="d-flex">
+                <div class="mb-3 me-2">
+                    <input type="date" class="form-control" id="dateFilter" name="date_filter">
+                </div>
+                <button type="submit" class="btn btn-secondary" style="height: 40px;">Filter</button>
+            </form>
+        </div>
+    
         <div class="table-responsive mt-4" style="margin-left:30px;margin-right:30px;">
             <table class="table table-bordered table-hover shadow-sm">                
                 <thead class="thead-dark bg-warning">
@@ -162,28 +161,34 @@
                     {% for order in orders %}
                         <tr>
                             <td><span class="me-2">{{ forloop.counter }}</span></td>
+
                             <td>
                                 <ul class="list-unstyled">
-                                    {% for product in order.products.all %}
+                                    {% for cart_item in order.cart_items.all %}
                                         <li>
                                             <div class="d-flex align-items-center mb-2">
-                                                
-                                                <img class="me-3" src="{{ product.product_image.url }}" alt="{{ product.name }}" width="50" height="50">
+                                                <img class="me-3" src="{{ cart_item.product.product_image.url }}" alt="{{ cart_item.product.product_name }}" width="50" height="50">
                                                 <div class="ml-2">
-                                                    {{ product.product_name }} - ₹{{ product.price }}
+                                                    {{ cart_item.product.product_name }} - ₹{{ cart_item.product.price }} - Qty:{{ cart_item.quantity }}
                                                 </div>
                                             </div>
                                         </li>
-                                    {% endfor %}
+                                        {% endfor %}
                                 </ul>
                             </td>
+                            
                             <td>{{ order.order_date }}</td>
                             <td>₹{{ order.total_price }}</td>
                             <td>{{ order.get_payment_status_display }}</td>
                             <td>
-                                <a href="{% url 'generate_pdf' order.id %}" target="_blank">
-                                    <i class="fas fa-file-pdf text-danger fa-lg"></i>
-                                </a>
+                                {% if order.payment_status == 'successful' %}
+                                    <a href="{% url 'generate_pdf' order.id %}" target="_blank">
+                                        <i class="fas fa-file-pdf text-danger fa-lg"></i>
+                                    </a>
+                                {% else %}
+                                    <!-- If the payment status is not successful, you can show a different icon or some other content -->
+                                    <i class="fas fa-times text-muted fa-lg" title="Order not successful"></i>
+                                {% endif %}
                             </td>
                         </tr>
                     {% endfor %}
@@ -191,8 +196,42 @@
                 
             </table>
         </div>
+        
     </div>
-
+    <div class="pagination justify-content-center mt-4">
+        <ul class="pagination">
+            {% if orders.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page=1" aria-label="First">
+                        <span aria-hidden="true">&laquo;&laquo;</span>
+                    </a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ orders.previous_page_number }}" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+            {% endif %}
+    
+            <li class="page-item disabled">
+                <span class="page-link">Page {{ orders.number }} of {{ orders.paginator.num_pages }}</span>
+            </li>
+    
+            {% if orders.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ orders.next_page_number }}" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ orders.paginator.num_pages }}" aria-label="Last">
+                        <span aria-hidden="true">&raquo;&raquo;</span>
+                    </a>
+                </li>
+            {% endif %}
+        </ul>
+    </div>
+    
 
 
 
@@ -259,10 +298,19 @@ $(document).ready(function() {
             }
         });
     });
-    // Clear search results when the modal is hidden
-    $("#templatemo_search").on("hidden.bs.modal", function() {
+    // Clear search results and input when the modal is hidden
+    $("#templatemo_search").on("hidden.bs.modal", function () {
         $("#search-results").empty();
         $("#inputModalSearch").val('');
+    });
+
+    // Clear search input when the dropdown is closed or when clicking outside the dropdown
+    $(document).on('click', function (e) {
+        if (!$(e.target).closest('.dropdown-menu').length) {
+            // Clicked outside the dropdown
+            $("#inputModalSearch").val('');
+            $("#search-results").empty();
+        }
     });
 });
 

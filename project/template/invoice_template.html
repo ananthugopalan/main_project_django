@@ -89,38 +89,50 @@
                 <h1 class="invoice-title" style="text-align: center;"><u>Invoice for Order #{{ order.id }}</u></h1>
             </div>
         </div>
-
+    
         <div class="row">
             <div class="col-md-6">
                 <p style="font-size: 14px;"><strong>Order Date:</strong> {{ order.order_date }}</p>
             </div>
         </div>
-
+    
         <div class="row mt-4">
             <div class="col-md-12">
                 <table class="table table-bordered table-hover">
                     <thead class="thead-dark">
                         <tr>
                             <th scope="col" class="product-column" style="font-size: 14px;">Product Name</th>
+                            <th scope="col" style="font-size: 14px;">Quantity</th> <!-- Add this column for quantity -->
                             <th scope="col" style="font-size: 14px;">Price</th>
+                            
                         </tr>
                     </thead>
                     <tbody>
-                        {% for product in order.products.all %}
+                        {% for cart_item in order.cart_items.all %}
                             <tr>
-                                <td class="product-column" style="font-size: 12px;">{{ product.product_name }}</td>
-                                <td style="font-size: 12px;">Rs.{{ product.price }}</td>
+                                <td class="product-column" style="font-size: 12px;">{{ cart_item.product.product_name }}</td>
+                                <td style="font-size: 12px;">{{ cart_item.quantity }}</td> <!-- Display quantity -->
+                                <td style="font-size: 12px;">Rs.{{ cart_item.product.price }}</td>
+                                
                             </tr>
                         {% endfor %}
-                        <tr>
-                            <td style="font-size: 14px;"><b>Total Price</b></td>
+                        <!-- <tr>
+                            <td style="font-size: 14px;"><b>Items:{{ order.cart_items.count }}</b></td>
+                            <td style="font-size: 14px;">  </td>
                             <td style="font-size: 14px;"><b>Rs.{{ order.total_price }}</b></td>
-                        </tr>
+                        </tr> -->
                     </tbody>
+                    
                 </table>
             </div>
+        </div><hr>
+        <div class="col-md-6">
+            <div style="text-align: right;">
+                <p style="font-size: 16px;"><b>Total Price: Rs.{{ order.total_price }}</b></p>
+            </div>
         </div>
-    </div>
+        <hr>
+    </div>    
 
     <!-- Bootstrap JS and Popper.js are required for some Bootstrap components -->
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>

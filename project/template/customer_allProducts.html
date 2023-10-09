@@ -24,7 +24,12 @@
             color: white; /* Change the heart color */
             background-color: red; /* Change the background color */
         }
-
+        .no-padding {
+        padding: 0;
+    }
+        .custom-dropdown-width {
+            width: 300px; /* Adjust the width as needed */
+        }
     </style>
 </head>
 
@@ -72,17 +77,24 @@
                     </ul>
                 </div>
                 <div class="navbar align-self-center d-flex">
-                    <div class="d-lg-none flex-sm-fill mt-3 mb-4 col-7 col-sm-auto pr-3">
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="inputMobileSearch" placeholder="Search ...">
-                            <div class="input-group-text">
+                    <div class="flex-sm-fill mt-3 mb-4 col-7 col-sm-auto pr-3">
+                        <div class="dropdown" >
+                            <button class="btn border-0 mt-2" type="button" id="searchDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                                 <i class="fa fa-fw fa-search"></i>
-                            </div>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end custom-dropdown-width mt-3" id="searchDropdown" aria-labelledby="searchDropdown" >
+                                <li>
+                                    <form id="search-form" class="px-4 py-3">
+                                        <div class="mb-3 d-flex">
+                                            <input type="text" class="form-control me-2" id="inputModalSearch" name="q" placeholder="Search ...">
+                                        
+                                        <button type="submit" class="btn btn-primary"><i class="fa fa-fw fa-search"></i></button></div>
+                                        <div id="search-results"></div>
+                                    </form>
+                                </li>
+                            </ul>
                         </div>
                     </div>
-                    <a class="nav-icon d-none d-lg-inline" href="#" data-bs-toggle="modal" data-bs-target="#templatemo_search">
-                        <i class="fa fa-fw fa-search text-dark mr-2"></i>
-                    </a>
                     {% if user.is_authenticated %}
                     <a class="nav-icon position-relative text-decoration-none" href="{% url 'cart' %}">
                         <i class="fa fa-fw fa-shopping-cart text-dark mr-1"></i>
@@ -117,101 +129,67 @@
     </nav>
     <!-- Close Header -->
 
-    <!-- Modal -->
-    <div class="modal fade bg-white" id="templatemo_search" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg" role="document">
-            <div class="w-100 pt-1 mb-5 text-right">
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form id="search-form" class="modal-content modal-body border-0 p-0">
-                <div class="input-group mb-2">
-                    <input type="text" class="form-control" id="inputModalSearch" name="q" placeholder="Search ...">
-                    <button type="submit" class="input-group-text bg-success text-light">
-                        <i class="fa fa-fw fa-search text-white"></i>
-                    </button>
-                </div>
-                <div id="search-results">
-                </div>
-            </form>
-            <!-- Display search results here -->
-        </div>
-    </div>
-    
+   
         <!--nav ends -->
 
-        <div class="container mt-5">
+        <div class="container mt-5" style="margin-left:2rem;">
             <div class="row">
-                <!-- Sidebar -->
-                <div class="col-md-3">
-                    <div class="sidebar bg-light p-3" style="width: 200px;">
-                        
-                        <!-- Categories -->
-                        <h4>Categories</h4>
-                        <ul class="list-unstyled">
-                            <li>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="category" value="All" id="categoryAll" checked>
-                                    <label class="form-check-label" for="categoryAll">All</label>
+                <div class="col-md-3 no-padding" style="font-family: Arial, Helvetica, sans-serif;">
+                    <div class="card">
+                        <div class="card-body" >
+                            <h5 class="card-title">Filter</h5>
+                            <form id="filterForm">
+                                {% csrf_token %}
+                                <div class="mb-3">
+                                    <label class="form-label">Category</label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="categoryAll" name="category" value="All" checked>
+                                        <label class="form-check-label" for="categoryAll">All</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="categoryCrops" name="category" value="crops">
+                                        <label class="form-check-label" for="categoryCrops">Crops</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="categorySeeds" name="category" value="seeds">
+                                        <label class="form-check-label" for="categorySeeds">Seeds</label>
+                                    </div>
                                 </div>
-                            </li>
-                            <li>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="category" value="crops" id="categoryCrops">
-                                    <label class="form-check-label" for="categoryCrops">Crops</label>
+                                <div class="mb-3">
+                                    <label class="form-label">Subcategory</label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="subcategoryAll" name="subcategory" value="All" checked>
+                                        <label class="form-check-label" for="subcategoryAll">All</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="subcategoryVegetables" name="subcategory" value="vegetables">
+                                        <label class="form-check-label" for="subcategoryVegetables">Vegetables</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="subcategoryFruits" name="subcategory" value="fruits">
+                                        <label class="form-check-label" for="subcategoryFruits">Fruits</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="subcategoryFlowers" name="subcategory" value="flowers">
+                                        <label class="form-check-label" for="subcategoryFlowers">Flowers</label>
+                                    </div>
+                                
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="subcategoryHerbs" name="subcategory" value="herbs">
+                                        <label class="form-check-label" for="subcategoryHerbs">Herbs</label>
+                                    </div>
+                                
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="subcategoryCereals" name="subcategory" value="cereals">
+                                        <label class="form-check-label" for="subcategoryCereals">Cereals</label>
+                                    </div>
+                                    <!-- Add other subcategories as needed -->
                                 </div>
-                            </li>
-                            <li>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="category" value="seeds" id="categorySeeds">
-                                    <label class="form-check-label" for="categorySeeds">Seeds</label>
-                                </div>
-                            </li>
-                        </ul>
-
-                        <!-- Subcategories -->
-                        <h4>Subcategories</h4>
-                        <ul class="list-unstyled">
-                            <li>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="subcategory" value="All" id="subcategoryAll" checked>
-                                    <label class="form-check-label" for="subcategoryAll">All</label>
-                                </div>
-                            </li>
-                            <li>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="subcategory" value="vegetables" id="subcategoryVegetables">
-                                    <label class="form-check-label" for="subcategoryVegetables">Vegetables</label>
-                                </div>
-                            </li>
-                            <li>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="subcategory" value="fruits" id="subcategoryFruits">
-                                    <label class="form-check-label" for="subcategoryFruits">Fruits</label>
-                                </div>
-                            </li>
-                            <li>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="subcategory" value="flowers" id="subcategoryFlowers">
-                                    <label class="form-check-label" for="subcategoryFlowers">Flowers</label>
-                                </div>
-                            </li>
-                            <li>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="subcategory" value="cereals" id="subcategoryCereals">
-                                    <label class="form-check-label" for="subcategoryCereals">Cereals</label>
-                                </div>
-                            </li>
-                            <li>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="subcategory" value="Herbs" id="subcategoryHerbs">
-                                    <label class="form-check-label" for="subcategoryHerbs">Herbs</label>
-                                </div>
-                            </li>
-                        </ul>
-
+                            </form>
+                        </div>
                     </div>
                 </div>
-                <!-- End Sidebar -->
+                
 
 
                 <div class="col-md-9">
@@ -228,14 +206,23 @@
                                     {% endif %}
                                     <div class="justify-content-between align-items-center">
                                         <div>
-                                            <span class="badge bg-success text-white">In Stock</span>
-                                        </div>
+                                            {% if product.status == 'in_stock' %}
+                                                <span class="badge bg-success text-white">In Stock</span>
+                                            {% elif product.status == 'out_of_stock' %}
+                                                <span class="badge bg-danger text-white">Out of Stock</span>
+                                            {% endif %}                                        
+                                    </div>
                                         <div class="mt-2">
+                                            
                                             <a href="{% url 'customer_ProductView' product.id %}" class="btn btn-outline-warning"><i class="fas fa-eye"></i></a>
                                             <a href="#" onclick="toggleWishlist('{{ product.id }}')" class="btn btn-outline-danger" id="wishlist-icon-{{ product.id }}">
                                                 <i class="fas fa-heart{% if product_in_wishlist %} wishlist-active{% endif %}"></i>
-                                            </a>                                            
-                                            <a href="{% url 'add_to_cart' product_id=product.id %}"  class="btn btn-outline-secondary"><i class="fas fa-shopping-cart"></i></a>
+                                            </a>
+                                            {% if product.status == 'in_stock' %}
+                                            <a href="{% url 'add_to_cart' product_id=product.id %}" class="btn btn-outline-secondary"><i class="fas fa-shopping-cart"></i></a>
+                                            {% else %}
+                                            <button class="btn btn-outline-secondary" disabled><i class="fas fa-shopping-cart"></i></button>
+                                            {% endif %}  
                                         </div>
                                     </div>
                                 </div>
@@ -296,35 +283,149 @@
         </div>
     </footer>
   <!-- Footer -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    
+
 
   <script>
-    $(document).ready(function() {
-        $("input[name='category']").change(function() {
-            if ($(this).val() !== 'All' && $(this).prop("checked")) {
-                $("#categoryAll").prop("checked", false);
+    document.addEventListener('DOMContentLoaded', function () {
+        // Get references to the category checkboxes
+        var categoryAll = document.getElementById('categoryAll');
+        var categoryCrops = document.getElementById('categoryCrops');
+        var categorySeeds = document.getElementById('categorySeeds');
+        // Add more category checkboxes as needed
+
+        // Get references to the subcategory checkboxes
+        var subcategoryAll = document.getElementById('subcategoryAll');
+        var subcategoryVegetables = document.getElementById('subcategoryVegetables');
+        var subcategoryFruits = document.getElementById('subcategoryFruits');
+        var subcategoryFlowers = document.getElementById('subcategoryFlowers');
+        var subcategoryHerbs = document.getElementById('subcategoryHerbs');
+        var subcategoryCereals = document.getElementById('subcategoryCereals');
+        // Add more subcategory checkboxes as needed
+
+        // Add event listeners to handle category checkbox changes
+        categoryAll.addEventListener('change', function () {
+            if (categoryAll.checked) {
+                // If "All" is checked, uncheck all other category checkboxes
+                uncheckOtherCategoryCheckboxes();
             }
         });
-    
-        $("input[name='subcategory']").change(function() {
-            if ($(this).val() !== 'All' && $(this).prop("checked")) {
-                $("#subcategoryAll").prop("checked", false);
+
+        categoryCrops.addEventListener('change', function () {
+            if (categoryCrops.checked) {
+                // If any other option is checked, uncheck "All"
+                categoryAll.checked = false;
+            } else {
+                // If all other options are unchecked, check "All"
+                checkAllCategoryChecked();
             }
         });
-    
-        $("#categoryAll").change(function() {
-            if ($(this).prop("checked")) {
-                $("input[name='category']").not(this).prop("checked", false);
+
+        categorySeeds.addEventListener('change', function () {
+            if (categorySeeds.checked) {
+                // If any other option is checked, uncheck "All"
+                categoryAll.checked = false;
+            } else {
+                // If all other options are unchecked, check "All"
+                checkAllCategoryChecked();
             }
         });
-    
-        $("#subcategoryAll").change(function() {
-            if ($(this).prop("checked")) {
-                $("input[name='subcategory']").not(this).prop("checked", false);
+
+        // Add event listeners to handle subcategory checkbox changes
+        subcategoryAll.addEventListener('change', function () {
+            if (subcategoryAll.checked) {
+                // If "All" is checked, uncheck all other subcategory checkboxes
+                uncheckOtherSubcategoryCheckboxes();
             }
         });
+
+        subcategoryVegetables.addEventListener('change', function () {
+            if (subcategoryVegetables.checked) {
+                // If any other option is checked, uncheck "All"
+                subcategoryAll.checked = false;
+            } else {
+                // If all other options are unchecked, check "All"
+                checkAllSubcategoryChecked();
+            }
+        });
+
+        subcategoryFruits.addEventListener('change', function () {
+            if (subcategoryFruits.checked) {
+                // If any other option is checked, uncheck "All"
+                subcategoryAll.checked = false;
+            } else {
+                // If all other options are unchecked, check "All"
+                checkAllSubcategoryChecked();
+            }
+        });
+
+        subcategoryFlowers.addEventListener('change', function () {
+            if (subcategoryFlowers.checked) {
+                // If any other option is checked, uncheck "All"
+                subcategoryAll.checked = false;
+            } else {
+                // If all other options are unchecked, check "All"
+                checkAllSubcategoryChecked();
+            }
+        });
+
+        subcategoryHerbs.addEventListener('change', function () {
+            if (subcategoryHerbs.checked) {
+                // If any other option is checked, uncheck "All"
+                subcategoryAll.checked = false;
+            } else {
+                // If all other options are unchecked, check "All"
+                checkAllSubcategoryChecked();
+            }
+        });
+
+        subcategoryCereals.addEventListener('change', function () {
+            if (subcategoryCereals.checked) {
+                // If any other option is checked, uncheck "All"
+                subcategoryAll.checked = false;
+            } else {
+                // If all other options are unchecked, check "All"
+                checkAllSubcategoryChecked();
+            }
+        });
+
+        // Function to uncheck all other category checkboxes
+        function uncheckOtherCategoryCheckboxes() {
+            categoryCrops.checked = false;
+            categorySeeds.checked = false;
+            // Add more logic to uncheck other category checkboxes as needed
+        }
+
+        // Function to uncheck all other subcategory checkboxes
+        function uncheckOtherSubcategoryCheckboxes() {
+            subcategoryVegetables.checked = false;
+            subcategoryFruits.checked = false;
+            subcategoryFlowers.checked = false;
+            subcategoryHerbs.checked = false;
+            subcategoryCereals.checked = false;
+            // Add more logic to uncheck other subcategory checkboxes as needed
+        }
+
+        // Function to check "All" if all category checkboxes are unchecked
+        function checkAllCategoryChecked() {
+            if (!categoryCrops.checked && !categorySeeds.checked) {
+                categoryAll.checked = true;
+            }
+        }
+
+        // Function to check "All" if all subcategory checkboxes are unchecked
+        function checkAllSubcategoryChecked() {
+            if (!subcategoryVegetables.checked && !subcategoryFruits.checked && !subcategoryFlowers.checked && !subcategoryHerbs.checked && !subcategoryCereals.checked) {
+                subcategoryAll.checked = true;
+            }
+        }
     });
-    </script>
-    
+</script>
+
+
+
  
     <script>
 
@@ -405,47 +506,62 @@
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
   <script>
-  $(document).ready(function() {
-      // Handle the form submission
-      $("#search-form").submit(function(event) {
-          event.preventDefault(); // Prevent the default form submission
-  
-          // Get the search query from the input field
-          var query = $("#inputModalSearch").val();
-  
-          // Send an AJAX request to the Django view
-          $.ajax({
-              type: "GET",
-              url: "/search/", // URL should match the URL pattern in your urls.py
-              data: {'q': query},
-              dataType: "json",
-              success: function(response) {
-                  // Handle the response and update the search results container
-                  var results = response.results;
-                  console.log(results)
-                  var resultHtml = '';
-  
-                  if (results.length === 0) {
-                      resultHtml = '<p>No results found.</p>';
-                  } else {
-                      for (var i = 0; i < results.length; i++) {
-                          // Construct the URLs for product name and category
-  
-                          console.log(results[i])
-                          var productNameUrl = "/customer_ProductView/" + results[i].id+ "/";
-                          var categoryUrl = "/customer_allProducts/?category=" + results[i].product_category;
-                          
-                          // Create clickable links for product name and category
-                          resultHtml += '<a style="z-index:7" href="' + productNameUrl + '">' + results[i].product_name + '</a> - <a href="' + categoryUrl + '">' + results[i].product_category + '</a><br>';
-                      }
-                  }
-  
-                  // Update the search results container
-                  $("#search-results").html(resultHtml);
-              }
-          });
-      });
-  });
+$(document).ready(function() {
+    // Handle the form submission
+    $("#search-form").submit(function(event) {
+        event.preventDefault(); // Prevent the default form submission
+
+        // Get the search query from the input field
+        var query = $("#inputModalSearch").val();
+
+        // Send an AJAX request to the Django view
+        $.ajax({
+            type: "GET",
+            url: "/search/", // URL should match the URL pattern in your urls.py
+            data: {'q': query},
+            dataType: "json",
+            success: function(response) {
+                // Handle the response and update the search results container
+                var results = response.results;
+                console.log(results)
+                var resultHtml = '';
+
+                if (results.length === 0) {
+                    resultHtml = '<p>No results found.</p>';
+                } else {
+                    for (var i = 0; i < results.length; i++) {
+                        // Construct the URLs for product name and category
+
+                        console.log(results[i])
+                        var productNameUrl = "/customer_ProductView/" + results[i].id+ "/";
+                        var categoryUrl = "/customer_allProducts/?category=" + results[i].product_category;
+                        
+                        // Create clickable links for product name and category
+                        resultHtml += '<a style="z-index:7" href="' + productNameUrl + '">' + results[i].product_name + '</a> - <a href="' + categoryUrl + '">' + results[i].product_category + '</a><br>';
+                    }
+                }
+
+                // Update the search results container
+                $("#search-results").html(resultHtml);
+            }
+        });
+    });
+    // Clear search results and input when the modal is hidden
+    $("#templatemo_search").on("hidden.bs.modal", function () {
+        $("#search-results").empty();
+        $("#inputModalSearch").val('');
+    });
+
+    // Clear search input when the dropdown is closed or when clicking outside the dropdown
+    $(document).on('click', function (e) {
+        if (!$(e.target).closest('.dropdown-menu').length) {
+            // Clicked outside the dropdown
+            $("#inputModalSearch").val('');
+            $("#search-results").empty();
+        }
+    });
+});
+
   
   </script>
     
@@ -456,6 +572,36 @@
     <script src="{% static 'js/templatemo.js' %}"></script>
     <script src="{% static 'js/custom.js' %}"></script>
     <!-- End Script -->
+    <!-- Add this script in your HTML file -->
+<!-- <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        // Function to update product visibility based on the checkbox status
+        function updateProductVisibility() {
+            var showCrops = $('#categoryCrops').is(':checked');
+
+            $('.card').each(function () {
+                var productCategory = $(this).data('product_category');
+
+                if (productCategory !== 'crops') {
+                    $(this).hide();
+                } else {
+                    $(this).show();
+                }
+            });
+        }
+
+        // Initial update based on checkbox status
+        updateProductVisibility();
+
+        // Event listener for checkbox change
+        $('#categoryCrops').change(function () {
+            updateProductVisibility();
+        });
+    });
+</script> -->
+
 </body>
 
 </html>

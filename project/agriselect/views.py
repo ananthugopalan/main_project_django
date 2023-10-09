@@ -1,7 +1,7 @@
 from django.shortcuts import render,redirect,get_object_or_404
 from django.http import JsonResponse
 from .forms import ProductForm
-from .models import Customer_Profile,Product, Wishlist, Address, CartItem, Order
+from .models import Customer_Profile,Product, Wishlist, Address, CartItem, Order, ShippingAddress
 from userapp.models import CustomUser,SellerDetails
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -21,44 +21,44 @@ def index(request):
     else:
         return render(request,'index.html')
     
-def search_view(request):
-    query = request.GET.get('query', '')
-    results = []
-
-    if query:
-        # Perform a search query in your database based on the 'query' parameter
-        # Replace this with your actual search logic
-        products = Product.objects.filter(product_name__icontains=query)
-
-        for product in products:
-            results.append({
-                'product_name': product.product_name,
-                'category': product.product_category,
-                'url': product.get_absolute_url(),  # Replace with the actual URL
-            })
-
-    return JsonResponse({'results': results})
-
-# def search_products(request):
-#     query = request.GET.get('q', '')
-#     results = [] 
+# def search_view(request):
+#     query = request.GET.get('query', '')
+#     results = []
 
 #     if query:
-#         # Perform your search query here, for example, by filtering products based on the search query
-#         results = Product.objects.filter(product_name__icontains=query)
+#         # Perform a search query in your database based on the 'query' parameter
+#         # Replace this with your actual search logic
+#         products = Product.objects.filter(product_name__icontains=query)
 
-#     # Prepare the search results as JSON data
-#     search_results = [{'id':product.id,'product_name': product.product_name, 'product_category': product.product_category} for product in results]
+#         for product in products:
+#             results.append({
+#                 'product_name': product.product_name,
+#                 'category': product.product_category,
+#                 'url': product.get_absolute_url(),  # Replace with the actual URL
+#             })
 
-#     response_data = {'results': search_results}
-#     return JsonResponse(response_data)
+#     return JsonResponse({'results': results})
+
+def search_products(request):
+    query = request.GET.get('q', '')
+    results = [] 
+
+    if query:
+        # Perform your search query here, for example, by filtering products based on the search query
+        results = Product.objects.filter(product_name__icontains=query)
+
+    # Prepare the search results as JSON data
+    search_results = [{'id':product.id,'product_name': product.product_name, 'product_category': product.product_category} for product in results]
+
+    response_data = {'results': search_results}
+    return JsonResponse(response_data)
 
 
 def customer_allProducts(request, category='All'):
     if category == 'All':
-        products = Product.objects.all()
+        products = Product.objects.filter(status__in=['in_stock', 'out_of_stock']).exclude(status='deactivated')
     else:
-        products = Product.objects.filter(product_category=category)
+        products = Product.objects.filter(product_category=category, status__in=['instock', 'out_of_stock']).exclude(status='deactivated')
     categories = Product.objects.values_list('product_category', flat=True).distinct()
     paginator = Paginator(products, 6)
     page_number = request.GET.get('page')
@@ -185,14 +185,15 @@ def remove_from_wishlist(request, product_id):
         return JsonResponse({'success': False})
 
 @login_required(login_url='user_login')
-def customer_ProductView(request,product_id):
+def customer_ProductView(request, product_id):
     product = get_object_or_404(Product, pk=product_id)
     product_category = product.product_category
     product_subcategory = product.product_subcategory
 
-    # Fetch related products from the same category (excluding the current product)
-    related_products = Product.objects.filter(  
-        product_category=product_category
+    # Fetch related products from the same category (excluding the current product) with 'instock' or 'out_of_stock' status
+    related_products = Product.objects.filter(
+        product_category=product_category,
+        status__in=['in_stock', 'out_of_stock']
     ).exclude(pk=product_id)[:4]  # Adjust the number of related products as needed
 
     context = {
@@ -205,17 +206,82 @@ def customer_ProductView(request,product_id):
     return render(request, 'customer_ProductView.html', context)
 
 
+
 def customer_OrderView(request):
     user = request.user
     # Fetch the user's orders and related products
-    orders = Order.objects.filter(user=user).prefetch_related('products')
+    orders = Order.objects.filter(user=user).prefetch_related('cart_items').order_by('-order_date')
+
+    # Set the number of orders to display per page
+    orders_per_page = 5
+
+    # Paginate the orders
+    paginator = Paginator(orders, orders_per_page)
+    page = request.GET.get('page', 1)
+
+    try:
+        orders_page = paginator.page(page)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver the first page.
+        orders_page = paginator.page(1)
+    except EmptyPage:
+        # If page is out of range (e.g. 9999), deliver the last page of results.
+        orders_page = paginator.page(paginator.num_pages)
 
     context = {
-        'orders': orders,
+        'orders': orders_page,
     }
+    print(orders)  # Add this line to print the orders in the console
+
     return render(request, 'customer_OrderView.html', context)
 
+from django.utils.decorators import method_decorator
+from django.views import View
+from datetime import datetime
 
+from django.db.models import DateTimeField
+from django.db.models.functions import TruncDate
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+
+@method_decorator(login_required, name='dispatch')
+class CustomerOrderView(View):
+    template_name = 'customer_OrderView.html'
+    items_per_page = 10  # Adjust the number of items per page as needed
+
+    def get(self, request, *args, **kwargs):
+        user = request.user
+        date_filter = request.GET.get('date_filter')
+
+        orders = Order.objects.filter(user=user)
+
+        if date_filter:
+            # Check if date_filter is not None or empty
+            if date_filter.strip():
+                # Parse the date from the input field
+                parsed_date = datetime.strptime(date_filter, '%Y-%m-%d').date()
+
+                # Filter orders based on the chosen date
+                orders = orders.filter(order_date__date=parsed_date)
+
+        orders = orders.annotate(truncated_date=TruncDate('order_date')).prefetch_related('cart_items')
+
+        # Paginate the orders
+        paginator = Paginator(orders, self.items_per_page)
+        page = request.GET.get('page')
+
+        try:
+            orders = paginator.page(page)
+        except PageNotAnInteger:
+            # If page is not an integer, deliver first page.
+            orders = paginator.page(1)
+        except EmptyPage:
+            # If page is out of range (e.g. 9999), deliver last page of results.
+            orders = paginator.page(paginator.num_pages)
+
+        context = {
+            'orders': orders,
+        }
+        return render(request, self.template_name, context)
 
 
 
@@ -236,31 +302,42 @@ def add_to_Cart(request, product_id):
     
     if request.method == 'POST':
         quantity = int(request.POST.get('quantity', 1))
-        cart_item, created = CartItem.objects.get_or_create(user=request.user, product=product)
         
-        if not created:
-            # Update the cart item's quantity
-            cart_item.quantity += quantity
+        # Check if a similar product with status cleared or ordered exists in the cart
+        existing_cart_item = CartItem.objects.filter(user=request.user, product=product, status__in=[CartItem.StatusChoices.CLEARED, CartItem.StatusChoices.ORDERED]).first()
+
+        if existing_cart_item:
+            # If an existing item is found, create a new cart item
+            new_cart_item = CartItem.objects.create(user=request.user, product=product, quantity=quantity, status=CartItem.StatusChoices.ACTIVE)
         else:
+            # If no existing item is found, update the existing one with status active
+            cart_item, created = CartItem.objects.get_or_create(user=request.user, product=product)
             cart_item.quantity = quantity
+            cart_item.status = CartItem.StatusChoices.ACTIVE
+            cart_item.save()
+            new_cart_item = cart_item
 
-        cart_item.save()
-    
-    return redirect('http://127.0.0.1:8000/customer_ProductView/' + str(product_id) + '/')
-
+        return redirect('http://127.0.0.1:8000/customer_ProductView/' + str(product_id) + '/')
 
 def add_to_cart(request, product_id):
     if request.user.is_authenticated:
         product = get_object_or_404(Product, id=product_id)
-        cart_item, created = CartItem.objects.get_or_create(user=request.user, product_id=product.id)
 
-        if not created:
-            cart_item.quantity += 1
-            cart_item.save()
+        # Check if a similar product with status cleared or ordered exists in the cart
+        existing_cart_item = CartItem.objects.filter(user=request.user, product=product, status__in=[CartItem.StatusChoices.CLEARED, CartItem.StatusChoices.ORDERED]).first()
+
+        if existing_cart_item:
+            # If an existing item is found, create a new cart item
+            new_cart_item = CartItem.objects.create(user=request.user, product=product, quantity=1, status=CartItem.StatusChoices.ACTIVE)
+        else:
+            # If no existing item is found, update the existing one with status active
+            existing_cart_item = CartItem.objects.create(user=request.user, product=product, quantity=1, status=CartItem.StatusChoices.ACTIVE)
+            new_cart_item = existing_cart_item
+
         return redirect('cart')
 
 def cart(request): 
-    cart_items = CartItem.objects.filter(user=request.user) 
+    cart_items = CartItem.objects.filter(user=request.user, status=CartItem.StatusChoices.ACTIVE) 
     total_items = sum(cart_item.quantity for cart_item in cart_items)
     total_price = sum(cart_item.product.price * cart_item.quantity for cart_item in cart_items)
     context = {
@@ -274,7 +351,8 @@ def cart(request):
 def remove_from_cart(request, product_id): 
     cart_item = get_object_or_404(CartItem, user=request.user, id=product_id) 
     print(f"Received product_id: {product_id}")  #Fixed the typo here 
-    cart_item.delete() 
+    cart_item.status = CartItem.StatusChoices.CLEARED  # Set status to cleared
+    cart_item.save()  # Save the changes to the object
     return redirect('cart')
 
 def decrease_item(request, item_id): 
@@ -290,8 +368,9 @@ def decrease_item(request, item_id):
 def increase_item(request, item_id): 
     try: 
         cart_item = CartItem.objects.get(id=item_id) 
-        cart_item.quantity += 1 
-        cart_item.save() 
+        if cart_item.quantity + 1 <= cart_item.product.stock:
+            cart_item.quantity += 1
+            cart_item.save()
     except CartItem.DoesNotExist: 
         pass  # Handle the case when the item does not exist in the cart 
     return redirect('cart')
@@ -300,16 +379,10 @@ def customer_Checkout(request):
     user = request.user
     # Fetch the user's addresses from the database
     user_addresses = Address.objects.filter(user=user)
-    cart_items = CartItem.objects.filter(user=request.user) 
+    cart_items = CartItem.objects.filter(user=request.user,  status=CartItem.StatusChoices.ACTIVE) 
     total_items = sum(cart_item.quantity for cart_item in cart_items)
     total_price = sum(cart_item.product.price * cart_item.quantity for cart_item in cart_items)
-    # order = Order.objects.create(
-    #     user=request.user,
-    #     total_price=total_price,
-    # )
-    # for cart_item in cart_items:
-    #     order.products.add(cart_item.product)
-    # cart_items.delete()
+    
     context = {
         'cart_items': cart_items,
         'total_items': total_items,
@@ -388,7 +461,10 @@ def seller_addProducts(request):
 
 @login_required(login_url='user_login')
 def seller_Products(request):
-    products = Product.objects.filter(seller=request.user)  # Fetch products associated with the currently logged-in seller
+    products = Product.objects.filter(
+        seller=request.user,
+        status__in=[Product.StatusChoices.IN_STOCK, Product.StatusChoices.OUT_OF_STOCK]
+    )  # Fetch products associated with the currently logged-in seller
     paginator = Paginator(products, 6)
     page_number = request.GET.get('page')
     page = paginator.get_page(page_number)
@@ -398,7 +474,8 @@ def seller_Products(request):
 def delete_product(request, product_id):
     try:
         product = Product.objects.get(id=product_id)
-        product.delete()
+        product.status = Product.StatusChoices.DEACTIVATED
+        product.save()
         # Optionally, you can add a success message here
     except Product.DoesNotExist:
         # Handle the case where the product does not exist
@@ -544,6 +621,7 @@ from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponseBadRequest
 from decimal import Decimal
+from django.db import transaction
 
 
 
@@ -553,7 +631,7 @@ razorpay_client = razorpay.Client(
 
 
 def homepage(request):
-    cart_items = CartItem.objects.filter(user=request.user)
+    cart_items = CartItem.objects.filter(user=request.user, status=CartItem.StatusChoices.ACTIVE)
     total_price = Decimal(sum(cart_item.product.price * cart_item.quantity for cart_item in cart_items))
     
     currency = 'INR'
@@ -581,8 +659,8 @@ def homepage(request):
     )
 
     # Add the products to the order
-    for cart_item in cart_items:
-        order.products.add(cart_item.product)
+    for cart_items in cart_items:
+        order.cart_items.add(cart_items)
 
     # Save the order to generate an order ID
     order.save()
@@ -626,10 +704,8 @@ def paymenthandler(request):
             # Signature verification succeeded.
             # Retrieve the order from the database
             order = Order.objects.get(razorpay_order_id=razorpay_order_id)
-            cart_items = CartItem.objects.filter(user=request.user)
+            
 
-            # Check if all the books in the order are in the user's cart
-                # Not all books are in the cart, add them to the library
             # Capture the payment with the amount from the order
             amount = int(order.total_price * 100)  # Convert Decimal to paise
             razorpay_client.payment.capture(payment_id, amount)
@@ -638,10 +714,136 @@ def paymenthandler(request):
             order.payment_id = payment_id
             order.payment_status = Order.PaymentStatusChoices.SUCCESSFUL
             order.save()
+
+            # Insert the shipping address into the database
+            selected_address_id = request.POST.get('selected_address')
+            if selected_address_id:
+                selected_address = Address.objects.get(id=selected_address_id)
+                ShippingAddress.objects.create(
+                    order=order,
+                    address=selected_address,
+                    user=request.user,
+                    building_name=selected_address.building_name,
+                    street=selected_address.street,
+                    city=selected_address.city,
+                    state=selected_address.state,
+                    zip_code=selected_address.zip_code,
+                    status=ShippingAddress.StatusChoices.PENDING  # or SHIPPED, DELIVERED
+
+                )
+            # Update the stock of products
+            for cart_item in order.cart_items.all():
+                product = cart_item.product
+                if product.status == Product.StatusChoices.IN_STOCK:
+                    product.stock -= cart_item.quantity
+                    if product.stock == 0:
+                        product.status = Product.StatusChoices.OUT_OF_STOCK
+                    product.save()
+
+            cart_items = CartItem.objects.filter(user=request.user)
+            for cart_item in cart_items:
+                cart_item.status = CartItem.StatusChoices.ORDERED
+                cart_item.save()
             
             # Update the order with payment ID and change status to "Successful
 
             # Redirect to a success page or return a success response
             return redirect('/')
+
+
+
+
+
+
+
+
+
+
+# views.py
+from django.shortcuts import render, redirect
+from .forms import UploadImageForm
+from .models import UploadedImage
+from tensorflow.keras.preprocessing import image
+from tensorflow.keras.applications import ResNet50
+from tensorflow.keras.layers import GlobalAveragePooling2D, Dense
+from tensorflow.keras.models import Model
+from tensorflow.keras.optimizers import Adam
+import numpy as np
+from django.conf import settings
+import os
+
+# Define the number of classes
+num_classes = 15  # Adjust this according to your dataset
+
+def predict_disease(img_path):
+    # Load the trained model
+    base_model = ResNet50(weights='imagenet', include_top=False)
+    x = base_model.output
+    x = GlobalAveragePooling2D()(x)
+    x = Dense(1024, activation='relu')(x)
+    predictions = Dense(num_classes, activation='softmax')(x)
+    model = Model(inputs=base_model.input, outputs=predictions)
+    model.compile(optimizer=Adam(learning_rate=0.0001), loss='categorical_crossentropy', metrics=['accuracy'])
+    
+    # Load the trained weights
+    weights_path = os.path.join(settings.BASE_DIR, settings.MODEL_WEIGHTS_PATH)
+
+    # Load the trained weights
+    model.load_weights(weights_path)
+
+    # Preprocess the image
+    img = image.load_img(img_path, target_size=(224, 224))
+    img_array = image.img_to_array(img)
+    img_array = np.expand_dims(img_array, axis=0) / 255.0
+
+    # Make prediction
+    prediction = model.predict(img_array)
+    disease_class = np.argmax(prediction)
+
+    # Map the disease class to a human-readable label
+    disease_labels = {
+        0: 'Class1',
+        1: 'Class2',
+        2: 'Class3',
+        3: 'Class4',
+        4: 'Class5',
+        5: 'Class6',
+        6: 'Class7',
+        7: 'Class8',
+        8: 'Class9',
+        9: 'Class10',
+        10: 'Class11',
+        11: 'Class12',
+        12: 'Class13',
+        13: 'Class14',
+        14: 'Class15'
+    }
+    predicted_disease = disease_labels[disease_class]
+
+    return predicted_disease
+
+def upload_image(request):
+    if request.method == 'POST':
+        form = UploadImageForm(request.POST, request.FILES)
+        if form.is_valid():
+            # Save the uploaded image
+            uploaded_image = form.save()
+
+            # Get the path to the uploaded image
+            img_path = uploaded_image.image.path
+
+            # Make a prediction
+            predicted_disease = predict_disease(img_path)
+
+            # Save the prediction to the database
+            uploaded_image.predicted_disease = predicted_disease
+            uploaded_image.save()
+
+            # Pass the prediction to the template
+            return render(request, 'result.html', {'predicted_disease': predicted_disease})
+    else:
+        form = UploadImageForm()
+
+    return render(request, 'upload_image.html', {'form': form})
 
 

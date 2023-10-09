@@ -15,7 +15,7 @@ class CustomUser(AbstractUser):
     first_name = models.CharField(max_length=100, default='')
     last_name   = models.CharField(max_length=100, default='')
     email = models.EmailField(unique=True)
-    password = models.CharField(max_length=128)
+    password = models.CharField(max_length=128,null=True)
     # role = models.PositiveSmallIntegerField(choices=ROLE_CHOICE, blank=True, null=True,default=CUSTOMER)
     is_customer = models.BooleanField(default=False)
     is_seller = models.BooleanField(default=False)

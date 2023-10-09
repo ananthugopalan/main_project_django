@@ -17,6 +17,12 @@
     <!-- Load fonts style after rendering the layout styles -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;200;300;400;500;700;900&display=swap">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        .custom-dropdown-width {
+            width: 300px; /* Adjust the width as needed */
+        }
+
+    </style>
 </head>
 
 <body>
@@ -64,16 +70,23 @@
                 </div>
                 <div class="navbar align-self-center d-flex">
                     <div class="d-lg-none flex-sm-fill mt-3 mb-4 col-7 col-sm-auto pr-3">
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="inputMobileSearch" placeholder="Search ...">
-                            <div class="input-group-text">
+                        <div class="dropdown" >
+                            <button class="btn border-0 mt-2" type="button" id="searchDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                                 <i class="fa fa-fw fa-search"></i>
-                            </div>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end custom-dropdown-width mt-3" id="searchDropdown" aria-labelledby="searchDropdown" >
+                                <li>
+                                    <form id="search-form" class="px-4 py-3">
+                                        <div class="mb-3 d-flex">
+                                            <input type="text" class="form-control me-2" id="inputModalSearch" name="q" placeholder="Search ...">
+                                        
+                                        <button type="submit" class="btn btn-primary"><i class="fa fa-fw fa-search"></i></button></div>
+                                        <div id="search-results"></div>
+                                    </form>
+                                </li>
+                            </ul>
                         </div>
                     </div>
-                    <a class="nav-icon d-none d-lg-inline" href="#" data-bs-toggle="modal" data-bs-target="#templatemo_search">
-                        <i class="fa fa-fw fa-search text-dark mr-2"></i>
-                    </a>
                     {% if user.is_authenticated %}
                     <a class="nav-icon position-relative text-decoration-none" href="{% url 'cart' %}">
                         <i class="fa fa-fw fa-shopping-cart text-dark mr-1"></i>
@@ -108,25 +121,7 @@
     </nav>
     <!-- Close Header -->
 
-       <!-- Modal -->
-       <div class="modal fade bg-white" id="templatemo_search" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg" role="document">
-            <div class="w-100 pt-1 mb-5 text-right">
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <form id="search-form" class="modal-content modal-body border-0 p-0">
-                <div class="input-group mb-2">
-                    <input type="text" class="form-control" id="inputModalSearch" name="q" placeholder="Search ...">
-                    <button type="submit" class="input-group-text bg-success text-light">
-                        <i class="fa fa-fw fa-search text-white"></i>
-                    </button>
-                </div>
-                <div id="search-results">
-                </div>
-            </form>
-            <!-- Display search results here -->
-        </div>
-    </div>
+
     <!--nav ends -->
 
     {% if messages %}
@@ -374,8 +369,8 @@
   <!-- Footer -->
  
 <!-- Add this JavaScript code to your template -->
-<script>
-    // Function to validate the input fields
+<!-- <script>
+    
     function validateInput(event) {
         const buildingNameInput = document.getElementById('building_name');
         const addressTypeInput = document.getElementById('address_type');
@@ -423,7 +418,7 @@
 
     // Add the event listener to the form submission
     document.getElementById('address-form').addEventListener('submit', validateInput);
-</script>
+</script> -->
 
 
 
@@ -775,47 +770,62 @@ document.addEventListener('DOMContentLoaded', function () {
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
   <script>
-  $(document).ready(function() {
-      // Handle the form submission
-      $("#search-form").submit(function(event) {
-          event.preventDefault(); // Prevent the default form submission
-  
-          // Get the search query from the input field
-          var query = $("#inputModalSearch").val();
-  
-          // Send an AJAX request to the Django view
-          $.ajax({
-              type: "GET",
-              url: "/search/", // URL should match the URL pattern in your urls.py
-              data: {'q': query},
-              dataType: "json",
-              success: function(response) {
-                  // Handle the response and update the search results container
-                  var results = response.results;
-                  console.log(results)
-                  var resultHtml = '';
-  
-                  if (results.length === 0) {
-                      resultHtml = '<p>No results found.</p>';
-                  } else {
-                      for (var i = 0; i < results.length; i++) {
-                          // Construct the URLs for product name and category
-  
-                          console.log(results[i])
-                          var productNameUrl = "/customer_ProductView/" + results[i].id+ "/";
-                          var categoryUrl = "/customer_allProducts/?category=" + results[i].product_category;
-                          
-                          // Create clickable links for product name and category
-                          resultHtml += '<a style="z-index:7" href="' + productNameUrl + '">' + results[i].product_name + '</a> - <a href="' + categoryUrl + '">' + results[i].product_category + '</a><br>';
-                      }
-                  }
-  
-                  // Update the search results container
-                  $("#search-results").html(resultHtml);
-              }
-          });
-      });
-  });
+$(document).ready(function() {
+    // Handle the form submission
+    $("#search-form").submit(function(event) {
+        event.preventDefault(); // Prevent the default form submission
+
+        // Get the search query from the input field
+        var query = $("#inputModalSearch").val();
+
+        // Send an AJAX request to the Django view
+        $.ajax({
+            type: "GET",
+            url: "/search/", // URL should match the URL pattern in your urls.py
+            data: {'q': query},
+            dataType: "json",
+            success: function(response) {
+                // Handle the response and update the search results container
+                var results = response.results;
+                console.log(results)
+                var resultHtml = '';
+
+                if (results.length === 0) {
+                    resultHtml = '<p>No results found.</p>';
+                } else {
+                    for (var i = 0; i < results.length; i++) {
+                        // Construct the URLs for product name and category
+
+                        console.log(results[i])
+                        var productNameUrl = "/customer_ProductView/" + results[i].id+ "/";
+                        var categoryUrl = "/customer_allProducts/?category=" + results[i].product_category;
+                        
+                        // Create clickable links for product name and category
+                        resultHtml += '<a style="z-index:7" href="' + productNameUrl + '">' + results[i].product_name + '</a> - <a href="' + categoryUrl + '">' + results[i].product_category + '</a><br>';
+                    }
+                }
+
+                // Update the search results container
+                $("#search-results").html(resultHtml);
+            }
+        });
+    });
+    // Clear search results and input when the modal is hidden
+    $("#templatemo_search").on("hidden.bs.modal", function () {
+        $("#search-results").empty();
+        $("#inputModalSearch").val('');
+    });
+
+    // Clear search input when the dropdown is closed or when clicking outside the dropdown
+    $(document).on('click', function (e) {
+        if (!$(e.target).closest('.dropdown-menu').length) {
+            // Clicked outside the dropdown
+            $("#inputModalSearch").val('');
+            $("#search-results").empty();
+        }
+    });
+});
+
   
   </script>
 
