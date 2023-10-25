@@ -46,9 +46,3 @@ class AddressForm(forms.ModelForm):
         model = Address
         fields = '__all__'
 
-from .models import UploadedImage
-
-class UploadImageForm(forms.ModelForm):
-    class Meta:
-        model = UploadedImage
-        fields = ['image']

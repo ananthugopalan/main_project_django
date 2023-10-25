@@ -111,7 +111,7 @@
                         {% else %}  
                             <a class="dropdown-item" href="{% url 'user_login' %}">Sign in</a>
                             <a class="dropdown-item" href="{% url 'customer_Registration' %}">Register</a>
-                            <a class="dropdown-item" href="{% url 'seller_home' %}">Seller's Home</a>
+                            <a class="dropdown-item" href="{% url 'seller_dashboard' %}">Seller's Home</a>
                         {% endif %}
 
                     </div>
@@ -296,7 +296,7 @@
                 <div class="card mt-2" style="max-width: 400px; margin: 0 auto; display: none;" id="address-cards-container">
                     <div class="card-body" >
                         <h5 class="card-title">Add New Address</h5>
-                        <form method="post" id="address-form" onsubmit="return addAddress()">
+                        <form method="post" id="address-form" onsubmit="return validateAddAddress()">
                             {% csrf_token %}
                             <div class="mb-1">
                                 <label for="building_name" class="form-label">Building Name</label>
@@ -367,58 +367,7 @@
         </div>
     </footer>
   <!-- Footer -->
- 
-<!-- Add this JavaScript code to your template -->
-<!-- <script>
     
-    function validateInput(event) {
-        const buildingNameInput = document.getElementById('building_name');
-        const addressTypeInput = document.getElementById('address_type');
-        const streetInput = document.getElementById('street');
-        const cityInput = document.getElementById('city');
-        const stateInput = document.getElementById('state');
-        const zipCodeInput = document.getElementById('zip_code');
-
-        const buildingNameError = document.getElementById('buildingNameError');
-        const addressTypeError = document.getElementById('addressTypeError');
-        const streetError = document.getElementById('streetError');
-        const cityError = document.getElementById('cityError');
-        const stateError = document.getElementById('stateError');
-        const zipCodeError = document.getElementById('zipCodeError');
-
-        // Check if any of the fields are empty or contain only spaces
-        if (
-            buildingNameInput.value.trim() === '' ||
-            addressTypeInput.value === '' ||
-            streetInput.value.trim() === '' ||
-            cityInput.value.trim() === '' ||
-            stateInput.value.trim() === '' ||
-            zipCodeInput.value.trim() === ''
-        ) {
-            // Display error messages
-            buildingNameError.textContent = 'Building Name is required';
-            addressTypeError.textContent = 'Address Type is required';
-            streetError.textContent = 'Street is required';
-            cityError.textContent = 'City is required';
-            stateError.textContent = 'State is required';
-            zipCodeError.textContent = 'ZIP Code is required';
-
-            // Prevent form submission
-            event.preventDefault();
-        } else {
-            // Clear error messages
-            buildingNameError.textContent = '';
-            addressTypeError.textContent = '';
-            streetError.textContent = '';
-            cityError.textContent = '';
-            stateError.textContent = '';
-            zipCodeError.textContent = '';
-        }
-    }
-
-    // Add the event listener to the form submission
-    document.getElementById('address-form').addEventListener('submit', validateInput);
-</script> -->
 
 
 

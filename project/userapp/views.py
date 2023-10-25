@@ -10,6 +10,7 @@ from django.utils.http import urlsafe_base64_decode
 from django.utils.encoding import force_bytes
 from .models import CustomUser, SellerDetails
 from django.contrib.auth import authenticate, login as auth_login 
+from django.views.decorators.cache import never_cache
 
 
 # Create your views here.
@@ -30,6 +31,7 @@ def email_verification(request, uidb64, token):
         user = None
     return redirect('user_login')
 
+@never_cache
 def customerReg(request):
     if request.method=='POST':
         first_name = request.POST.get('first_name')
@@ -73,6 +75,7 @@ def customerReg(request):
             messages.error(request, "Registration failed. Please try again.")
     return render(request, 'customerReg.html')
 
+@never_cache
 def seller_registration(request):
     if request.method == 'POST': 
         step = request.POST.get('step') 
@@ -189,6 +192,7 @@ def seller_registration(request):
 
     return render(request, 'seller_registration.html')
 
+@never_cache
 def user_login(request):
     if request.method == 'POST':
         email = request.POST.get('email')
@@ -198,16 +202,18 @@ def user_login(request):
             if user is not None:
                 auth_login(request, user) 
                 if user.is_seller:      
-                    return redirect('seller_home')
+                    return redirect('seller_dashboard')
                 elif user.is_customer: 
                     return redirect('/')
+                elif user.is_superuser: 
+                    return redirect('admin_dashboard')
             else:
                 error_message = "Invalid login credentials."
                 return render(request, 'login.html', {'error_message': error_message})
             
     return render(request,'login.html')
 
-
+@never_cache
 def user_logout(request):
     auth.logout(request)
     return redirect('/') 

@@ -121,8 +121,3 @@ class ShippingAddress(models.Model):
 
     def __str__(self):
         return f"{self.user.first_name} - Order ID: {self.order.id} - Status: {self.status}"
-
-
-class UploadedImage(models.Model):
-    image = models.ImageField(upload_to='uploads/')
-    predicted_disease = models.CharField(max_length=255, blank=True, null=True)

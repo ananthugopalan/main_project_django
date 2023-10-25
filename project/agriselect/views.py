@@ -4,20 +4,62 @@ from .forms import ProductForm
 from .models import Customer_Profile,Product, Wishlist, Address, CartItem, Order, ShippingAddress
 from userapp.models import CustomUser,SellerDetails
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.cache import never_cache
 from django.contrib import messages
 from django.core.paginator import Paginator
 
 # Create your views here.
 
+#admin
+@login_required(login_url='user_login')
+def admin_dashboard(request):
+    total_users = CustomUser.objects.count()
+    total_products = Product.objects.count()
+    total_orders = Order.objects.count()
+    total_revenue = Order.objects.aggregate(revenue=Sum('total_price'))['revenue'] or Decimal('0.00')
+    context = {
+        'total_users': total_users,
+        'total_products': total_products,
+        'total_orders': total_orders,
+        'total_revenue': total_revenue,
+    }
+    return render(request, 'admin_dashboard.html', context)
+
+@login_required(login_url='user_login')
+def admin_products(request):
+    products = Product.objects.all()
+    paginator = Paginator(products, 6)  # Show 8 products per page
+
+    page = request.GET.get('page')
+    try:
+        products = paginator.page(page)
+    except PageNotAnInteger:
+        products = paginator.page(1)
+    except EmptyPage:
+        products = paginator.page(paginator.num_pages)
+    return render(request, 'admin_products.html', {'products': products})
+
+@login_required(login_url='user_login')
+def admin_users(request):
+    customers = CustomUser.objects.filter(is_customer=True)
+    sellers = CustomUser.objects.filter(is_seller=True)
+    return render(request, 'admin_users.html', {'customers': customers, 'sellers': sellers})
+
+@login_required(login_url='user_login')
+def admin_orders(request):
+    orders = Order.objects.all()
+    context = {'orders': orders}
+    return render(request, 'admin_orders.html', context)
 
 #Customer
 
+@never_cache
 def index(request):
     user = request.user
     if user.is_anonymous:
         return render(request, 'index.html')
     elif user.is_seller:
-        return render(request, 'seller_home.html')
+        return render(request, 'seller_dashboard.html')
     else:
         return render(request,'index.html')
     
@@ -436,7 +478,7 @@ class GeneratePDF(View):
 
 
 #Seller
-
+@never_cache
 def seller_home(request):
     return render(request,'seller_home.html')
 
@@ -544,8 +586,33 @@ def seller_Profile(request):
 from django.db.models import Sum
 from django.db.models import Count
 
+@never_cache
 def seller_dashboard(request):
-    return render(request, 'seller_dashboard.html')
+    if request.user.is_authenticated:
+        # Get the count of products for the logged-in seller
+        product_count = Product.objects.filter(seller=request.user).count()
+        seller_products = Product.objects.filter(seller=request.user)
+        order_count = Order.objects.filter(cart_items__product__in=seller_products).count()
+        products_sold_quantity = CartItem.objects.filter(
+                user=request.user,
+                status=CartItem.StatusChoices.ORDERED,
+                order__payment_status=Order.PaymentStatusChoices.SUCCESSFUL
+            ).aggregate(Sum('quantity'))['quantity__sum'] or 0
+
+
+        # Pass the counts to the template
+        context = {
+            'product_count': product_count,
+            'order_count': order_count,
+            'products_sold_quantity': products_sold_quantity,
+            # Add other counts to the context if needed
+        }
+
+        return render(request, 'seller_dashboard.html', context)
+    else:
+        # Handle the case where the user is not authenticated
+        # You might want to redirect them to the login page or show an error message
+        return render(request, 'error.html', {'error_message': 'User not authenticated'})
 
 # def get_sales_data(request):
 #     # Assuming your Order model has a date field named 'order_date'
@@ -755,95 +822,5 @@ def paymenthandler(request):
 
 
 
-
-
-
-
-# views.py
-from django.shortcuts import render, redirect
-from .forms import UploadImageForm
-from .models import UploadedImage
-from tensorflow.keras.preprocessing import image
-from tensorflow.keras.applications import ResNet50
-from tensorflow.keras.layers import GlobalAveragePooling2D, Dense
-from tensorflow.keras.models import Model
-from tensorflow.keras.optimizers import Adam
-import numpy as np
-from django.conf import settings
-import os
-
-# Define the number of classes
-num_classes = 15  # Adjust this according to your dataset
-
-def predict_disease(img_path):
-    # Load the trained model
-    base_model = ResNet50(weights='imagenet', include_top=False)
-    x = base_model.output
-    x = GlobalAveragePooling2D()(x)
-    x = Dense(1024, activation='relu')(x)
-    predictions = Dense(num_classes, activation='softmax')(x)
-    model = Model(inputs=base_model.input, outputs=predictions)
-    model.compile(optimizer=Adam(learning_rate=0.0001), loss='categorical_crossentropy', metrics=['accuracy'])
-    
-    # Load the trained weights
-    weights_path = os.path.join(settings.BASE_DIR, settings.MODEL_WEIGHTS_PATH)
-
-    # Load the trained weights
-    model.load_weights(weights_path)
-
-    # Preprocess the image
-    img = image.load_img(img_path, target_size=(224, 224))
-    img_array = image.img_to_array(img)
-    img_array = np.expand_dims(img_array, axis=0) / 255.0
-
-    # Make prediction
-    prediction = model.predict(img_array)
-    disease_class = np.argmax(prediction)
-
-    # Map the disease class to a human-readable label
-    disease_labels = {
-        0: 'Class1',
-        1: 'Class2',
-        2: 'Class3',
-        3: 'Class4',
-        4: 'Class5',
-        5: 'Class6',
-        6: 'Class7',
-        7: 'Class8',
-        8: 'Class9',
-        9: 'Class10',
-        10: 'Class11',
-        11: 'Class12',
-        12: 'Class13',
-        13: 'Class14',
-        14: 'Class15'
-    }
-    predicted_disease = disease_labels[disease_class]
-
-    return predicted_disease
-
-def upload_image(request):
-    if request.method == 'POST':
-        form = UploadImageForm(request.POST, request.FILES)
-        if form.is_valid():
-            # Save the uploaded image
-            uploaded_image = form.save()
-
-            # Get the path to the uploaded image
-            img_path = uploaded_image.image.path
-
-            # Make a prediction
-            predicted_disease = predict_disease(img_path)
-
-            # Save the prediction to the database
-            uploaded_image.predicted_disease = predicted_disease
-            uploaded_image.save()
-
-            # Pass the prediction to the template
-            return render(request, 'result.html', {'predicted_disease': predicted_disease})
-    else:
-        form = UploadImageForm()
-
-    return render(request, 'upload_image.html', {'form': form})
 
 

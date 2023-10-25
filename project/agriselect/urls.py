@@ -52,7 +52,9 @@ urlpatterns = [
     path('paymenthandler/', views.paymenthandler, name='paymenthandler'),
 
 
-    #predictions
-    path('upload/', views.upload_image, name='upload_image'),
-    path('result/', views.predict_disease, name='predict_disease'),
+    #admin
+    path('admin_dashboard/', views.admin_dashboard, name='admin_dashboard'),
+    path('admin_products/', views.admin_products, name='admin_products'),
+    path('admin_users/', views.admin_users, name='admin_users'),
+    path('admin_orders/', views.admin_orders, name='admin_orders'),
 ]

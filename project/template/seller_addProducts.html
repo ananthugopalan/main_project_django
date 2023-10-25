@@ -19,6 +19,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 
     <style>
+        body{
+            background-color: white;
+        }
         /* body {
             background-image: url("{% static 'img/pic3.jpg' %}");
             background-repeat: no-repeat;
@@ -84,7 +87,7 @@
                     <div class="dropdown-menu" aria-labelledby="userDropdown">
                         {% if user.is_authenticated %}
                             <a class="dropdown-item text-success" href="#">{{ request.user.first_name }}</a>
-                            <a class="dropdown-item" href="#">Profile</a>
+                            <a class="dropdown-item" href="{% url 'seller_Profile' %}">Profile</a>
                             <a class="dropdown-item" href="{% url 'user_logout' %}" onclick="return confirm('Are you sure you want to sign out?')">Sign out</a>
                        
                         {% endif %}
@@ -112,7 +115,7 @@
                         <div class="col-md-6 shadow p-3 transparent-form" style="background-color: #F7F7F7 ">
                             <h2 class="fs-4 text-center"><u>Add Products</u></h2>
                             
-                            <form action="{% url 'seller_addProducts' %}" method="POST" enctype="multipart/form-data">
+                            <form action="{% url 'seller_addProducts' %}" method="POST" enctype="multipart/form-data" onsubmit="return validateForm()">
                                 {% csrf_token %}
                                 <div class="mb-3">
                                     <label for="{{ form.product_name.id_for_label }}" class="form-label" style="margin-bottom: 10px;">Product Name:</label>
@@ -251,6 +254,65 @@
             productNameInput.classList.add("is-invalid");
         }
     });
+</script>
+<script>
+    // document.addEventListener("DOMContentLoaded", function() {
+    //     const productNameInput = document.querySelector("#{{ form.product_name.id_for_label }}");
+    //     const productNameError = document.querySelector("#productNameError");
+
+    //     productNameInput.addEventListener("input", function() {
+    //         const productNameValue = productNameInput.value;
+    //         if (/[^a-zA-Z]/.test(productNameValue)) {
+    //             productNameError.textContent = "Only alphabets are allowed.";
+    //         } else {
+    //             productNameError.textContent = ""; // Clear the error message
+    //         }
+    //     });
+    // });
+
+    function validateForm() {
+    const productNameInput = document.querySelector("#{{ form.product_name.id_for_label }}");
+    const descriptionInput = document.querySelector("#{{ form.description.id_for_label }}");
+    const stockInput = document.querySelector("#{{ form.stock.id_for_label }}");
+    const priceInput = document.querySelector("#{{ form.price.id_for_label }}");
+    const productImageInput = document.querySelector("#{{ form.product_image.id_for_label }}");
+    const productNameError = document.querySelector("#productNameError");
+    const descriptionError = document.querySelector("#descriptionError");
+    const stockError = document.querySelector("#stockError");
+    const priceError = document.querySelector("#priceError");
+    const productImageError = document.querySelector("#imageError");
+
+    const productNameValue = productNameInput.value.trim();
+    const descriptionValue = descriptionInput.value;
+    const stockValue = stockInput.value;
+    const priceValue = priceInput.value;
+    const productImageValue = productImageInput.value;
+
+    // Check if any of the input fields are empty
+    if (
+        productNameValue === "" ||
+        descriptionValue.trim() === "" ||
+        stockValue.trim() === "" ||
+        priceValue.trim() === "" ||
+        productImageValue.trim() === ""
+    ) {
+        alert("All fields are required.");
+        return false; // Prevent form submission
+    }
+
+    // Check if the product name contains only spaces or non-alphabet characters
+    if (/^\s*$/.test(productNameValue) || /[^a-zA-Z\s]/.test(productNameValue)) {
+        productNameError.textContent = "Only alphabets are allowed.";
+        return false; // Prevent form submission
+    } else {
+        productNameError.textContent = "";
+    }
+
+    // You can add more validation logic for other fields here if needed
+
+    return true; // Allow form submission if all validations pass
+}
+
 </script>
 
 
