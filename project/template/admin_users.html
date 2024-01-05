@@ -1,0 +1,177 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+
+    <title>Admin Dashboard</title>
+    <style>
+        /* Reset some default styles for better consistency */
+            body, h1, h2, h3, p, ul, li {
+                margin: 0;
+                padding: 0;
+            }
+
+            body {
+                font-family: Arial, sans-serif;
+                background-color: #f0f0f0;
+            }
+
+            header {
+                background-color: #333;
+                color: #fff;
+                text-align: center;
+                padding: 20px;
+            }
+
+            header h1 {
+                margin: 0;
+            }
+
+            .sidenav {
+                width: 250px;
+                background-color: #333;
+                color: #fff;
+                height: 100%;
+                position: fixed;
+                top: 0;
+                left: 0;
+                padding: 20px 0; /* Add padding to the top and bottom */
+            }
+
+            .sidenav ul {
+                list-style: none;
+                padding: 0;
+            }
+
+            .sidenav li {
+                margin: 10px 0 0 15px;
+            }
+
+            .sidenav a {
+                display: block;
+                text-decoration: none;
+                color: #fff;
+                font-weight: bold;
+                padding: 10px;
+            }
+
+            .sidenav a:hover {
+                background-color: #444; /* Slightly darker background color on hover */
+            }
+
+            .sidenav h1 {
+                margin: 0;
+                padding: 20px; /* Add padding to the top for the header */
+            }
+
+            /* Add a border on the right side of the sidenav */
+            .sidenav {
+                border-right: 1px solid #555;
+            }
+
+            /* Style the main content area */
+            main {
+                margin-left: 250px;
+                padding: 20px;
+            }
+
+            .content {
+                background-color: #fff;
+                padding: 20px;
+                border-radius: 5px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            }
+
+            /* Footer styling */
+            footer {
+                background-color: #333;
+                color: #fff;
+                text-align: center;
+                padding: 10px;
+            }
+
+    </style>
+</head>
+<body>
+    <header>
+        <h1  style="margin-left: 25%;">Admin Dashboard</h1>
+    </header>
+    <div class="sidenav">
+        <ul>
+            <li><a href="{% url 'admin_dashboard' %}">Home</a></li>
+            <li><a href="{% url 'admin_products' %}">Products</a></li>
+            <li><a href="{% url 'admin_orders' %}">Orders</a></li>
+            <li><a href="{% url 'admin_users' %}">Users</a></li>
+            <li><a href="{% url 'user_logout' %}">Logout</a></li>
+        </ul>
+    </div>
+    <main>
+        <section class="content">
+            <div class="container">
+                <h2>User Table</h2><br>
+                <div class="table-responsive">
+                    <h4>Customers</h4>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>First Name</th>
+                                <th>Last Name</th>
+                                <th>Email</th>
+                                <!-- Add more fields as needed -->
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for customer in customers %}
+                                <tr>
+                                    <td>{{ customer.first_name }}</td>
+                                    <td>{{ customer.last_name }}</td>
+                                    <td>{{ customer.email }}</td>
+                                    <!-- Add more fields as needed -->
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+
+                    <h4>Sellers</h4>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>First Name</th>
+                                <th>Last Name</th>
+                                <th>Email</th>
+                                <th>PAN ID</th>
+                                <th>Status</th>
+                                <!-- Add more fields as needed -->
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for seller in sellers %}
+                                <tr>
+                                    <td>{{ seller.first_name }}</td>
+                                    <td>{{ seller.last_name }}</td>
+                                    <td>{{ seller.email }}</td>
+                                    <td>{{ seller.pan_number }}</td>
+                                    <td>
+                                        <!-- Add a checkbox input for the Status field -->
+                                        <input type="checkbox" name="status_checkbox_{{ seller.id }}" value="{{ seller.id }}" {% if seller.is_active %}checked{% endif %}>
+                                    </td>
+                                    <!-- Add more fields as needed -->
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <footer>
+        <p style="margin-left: 25%;">&copy; 2023 AgriSelect-Smarter Crop Choices</p>
+    </footer>
+</body>
+</html>

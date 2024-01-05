@@ -1,0 +1,160 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <title>Admin Dashboard</title>
+    <style>
+        /* Reset some default styles for better consistency */
+            body, h1, h2, h3, p, ul, li {
+                margin: 0;
+                padding: 0;
+            }
+
+            body {
+                font-family: Arial, sans-serif;
+                background-color: #f0f0f0;
+            }
+
+            header {
+                background-color: #333;
+                color: #fff;
+                text-align: center;
+                padding: 20px;
+            }
+
+            header h1 {
+                margin: 0;
+            }
+
+            .sidenav {
+                width: 250px;
+                background-color: #333;
+                color: #fff;
+                height: 100%;
+                position: fixed;
+                top: 0;
+                left: 0;
+                padding: 20px 0; /* Add padding to the top and bottom */
+            }
+
+            .sidenav ul {
+                list-style: none;
+                padding: 0;
+            }
+
+            .sidenav li {
+                margin: 10px 0 0 15px;
+            }
+
+            .sidenav a {
+                display: block;
+                text-decoration: none;
+                color: #fff;
+                font-weight: bold;
+                padding: 10px;
+            }
+
+            .sidenav a:hover {
+                background-color: #444; /* Slightly darker background color on hover */
+            }
+
+            .sidenav h1 {
+                margin: 0;
+                padding: 20px; /* Add padding to the top for the header */
+            }
+
+            /* Add a border on the right side of the sidenav */
+            .sidenav {
+                border-right: 1px solid #555;
+            }
+
+            /* Style the main content area */
+            main {
+                margin-left: 250px;
+                padding: 20px;
+            }
+
+            .content {
+                background-color: #fff;
+                padding: 20px;
+                border-radius: 5px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            }
+
+            /* Footer styling */
+            footer {
+                background-color: #333;
+                color: #fff;
+                text-align: center;
+                padding: 10px;
+            }
+
+    </style>
+</head>
+<body>
+    <header>
+        <h1  style="margin-left: 25%;">Admin Dashboard</h1>
+    </header>
+    <div class="sidenav">
+        <ul>
+            <li><a href="{% url 'admin_dashboard' %}">Home</a></li>
+            <li><a href="{% url 'admin_products' %}">Products</a></li>
+            <li><a href="{% url 'admin_orders' %}">Orders</a></li>
+            <li><a href="{% url 'admin_users' %}">Users</a></li>
+            <li><a href="{% url 'user_logout' %}">Logout</a></li>
+        </ul>
+    </div>
+    <main>
+        <section class="content">
+            <!-- Your dashboard content goes here -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="card border-primary bg-primary text-white">
+                        <div class="card-body">
+                            <h5 class="card-title">Total Users</h5>
+                            <p class="card-text">{{ total_users }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card border-success bg-success text-white">
+                        <div class="card-body">
+                            <h5 class="card-title">Total Products</h5>
+                            <p class="card-text">{{ total_products }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="card border-warning bg-warning text-white">
+                        <div class="card-body">
+                            <h5 class="card-title">Total Orders</h5>
+                            <p class="card-text">{{ total_orders }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card border-danger bg-danger text-white">
+                        <div class="card-body">
+                            <h5 class="card-title">Total Revenue</h5>
+                            <p class="card-text">{{ total_revenue }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr>
+        </section>
+    </main>
+    <footer>
+        <p style="margin-left: 25%;">&copy; 2023 AgriSelect-Smarter Crop Choices</p>
+    </footer>
+</body>
+</html>

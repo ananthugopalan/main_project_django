@@ -820,7 +820,30 @@ def paymenthandler(request):
 
 
 
+def product_crops(request):
+    crop_products = Product.objects.filter(product_category='crops',status__in=['in_stock', 'out_of_stock'])
+    products_per_page = 6  # You can adjust this number as needed
 
+    # Get the page number from the request's GET parameters
+    page_number = request.GET.get('page')
 
+    # Create a Paginator instance for the crop products
+    paginator = Paginator(crop_products, products_per_page)
 
+    # Get the products for the current page
+    crop_products_page = paginator.get_page(page_number)
+    return render(request, 'product_crops.html', {'crop_products_page': crop_products_page})
 
+def product_seeds(request):
+    seeds_products = Product.objects.filter(product_category='seeds',status__in=['in_stock', 'out_of_stock'])
+    products_per_page = 6  # You can adjust this number as needed
+
+    # Get the page number from the request's GET parameters
+    page_number = request.GET.get('page')
+
+    # Create a Paginator instance for the crop products
+    paginator = Paginator(seeds_products, products_per_page)
+
+    # Get the products for the current page
+    seeds_products_page = paginator.get_page(page_number)
+    return render(request, 'product_seeds.html', {'seeds_products_page': seeds_products_page})
