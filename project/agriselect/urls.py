@@ -10,7 +10,10 @@ urlpatterns = [
     path('search/', views.search_products, name='search_products'),
     # path('search/', views.search_view, name='search_view'),
     path('customer_allProducts/',views.customer_allProducts,name='customer_allProducts'),
+    
     path('customer_ProductView/<int:product_id>/',views.customer_ProductView,name='customer_ProductView'),
+    path('add_review/<int:product_id>/', views.add_review, name='add_review'),
+
     path('customer_Profile/', views.customer_Profile, name='customer_Profile'),
     path('customer_Wishlist/',views.customer_Wishlist,name='customer_Wishlist'),
     path('delete_address/<int:address_id>/', views.delete_address, name='delete_address'),
@@ -22,11 +25,10 @@ urlpatterns = [
     path('customer/order/view/', CustomerOrderView.as_view(), name='customer_order_view'),
 
     path('generate-pdf/<int:order_id>/', GeneratePDF.as_view(), name='generate_pdf'),
-    
 
 
     # Cart
-    path('add_to_Cart/<int:product_id>/', views.add_to_Cart, name='add_to_Cart'),
+    # path('add_to_Cart/<int:product_id>/', views.add_to_Cart, name='add_to_Cart'),
     path('add_to_cart/<int:product_id>/', views.add_to_cart, name='add_to_cart'),
     path('cart/', views.cart, name='cart'),
     path('remove_from_cart/<int:product_id>/', views.remove_from_cart, name='remove_from_cart'),

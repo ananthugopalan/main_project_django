@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Customer_Profile, Product, Address, Order, CartItem, Site_Logo
+from .models import Customer_Profile, Product, Address, Order, CartItem, Site_Logo, CustomerReview, ShippingAddress
 
 # Register your models here.
 admin.site.register(Product)
@@ -8,3 +8,5 @@ admin.site.register(Address)
 admin.site.register(Order)
 admin.site.register(CartItem)
 admin.site.register(Site_Logo)
+admin.site.register(CustomerReview)
+admin.site.register(ShippingAddress)

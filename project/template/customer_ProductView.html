@@ -29,12 +29,22 @@
         .custom-dropdown-width {
             width: 300px; /* Adjust the width as needed */
         }
+        /* Add this to your existing styles or create a new style block */
+        .star-rating {
+            display: inline-block;
+            font-size: 24px;
+            color: #ffd700; /* Yellow color for filled stars */
+        }
 
+        .star-rating i {
+            cursor: pointer;
+        }
 
     </style>
 </head>
 
 <body>
+
     <!-- Header -->
     <nav class="navbar navbar-expand-lg navbar-light shadow p-0 sticky-top">
         <div class="container d-flex justify-content-between align-items-center">
@@ -164,12 +174,12 @@
                             {% endif %}   
                         </div>
                         <p class="lead text-muted">{{ product.description }}</p>
-                        <form method="post" action="{% url 'add_to_Cart' product_id=product.id %}">
+                        <form method="post" action="{% url 'add_to_cart' product_id=product.id %}">
                             {% csrf_token %}
-                            <div class="d-flex">
+                            <!-- <div class="d-flex">
                                 <label for="inputQuantity" class="my-auto mr-2">Qty:</label>
                                 <input id="inputQuantity" class="form-control text-center me-3" name="quantity" type="number" value="1" min="1" style="max-width: 4rem;" data-max-stock="{{ product.stock }}"/>
-                            </div>
+                            </div> -->
                             <div class="mt-4 d-flex flex-row gap-3  ">
                                 {% if product.status == 'in_stock' %}
                                 <button type="submit" class="btn flex-shrink-0" style="background-color:#FE9A2E; color: white;">
@@ -230,6 +240,48 @@
     </div>
 </section>
 
+<!-- Add this section below the related products -->
+<section class="py-5">
+    <div class="container px-4 px-lg-5 mt-5">
+        <h2 class="fw-bolder mb-4">Customer Reviews</h2>
+        <!-- Update the form for new reviews -->
+        <form method="post" action="{% url 'add_review' product_id=product.id %}">
+            {% csrf_token %}
+            <!-- Rating field as stars -->
+            <div class="mb-3">
+                <label for="inputRating" class="form-label">Your Rating:</label>
+                <div class="star-rating">
+                    <input type="hidden" id="inputRating" name="rating" value="0">
+                    <i class="far fa-star" onclick="setRating(1)"></i>
+                    <i class="far fa-star" onclick="setRating(2)"></i>
+                    <i class="far fa-star" onclick="setRating(3)"></i>
+                    <i class="far fa-star" onclick="setRating(4)"></i>
+                    <i class="far fa-star" onclick="setRating(5)"></i>
+                </div>
+            </div>
+            <!-- Comment field -->
+            <div class="mb-3">
+                <label for="inputComment" class="form-label">Your Comment:</label>
+                <textarea class="form-control" id="inputComment" name="comment" rows="3" required></textarea>
+            </div>
+            <!-- Submit button -->
+            <button type="submit" class="btn btn-primary">Submit Review</button>
+        </form>
+
+        <!-- Add space above the heading -->
+        <div class="mt-4"></div>
+        <div class="customer-reviews-box border p-4">
+            <!-- Display existing reviews -->
+            {% for review in reviews %}
+                <div>
+                    <p><strong>{{ review.user.email }}</strong> - {{ review.created_at|date:"F d, Y" }}</p>
+                    <p>Rating: {{ review.rating }}</p>
+                    <p>{{ review.comment }}</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
 
 
         <!-- Footer -->
@@ -404,6 +456,35 @@ $(document).ready(function() {
         }
         return cookieValue;
     }
+    // Replace the existing JavaScript function with this one
+function setRating(starValue) {
+    // Get the hidden rating input
+    const ratingInput = document.getElementById("inputRating");
+
+    // Toggle the selection when the same star is clicked twice
+    if (ratingInput.value == starValue) {
+        ratingInput.value = 0; // Reset the rating if clicked twice
+    } else {
+        ratingInput.value = starValue; // Set the rating value
+    }
+
+    // Update the styling of the stars based on the selected value
+    const starIcons = document.querySelectorAll('.star-rating i');
+
+    starIcons.forEach((starIcon, index) => {
+        if (index + 1 <= ratingInput.value) {
+            // Add the filled class for selected stars
+            starIcon.classList.remove('far');
+            starIcon.classList.add('fas');
+        } else {
+            // Remove the filled class for unselected stars
+            starIcon.classList.remove('fas');
+            starIcon.classList.add('far');
+        }
+    });
+}
+
+
 </script>
 
     <!-- Start Script -->

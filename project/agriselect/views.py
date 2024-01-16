@@ -1,7 +1,7 @@
 from django.shortcuts import render,redirect,get_object_or_404
 from django.http import JsonResponse
 from .forms import ProductForm
-from .models import Customer_Profile,Product, Wishlist, Address, CartItem, Order, ShippingAddress
+from .models import Customer_Profile,Product, Wishlist, Address, CartItem, Order, ShippingAddress, CustomerReview
 from userapp.models import CustomUser,SellerDetails
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import never_cache
@@ -232,20 +232,43 @@ def customer_ProductView(request, product_id):
     product_category = product.product_category
     product_subcategory = product.product_subcategory
 
-    # Fetch related products from the same category (excluding the current product) with 'instock' or 'out_of_stock' status
+    # Fetch related products and reviews
     related_products = Product.objects.filter(
         product_category=product_category,
         status__in=['in_stock', 'out_of_stock']
-    ).exclude(pk=product_id)[:4]  # Adjust the number of related products as needed
+    ).exclude(pk=product_id)[:4]
+
+    reviews = CustomerReview.objects.filter(product=product)
 
     context = {
         'product': product,
         'product_category': product_category,
         'product_subcategory': product_subcategory,
         'related_products': related_products,
+        'reviews': reviews,
     }
 
     return render(request, 'customer_ProductView.html', context)
+
+@login_required
+def add_review(request, product_id):
+    product = get_object_or_404(Product, pk=product_id)
+    
+    if request.method == 'POST':
+        rating = int(request.POST.get('rating'))
+        comment = request.POST.get('comment')
+
+        # Check if the user has already reviewed the product
+        existing_review = CustomerReview.objects.filter(product=product, user=request.user).exists()
+
+        if not existing_review:
+            # Create a new review
+            review = CustomerReview.objects.create(product=product, user=request.user, rating=rating, comment=comment)
+            return redirect('customer_ProductView', product_id=product_id)
+        else:
+            return JsonResponse({'success': False, 'message': 'You have already reviewed this product.'})
+
+    return redirect('customer_ProductView', product_id=product_id)
 
 
 
@@ -339,44 +362,49 @@ class CustomerOrderView(View):
 
 #cart
 @login_required(login_url='user_login')
-def add_to_Cart(request, product_id):
-    product = get_object_or_404(Product, id=product_id)
+# def add_to_Cart(request, product_id):
+#     product = get_object_or_404(Product, id=product_id)
     
-    if request.method == 'POST':
-        quantity = int(request.POST.get('quantity', 1))
+#     if request.method == 'POST':
+#         quantity = int(request.POST.get('quantity', 1))
         
-        # Check if a similar product with status cleared or ordered exists in the cart
-        existing_cart_item = CartItem.objects.filter(user=request.user, product=product, status__in=[CartItem.StatusChoices.CLEARED, CartItem.StatusChoices.ORDERED]).first()
+#         # Check if a similar product with status cleared or ordered exists in the cart
+#         existing_cart_item = CartItem.objects.filter(user=request.user, product=product, status__in=[CartItem.StatusChoices.CLEARED, CartItem.StatusChoices.ORDERED]).first()
 
-        if existing_cart_item:
-            # If an existing item is found, create a new cart item
-            new_cart_item = CartItem.objects.create(user=request.user, product=product, quantity=quantity, status=CartItem.StatusChoices.ACTIVE)
-        else:
-            # If no existing item is found, update the existing one with status active
-            cart_item, created = CartItem.objects.get_or_create(user=request.user, product=product)
-            cart_item.quantity = quantity
-            cart_item.status = CartItem.StatusChoices.ACTIVE
-            cart_item.save()
-            new_cart_item = cart_item
-
-        return redirect('http://127.0.0.1:8000/customer_ProductView/' + str(product_id) + '/')
+#         if existing_cart_item:
+#             # If an existing item is found, create a new cart item
+#             new_cart_item = CartItem.objects.create(user=request.user, product=product, quantity=quantity, status=CartItem.StatusChoices.ACTIVE)
+#         else:
+#             # If no existing item is found, update the existing one with status active
+#             cart_item, created = CartItem.objects.get_or_create(user=request.user, product=product)
+#             cart_item.quantity = quantity
+#             cart_item.status = CartItem.StatusChoices.ACTIVE
+#             cart_item.save()
+#             new_cart_item = cart_item
+#         return redirect('cart')
+#         # return redirect('http://127.0.0.1:8000/customer_ProductView/' + str(product_id) + '/')
 
 def add_to_cart(request, product_id):
     if request.user.is_authenticated:
         product = get_object_or_404(Product, id=product_id)
 
-        # Check if a similar product with status cleared or ordered exists in the cart
-        existing_cart_item = CartItem.objects.filter(user=request.user, product=product, status__in=[CartItem.StatusChoices.CLEARED, CartItem.StatusChoices.ORDERED]).first()
+        # Check if a similar product with status active exists in the cart
+        existing_cart_item = CartItem.objects.filter(user=request.user, product=product, status=CartItem.StatusChoices.ACTIVE).first()
 
         if existing_cart_item:
-            # If an existing item is found, create a new cart item
-            new_cart_item = CartItem.objects.create(user=request.user, product=product, quantity=1, status=CartItem.StatusChoices.ACTIVE)
+            # If an existing item is found, update the existing cart item with status active
+            if existing_cart_item.quantity < product.stock:
+                existing_cart_item.quantity += 1
+                existing_cart_item.save()
+            else:
+                messages.error(request, "Cannot add more than available stock.")
         else:
-            # If no existing item is found, update the existing one with status active
-            existing_cart_item = CartItem.objects.create(user=request.user, product=product, quantity=1, status=CartItem.StatusChoices.ACTIVE)
-            new_cart_item = existing_cart_item
+            # If no existing item is found, create a new cart item
+            if product.stock > 0:
+                new_quantity = min(1, product.stock)  # Ensure the quantity does not exceed available stock
+                new_cart_item = CartItem.objects.create(user=request.user, product=product, quantity=new_quantity, status=CartItem.StatusChoices.ACTIVE)
 
-        return redirect('cart')
+    return redirect('cart')
 
 def cart(request): 
     cart_items = CartItem.objects.filter(user=request.user, status=CartItem.StatusChoices.ACTIVE) 
@@ -393,8 +421,8 @@ def cart(request):
 def remove_from_cart(request, product_id): 
     cart_item = get_object_or_404(CartItem, user=request.user, id=product_id) 
     print(f"Received product_id: {product_id}")  #Fixed the typo here 
-    cart_item.status = CartItem.StatusChoices.CLEARED  # Set status to cleared
-    cart_item.save()  # Save the changes to the object
+    # cart_item.status = CartItem.StatusChoices.CLEARED  # Set status to cleared
+    cart_item.delete()  # Save the changes to the object
     return redirect('cart')
 
 def decrease_item(request, item_id): 
@@ -847,3 +875,5 @@ def product_seeds(request):
     # Get the products for the current page
     seeds_products_page = paginator.get_page(page_number)
     return render(request, 'product_seeds.html', {'seeds_products_page': seeds_products_page})
+
+

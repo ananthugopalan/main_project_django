@@ -285,8 +285,6 @@
   <!-- Footer -->
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-    
-
 
   <script>
     document.addEventListener('DOMContentLoaded', function () {
@@ -425,8 +423,6 @@
 </script>
 
 
-
- 
     <script>
 
         function toggleWishlist(productId) {
@@ -572,36 +568,6 @@ $(document).ready(function() {
     <script src="{% static 'js/templatemo.js' %}"></script>
     <script src="{% static 'js/custom.js' %}"></script>
     <!-- End Script -->
-    <!-- Add this script in your HTML file -->
-<!-- <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-
-<script>
-    $(document).ready(function () {
-        // Function to update product visibility based on the checkbox status
-        function updateProductVisibility() {
-            var showCrops = $('#categoryCrops').is(':checked');
-
-            $('.card').each(function () {
-                var productCategory = $(this).data('product_category');
-
-                if (productCategory !== 'crops') {
-                    $(this).hide();
-                } else {
-                    $(this).show();
-                }
-            });
-        }
-
-        // Initial update based on checkbox status
-        updateProductVisibility();
-
-        // Event listener for checkbox change
-        $('#categoryCrops').change(function () {
-            updateProductVisibility();
-        });
-    });
-</script> -->
-
 </body>
 
 </html>

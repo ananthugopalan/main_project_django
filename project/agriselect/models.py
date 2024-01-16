@@ -17,6 +17,7 @@ class Product(models.Model):
     product_category = models.CharField(max_length=100)
     product_subcategory = models.CharField(max_length=100)
     product_image = models.ImageField(upload_to='product_images/')
+    average_rating = models.FloatField(default=0.0)
     status = models.CharField(
         max_length=20, choices=StatusChoices.choices, default=StatusChoices.IN_STOCK
     )
@@ -121,3 +122,17 @@ class ShippingAddress(models.Model):
 
     def __str__(self):
         return f"{self.user.first_name} - Order ID: {self.order.id} - Status: {self.status}"
+
+from django.db.models import Avg
+class CustomerReview(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    rating = models.PositiveIntegerField(choices=[(i, str(i)) for i in range(1, 6)])
+    comment = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        # Update the average rating of the associated product
+        self.product.average_rating = CustomerReview.objects.filter(product=self.product).aggregate(Avg('rating'))['rating__avg'] or 0
+        self.product.save()
