@@ -257,9 +257,10 @@ def add_review(request, product_id):
     if request.method == 'POST':
         rating = int(request.POST.get('rating'))
         comment = request.POST.get('comment')
-
+        
         # Check if the user has already reviewed the product
         existing_review = CustomerReview.objects.filter(product=product, user=request.user).exists()
+        
 
         if not existing_review:
             # Create a new review
