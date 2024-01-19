@@ -56,12 +56,15 @@ def admin_orders(request):
 @never_cache
 def index(request):
     user = request.user
+    products_with_sentiment_sum = Product.objects.annotate(sentiment_sum=Sum('customerreview__sentiment_score')).order_by('-sentiment_sum')[:3]
+    for product in products_with_sentiment_sum:
+        print (product.product_name)
     if user.is_anonymous:
-        return render(request, 'index.html')
+        return render(request, 'index.html', {'products_with_sentiment_sum' : products_with_sentiment_sum})
     elif user.is_seller:
         return render(request, 'seller_dashboard.html')
     else:
-        return render(request,'index.html')
+        return render(request,'index.html', {'products_with_sentiment_sum': products_with_sentiment_sum })
     
 # def search_view(request):
 #     query = request.GET.get('query', '')
@@ -250,6 +253,9 @@ def customer_ProductView(request, product_id):
 
     return render(request, 'customer_ProductView.html', context)
 
+import nltk
+nltk.download('vader_lexicon')
+from nltk.sentiment import SentimentIntensityAnalyzer
 @login_required
 def add_review(request, product_id):
     product = get_object_or_404(Product, pk=product_id)
@@ -257,6 +263,8 @@ def add_review(request, product_id):
     if request.method == 'POST':
         rating = int(request.POST.get('rating'))
         comment = request.POST.get('comment')
+        sentiment_analyzer = SentimentIntensityAnalyzer()
+        sentiment_score = sentiment_analyzer.polarity_scores(comment)['compound']
         
         # Check if the user has already reviewed the product
         existing_review = CustomerReview.objects.filter(product=product, user=request.user).exists()
@@ -264,17 +272,17 @@ def add_review(request, product_id):
 
         if not existing_review:
             # Create a new review
-            review = CustomerReview.objects.create(product=product, user=request.user, rating=rating, comment=comment)
+            review = CustomerReview.objects.create(product=product, user=request.user, rating=rating, comment=comment, sentiment_score=sentiment_score)
             return redirect('customer_ProductView', product_id=product_id)
         else:
             return JsonResponse({'success': False, 'message': 'You have already reviewed this product.'})
     
-    if request.user.is_authenticated:
-            user_has_purchased_product = Order.objects.filter(
-            user=request.user,
-            orderitem__product=product,
-            payment_status=Order.PaymentStatusChoices.SUCCESSFUL
-        ).exists()
+    # if request.user.is_authenticated:
+    #         user_has_purchased_product = Order.objects.filter(
+    #         user=request.user,
+    #         orderitem__product=product,
+    #         payment_status=Order.PaymentStatusChoices.SUCCESSFUL
+    #     ).exists()
 
     return redirect('customer_ProductView', product_id=product_id)
 

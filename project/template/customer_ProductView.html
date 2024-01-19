@@ -244,7 +244,6 @@
 <section class="py-5">
     <div class="container px-4 px-lg-5 mt-5">
         <h2 class="fw-bolder mb-4">Customer Reviews</h2>
-        {% if user_has_purchased_product %}
         <form method="post" action="{% url 'add_review' product_id=product.id %}" onsubmit="return validateRating()">
             {% csrf_token %}
             
@@ -268,7 +267,6 @@
             <!-- Submit button -->
             <button type="submit" class="btn btn-primary">Submit Review</button>
         </form>
-        {% endif %}
 
         <!-- Add space above the heading -->
         <div class="mt-4"></div>
