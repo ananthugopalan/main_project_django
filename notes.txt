@@ -1,0 +1,266 @@
+framework py - django
+dbsqlite3 - db
+m v t - model view template model
+django -> ORM -> object relation mapping
+template - html
+view - functions
+model - db struc
+each project - each environment
+-----------------------------------------------------------------------------------------
+
+1. create envi
+2. wrap
+3. project
+
+
+admin - 
+username - admin
+pass - 123
+------------------------------------------------------------------------------------------
+
+cmd:
+    envi - project
+    project - booking
+    app - hotel
+ for database create models
+
+i) pip install virtualenvwrapper-win 				//env wrapper
+ii) python -m venv project					//env create
+iii) project\scripts\activate					//activate envi
+iv) pip install django						//django install
+v) django-admin startproject booking				//project creation
+     * cd booking
+
+vi) python manage.py runserver	                    // run server
+        //html - template others-static
+
+vii) python manage.py startapp hotel	            //create app
+        * imp - models.py - db tables
+        * apps.py - details of app
+        * create urls.py in app - copy project urls.py(from 17) to this
+        * in project(booking) urls.py add path('',include('hotel.urls')) //'' for root -- to connect app's urls
+
+viii) in project's settings.py     
+        * import os (line 12)
+        * installed apps - give name of app in ''
+        * template - 'DIRS': [os.path.join(BASE_DIR, 'template')],
+        * static_url next line - STATICFILES_DIRS = [os.path.join(BASE_DIR,'static')]
+    
+ix) hotel - views.py - functions
+    //url - redirect, string - httpresponse, html - render
+    def index(request):
+    return render(request, 'index.html')
+
+x) in app's urls.py add path
+    path('',views.index,name='index'),
+
+xi) load static files //notify server about static files
+    1) register tag in jinja format - index.html - top - {%load static%}
+    2) all css,js,img "{% static '' %}"
+
+migrate - databse
+1) model create (model.py)
+2) migrate :
+    i)python -m pip install Pillow
+    ii)python manage.py makemigrations
+    iii)python manage.py migrate
+3) admin create - 
+    * python manage.py createsuperuser
+    * username
+    * pass
+    * runserver  - /admin - login - users
+4) admin.py - to see model - admin.site.register(hotel_book)
+5) db browser download
+---------------------------------------------------------------------
+
+***model.py - each object - link to html - create dictionary{key: appname.objects.all()}
+            then .html, dict_name
+//views.py->models.py to render model
+then to add to template
+    * loop card - from start of card {% for in key %} ......... {% end for %}
+
+to upload images - needs media
+    * setting.py : STATIC_URL = 'static/'
+                    STATICFILES_DIRS = [os.path.join(BASE_DIR,'static')]
+                    # MEDIA_URL = 'media/'
+                    # MEDIA_ROOT = os.path.join(BASE_DIR,'media')
+                 then create folder media add images file within 
+                  or comment this code
+    
+    * in urls.py of project:
+    from django.conf import settings
+    from django.conf.urls.static import static
+    
+    urlpatterns = [
+        path('admin/', admin.site.urls),
+        path('',include('hotels.urls'))
+    ]+static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)
+
+
+--------------------------------------------------------------------------------
+Booking form
+
+// {% csrf_token %} - for security purposes - before form
+
+1. model.py - create model
+2. connect in admin.py
+3. do makemigrations and migrate
+4. create forms.py in app
+5. In forms.py create class bookingform and within meta class
+    class BookingForm(forms.ModelForm):
+    class Meta:
+        model=booking
+        fields='__all__'
+
+6. notify in views.py
+def book(request):
+form = BookingForm()
+dict_book = {'form': form }
+return render(request,'book.html',dict_book)
+
+7. to make date input, forms.py -> create a class
+class DateInput(forms.DateInput):
+input_type = 'date'
+class BookingForm(forms.ModelForm):
+class Meta:
+    model=booking
+    fields='__all__'
+    widgets = {
+        'checkin': DateInput(),
+        'checkout': DateInput()
+    }
+
+
+8. to change name in dropdown-> in models.py ->
+def __str__(self):
+    return self.name
+
+9. for validation -> views.py -> 
+def book(request):
+if request.method == 'POST':
+    form = BookingForm(request.POST)
+    if form.is_valid():
+        form.save()
+        return redirect('/')
+form = BookingForm()
+dict_book = {'form': form }
+return render(request,'book.html',dict_book)
+
+
+_________________________________________________________________________________________________________
+
+Authentication
+
+1. create login.html and register.html
+2. create separate app for Authentication - userapp
+3. create urls.py for userapp
+4. project setting -> installed apps ->'userapp'
+5. project urls.py -> path ->path('register/',include('userapp.urls')),
+6. userapp views.py -> def....
+7. add navbar -> signup,login,logout
+8. in views.py of app -> 
+        def register(request):
+            if request.method=='POST':
+                username = request.POST.get('username')
+                email = request.POST.get('email')
+                password = request.POST.get('password')
+                con_password = request.POST.get('con_password')
+        return render(request, 'register.html')
+
+    //to store these inputs in attributes of db browser
+
+9. to check attributes:
+    if password==confirmpassword:
+            if User.objects.filter(username=username).exists():
+                return redirect('http://127.0.0.1:8000/register/')
+            if User.objects.filter(email=email).exists():
+                return redirect('http://127.0.0.1:8000/register/')              //{% url 'register' %}
+            else:
+                user_reg = User.objects.create_user(username=username,email=email,password=password)
+                user_reg.save()
+                return redirect('http://127.0.0.1:8000/index')
+    return render(request, 'register.html')
+
+    // {% csrf_token %} - for security purposes - before form
+
+10. Same in login get username and password
+    Create variable user to store username and password to authenticate
+
+11. logout 
+ -> def .. in views.py
+        def logout(request):
+            auth.logout(request)
+            return redirect('/')
+ -> path in urls.py
+ -> condition in html pages
+
+ ------------------------------------------------------------------------------------------------------------
+
+ CRUD
+
+ 1. new envi --task --- python -m venv task
+ 2. activate envi
+ 3. pip install django
+ 4. django-admin startproject form
+ 5. cd form
+ 6. python manage.py startapp table
+ 7. python manage.py runserver
+ 8. settings.py of project -> import os
+                              installed apps -> app name
+                              template->'DIRS': [os.path.join(BASE_DIR, 'template')] 
+ 9. html -> template
+10. form.html -> csrf_token                               
+
+1. model create -> connect in admin.py
+2. makemigrations -> migrate
+
+1. views.py -> functions
+    def taskadd(request):
+        if request.method == 'POST':
+            taskname = request.POST.get('tname')
+            desc = request.POST.get('desc')
+            task = add(tname=taskname, desc=desc)
+            task.save()
+            return redirect('/')
+    return render (request,'form.html')
+    // any action -- eg save -- redirect
+    // gets into database
+
+2. // to render in table
+ new function -> def taskread(request):
+                    task_view = add.objects.all()
+                    dict_task = {'name':task_view}
+                    return render(request, 'form_print.html',dict_task)
+ -> path in urls.py of project
+ 
+3. UPDATE
+    -> urls.py -> path('update/<int:update_id>/',views.taskupdate,name='taskupdate') //need id of each row to update particular record
+    -> views.py -> new function
+                    def taskupdate(request,update_id):
+                        tupdate = add.objects.get(id=update_id)
+                        form1 = TableUpdate(request.POST or None, instance = tupdate)
+                        if form1.is_valid():
+                            form1.save()
+                            return redirect('http://127.0.0.1:8000/taskread/')
+                        return render(request, 'form_update.html', {'form':form1,'task_key':tupdate})
+    -> forms.py create -> for duplication of model form -> 
+    -> new html for update -> clear fields -> {{form(key).as_p}}
+    -> button in table html -> <a href="{% url 'taskupdate' i.id %}"><button class="btnfun">UPDATE</button></a>
+
+ 4. DELETE
+  -> same as above
+  -> in views.py -> def taskdelete(request,delete_id):
+                        tdelete = add.objects.get(id=delete_id)
+                        tdelete.delete()
+                        return redirect('http://127.0.0.1:8000/taskread/')
+
+
+
+242635766851-gl9hgnejgtpi11j0g06tmfvot8i10kvg.apps.googleusercontent.com
+
+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
+
+
+
+razorpay_order_id=razorpay_order_id,
+        payment_status=Order.PaymentStatusChoices.PENDING,
