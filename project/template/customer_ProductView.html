@@ -244,19 +244,20 @@
 <section class="py-5">
     <div class="container px-4 px-lg-5 mt-5">
         <h2 class="fw-bolder mb-4">Customer Reviews</h2>
-        <!-- Update the form for new reviews -->
-        <form method="post" action="{% url 'add_review' product_id=product.id %}">
+        {% if user_has_purchased_product %}
+        <form method="post" action="{% url 'add_review' product_id=product.id %}" onsubmit="return validateRating()">
             {% csrf_token %}
+            
             <!-- Rating field as stars -->
             <div class="mb-3">
                 <label for="inputRating" class="form-label">Your Rating:</label>
                 <div class="star-rating">
-                    <input type="hidden" id="inputRating" name="rating" value="0">
-                    <i class="far fa-star" onclick="setRating(1)"></i>
-                    <i class="far fa-star" onclick="setRating(2)"></i>
-                    <i class="far fa-star" onclick="setRating(3)"></i>
-                    <i class="far fa-star" onclick="setRating(4)"></i>
-                    <i class="far fa-star" onclick="setRating(5)"></i>
+                    <input type="hidden" id="inputRating" name="rating" value="-1">
+                    <i class="far fa-star" onclick="setRating(1)" required></i>
+                    <i class="far fa-star" onclick="setRating(2)" required></i>
+                    <i class="far fa-star" onclick="setRating(3)" required></i>
+                    <i class="far fa-star" onclick="setRating(4)" required></i>
+                    <i class="far fa-star" onclick="setRating(5)" required></i>
                 </div>
             </div>
             <!-- Comment field -->
@@ -267,18 +268,26 @@
             <!-- Submit button -->
             <button type="submit" class="btn btn-primary">Submit Review</button>
         </form>
+        {% endif %}
 
         <!-- Add space above the heading -->
         <div class="mt-4"></div>
         <div class="customer-reviews-box border p-4">
             <!-- Display existing reviews -->
-            {% for review in reviews %}
-                <div>
-                    <p><strong>{{ review.user.email }}</strong> - {{ review.created_at|date:"F d, Y" }}</p>
-                    <p>Rating: {{ review.rating }}</p>
-                    <p>{{ review.comment }}</p>
-                </div>
-            {% endfor %}
+        {% for review in reviews %}
+            <div>
+                <p><strong>{{ review.user.email }}</strong> - {{ review.created_at|date:"F d, Y" }}</p>
+                <p>Rating: 
+                    {% for _ in ""|ljust:review.rating %}
+                        <i class="fas fa-star" style="color: #ffd700;"></i>
+                    {% endfor %}
+                    
+                </p>
+                <p>{{ review.comment }}</p>
+            </div>
+            <hr>
+        {% endfor %}
+
         </div>
     </div>
 </section>
@@ -484,6 +493,15 @@ function setRating(starValue) {
     });
 }
 
+function validateRating() {
+        // Check if at least one star is selected
+        var rating = document.getElementById('inputRating').value;
+        if (rating === '-1') {
+            alert('Please select a rating.');
+            return false; // Prevent form submission
+        }
+        return true; // Allow form submission
+    }
 
 </script>
 

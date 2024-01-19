@@ -62,4 +62,5 @@ urlpatterns = [
 
     path('product_crops/', views.product_crops, name='product_crops'),
     path('product_seeds/', views.product_seeds, name='product_seeds'),
+    path('customer_growbag/', views.customer_growbag, name='customer_growbag'),
 ]

@@ -136,3 +136,6 @@ class CustomerReview(models.Model):
         # Update the average rating of the associated product
         self.product.average_rating = CustomerReview.objects.filter(product=self.product).aggregate(Avg('rating'))['rating__avg'] or 0
         self.product.save()
+    
+    def __str__(self):
+        return f'{self.user.email} - {self.product.product_name}'

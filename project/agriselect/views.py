@@ -267,6 +267,13 @@ def add_review(request, product_id):
             return redirect('customer_ProductView', product_id=product_id)
         else:
             return JsonResponse({'success': False, 'message': 'You have already reviewed this product.'})
+    
+    if request.user.is_authenticated:
+            user_has_purchased_product = Order.objects.filter(
+            user=request.user,
+            orderitem__product=product,
+            payment_status=Order.PaymentStatusChoices.SUCCESSFUL
+        ).exists()
 
     return redirect('customer_ProductView', product_id=product_id)
 
@@ -877,3 +884,5 @@ def product_seeds(request):
     return render(request, 'product_seeds.html', {'seeds_products_page': seeds_products_page})
 
 
+def customer_growbag(request):
+    return render(request, 'customer_growbag.html')
