@@ -135,58 +135,41 @@
         <div class="container mt-5" style="margin-left:2rem;">
             <div class="row">
                 <div class="col-md-3 no-padding" style="font-family: Arial, Helvetica, sans-serif;">
-                    <div class="card">
-                        <div class="card-body" >
-                            <h5 class="card-title">Filter</h5>
-                            <form id="filterForm">
-                                {% csrf_token %}
-                                <div class="mb-3">
-                                    <label class="form-label">Category</label>
-                                    <!-- <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" id="categoryAll" name="category" value="All" checked>
-                                        <label class="form-check-label" for="categoryAll">All</label>
-                                    </div> -->
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" id="categoryCrops" name="category" value="crops">
-                                        <label class="form-check-label" for="categoryCrops">Crops</label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" id="categorySeeds" name="category" value="seeds">
-                                        <label class="form-check-label" for="categorySeeds">Seeds</label>
-                                    </div>
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label">Subcategory</label>
-                                    <!-- <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" id="subcategoryAll" name="subcategory" value="All" checked>
-                                        <label class="form-check-label" for="subcategoryAll">All</label>
-                                    </div> -->
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" id="subcategoryVegetables" name="subcategory" value="vegetables">
-                                        <label class="form-check-label" for="subcategoryVegetables">Vegetables</label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" id="subcategoryFruits" name="subcategory" value="fruits">
-                                        <label class="form-check-label" for="subcategoryFruits">Fruits</label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" id="subcategoryFlowers" name="subcategory" value="flowers">
-                                        <label class="form-check-label" for="subcategoryFlowers">Flowers</label>
-                                    </div>
-                                
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" id="subcategoryHerbs" name="subcategory" value="herbs">
-                                        <label class="form-check-label" for="subcategoryHerbs">Herbs</label>
-                                    </div>
-                                
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" id="subcategoryCereals" name="subcategory" value="cereals">
-                                        <label class="form-check-label" for="subcategoryCereals">Cereals</label>
-                                    </div>
-                                    <!-- Add other subcategories as needed -->
-                                </div>
-                            </form>
-                        </div>
+                    <!-- Category Section -->
+                    <div class="category-section">
+                        <h4>Categories</h4>
+                        <ul class="list-group mt-3">
+                            <li class="list-group-item col-md-10">
+                                <a href="#" class="btn btn-block">Crops</a>
+                            </li>
+                            <li class="list-group-item mt-1 col-md-10">
+                                <a href="#" class="btn btn-block">Seeds</a>
+                            </li>
+                            <!-- Add more categories as needed -->
+                        </ul>
+                    </div>
+
+                    <!-- Subcategory Section -->
+                    <div class="subcategory-section mt-4">
+                        <h4>Subcategories</h4>
+                        <ul class="list-group mt-3">
+                            <li class="list-group-item col-md-10">
+                                <a href="#" class="btn btn-block">Vegetables</a>
+                            </li>
+                            <li class="list-group-item mt-1 col-md-10">
+                                <a href="#" class="btn btn-block">Fruits</a>
+                            </li>
+                            <li class="list-group-item mt-1 col-md-10">
+                                <a href="#" class="btn btn-block">Flowers</a>
+                            </li>
+                            <li class="list-group-item mt-1 col-md-10">
+                                <a href="#" class="btn btn-block">Herbs</a>
+                            </li>
+                            <li class="list-group-item mt-1 col-md-10">
+                                <a href="#" class="btn btn-block">Cereals</a>
+                            </li>
+                            <!-- Add more subcategories as needed -->
+                        </ul>
                     </div>
                 </div>
                 
@@ -283,144 +266,9 @@
         </div>
     </footer>
   <!-- Footer -->
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-
-  <!-- <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        // Get references to the category checkboxes
-        var categoryAll = document.getElementById('categoryAll');
-        var categoryCrops = document.getElementById('categoryCrops');
-        var categorySeeds = document.getElementById('categorySeeds');
-        // Add more category checkboxes as needed
-
-        // Get references to the subcategory checkboxes
-        var subcategoryAll = document.getElementById('subcategoryAll');
-        var subcategoryVegetables = document.getElementById('subcategoryVegetables');
-        var subcategoryFruits = document.getElementById('subcategoryFruits');
-        var subcategoryFlowers = document.getElementById('subcategoryFlowers');
-        var subcategoryHerbs = document.getElementById('subcategoryHerbs');
-        var subcategoryCereals = document.getElementById('subcategoryCereals');
-        // Add more subcategory checkboxes as needed
-
-        // Add event listeners to handle category checkbox changes
-        categoryAll.addEventListener('change', function () {
-            if (categoryAll.checked) {
-                // If "All" is checked, uncheck all other category checkboxes
-                uncheckOtherCategoryCheckboxes();
-            }
-        });
-
-        categoryCrops.addEventListener('change', function () {
-            if (categoryCrops.checked) {
-                // If any other option is checked, uncheck "All"
-                categoryAll.checked = false;
-            } else {
-                // If all other options are unchecked, check "All"
-                checkAllCategoryChecked();
-            }
-        });
-
-        categorySeeds.addEventListener('change', function () {
-            if (categorySeeds.checked) {
-                // If any other option is checked, uncheck "All"
-                categoryAll.checked = false;
-            } else {
-                // If all other options are unchecked, check "All"
-                checkAllCategoryChecked();
-            }
-        });
-
-        // Add event listeners to handle subcategory checkbox changes
-        subcategoryAll.addEventListener('change', function () {
-            if (subcategoryAll.checked) {
-                // If "All" is checked, uncheck all other subcategory checkboxes
-                uncheckOtherSubcategoryCheckboxes();
-            }
-        });
-
-        subcategoryVegetables.addEventListener('change', function () {
-            if (subcategoryVegetables.checked) {
-                // If any other option is checked, uncheck "All"
-                subcategoryAll.checked = false;
-            } else {
-                // If all other options are unchecked, check "All"
-                checkAllSubcategoryChecked();
-            }
-        });
-
-        subcategoryFruits.addEventListener('change', function () {
-            if (subcategoryFruits.checked) {
-                // If any other option is checked, uncheck "All"
-                subcategoryAll.checked = false;
-            } else {
-                // If all other options are unchecked, check "All"
-                checkAllSubcategoryChecked();
-            }
-        });
-
-        subcategoryFlowers.addEventListener('change', function () {
-            if (subcategoryFlowers.checked) {
-                // If any other option is checked, uncheck "All"
-                subcategoryAll.checked = false;
-            } else {
-                // If all other options are unchecked, check "All"
-                checkAllSubcategoryChecked();
-            }
-        });
-
-        subcategoryHerbs.addEventListener('change', function () {
-            if (subcategoryHerbs.checked) {
-                // If any other option is checked, uncheck "All"
-                subcategoryAll.checked = false;
-            } else {
-                // If all other options are unchecked, check "All"
-                checkAllSubcategoryChecked();
-            }
-        });
-
-        subcategoryCereals.addEventListener('change', function () {
-            if (subcategoryCereals.checked) {
-                // If any other option is checked, uncheck "All"
-                subcategoryAll.checked = false;
-            } else {
-                // If all other options are unchecked, check "All"
-                checkAllSubcategoryChecked();
-            }
-        });
-
-        // Function to uncheck all other category checkboxes
-        function uncheckOtherCategoryCheckboxes() {
-            categoryCrops.checked = false;
-            categorySeeds.checked = false;
-            // Add more logic to uncheck other category checkboxes as needed
-        }
-
-        // Function to uncheck all other subcategory checkboxes
-        function uncheckOtherSubcategoryCheckboxes() {
-            subcategoryVegetables.checked = false;
-            subcategoryFruits.checked = false;
-            subcategoryFlowers.checked = false;
-            subcategoryHerbs.checked = false;
-            subcategoryCereals.checked = false;
-            // Add more logic to uncheck other subcategory checkboxes as needed
-        }
-
-        // Function to check "All" if all category checkboxes are unchecked
-        function checkAllCategoryChecked() {
-            if (!categoryCrops.checked && !categorySeeds.checked) {
-                categoryAll.checked = true;
-            }
-        }
-
-        // Function to check "All" if all subcategory checkboxes are unchecked
-        function checkAllSubcategoryChecked() {
-            if (!subcategoryVegetables.checked && !subcategoryFruits.checked && !subcategoryFlowers.checked && !subcategoryHerbs.checked && !subcategoryCereals.checked) {
-                subcategoryAll.checked = true;
-            }
-        }
-    });
-</script> -->
+  
+  <!-- Add this script tag in the head section of your HTML -->
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 
 
     <script>

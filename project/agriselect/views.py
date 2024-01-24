@@ -242,13 +242,21 @@ def customer_ProductView(request, product_id):
     ).exclude(pk=product_id)[:4]
 
     reviews = CustomerReview.objects.filter(product=product)
-
+    if request.user.is_authenticated:
+            user_has_purchased_product = Order.objects.filter(
+            user=request.user,
+            cart_items__product=product,
+            payment_status=Order.PaymentStatusChoices.SUCCESSFUL
+        ).exists()
+   
+    print(user_has_purchased_product)
     context = {
         'product': product,
         'product_category': product_category,
         'product_subcategory': product_subcategory,
         'related_products': related_products,
         'reviews': reviews,
+        'user_has_purchased_product': user_has_purchased_product
     }
 
     return render(request, 'customer_ProductView.html', context)
@@ -277,12 +285,7 @@ def add_review(request, product_id):
         else:
             return JsonResponse({'success': False, 'message': 'You have already reviewed this product.'})
     
-    # if request.user.is_authenticated:
-    #         user_has_purchased_product = Order.objects.filter(
-    #         user=request.user,
-    #         orderitem__product=product,
-    #         payment_status=Order.PaymentStatusChoices.SUCCESSFUL
-    #     ).exists()
+    
 
     return redirect('customer_ProductView', product_id=product_id)
 

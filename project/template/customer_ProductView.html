@@ -242,6 +242,8 @@
 
 <!-- Add this section below the related products -->
 <section class="py-5">
+    {% if user_has_purchased_product %}
+
     <div class="container px-4 px-lg-5 mt-5">
         <h2 class="fw-bolder mb-4">Customer Reviews</h2>
         <form method="post" action="{% url 'add_review' product_id=product.id %}" onsubmit="return validateRating()">
@@ -288,6 +290,10 @@
 
         </div>
     </div>
+    {% else %}
+    <p>You can only leave a review if you have purchased this product.</p>
+    {% endif %}
+
 </section>
 
 

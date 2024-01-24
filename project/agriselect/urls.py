@@ -21,6 +21,8 @@ urlpatterns = [
     path('add_to_wishlist/<int:product_id>/', views.add_to_wishlist, name='add_to_wishlist'),
     path('remove_from_wishlist/<int:product_id>/', views.remove_from_wishlist, name='remove_from_wishlist'),
     path('customer_allProducts/<str:category>/', views.customer_allProducts, name='customer_allProducts'),
+
+
     path('customer_OrderView/',views.customer_OrderView,name='customer_OrderView'),
     path('customer/order/view/', CustomerOrderView.as_view(), name='customer_order_view'),
 
