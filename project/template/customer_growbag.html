@@ -18,6 +18,8 @@
     <!-- Load fonts style after rendering the layout styles -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;200;300;400;500;700;900&display=swap">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.0.0-rc.5/dist/html2canvas.min.js"></script>
     
     <style>
         :root {
@@ -39,11 +41,14 @@
 
         .container_growbag {
             display: grid;
-            place-items: center;
+            /* place-items: center; */
             width: 100vw;
             background-color: #fff; /* Set background color to white */
         }
 
+        .product{
+            position: relative;
+        }
         .product::after {
             content: "";
             position: absolute;
@@ -117,6 +122,44 @@
         #color-4:checked~.product-nav>label:nth-of-type(4) {
             background-color: hsl(300, 70%, 45%);
         }
+        .icon{
+            position: absolute;
+            z-index: 10;
+            top: 100px;
+            left: 150px;
+        }
+        .sub_type{
+            width: 90%;
+            height: 75%;
+        }
+
+        /* Adjustments for smaller screens */
+@media screen and (max-width: 768px) {
+    .main_tab {
+        flex-direction: column;  /* Stack elements vertically for smaller screens */
+        align-items: flex-start;  /* Align items to the start of the container */
+        margin-left: 0;
+    }
+    .sub_type{
+        width: 336px;
+        height: 717px;
+    }
+    .container_growbag {
+        width: 100%;  /* Take full width on smaller screens */
+        margin-left: 0;
+    }
+
+    .border {
+        margin-left: 0;
+    }
+
+    .size-selection {
+        width: 100%;  /* Take full width on smaller screens */
+    }
+    .cart_btn{
+        width: 90%;
+    }
+}
     </style>
 </head>
 
@@ -215,38 +258,190 @@
         </div>
     </nav>
     <!-- Close Header -->
-    <section class="container_growbag">
-        <h2 class="mt-4">Customize your Growbag</h2>
+    <div class="main_tab ms-4 mt-4" style="display: flex; align-items: center;">
+    <section class="container_growbag" style="margin-left: 10px;">
+        <h2><u>Customize your Growbag</u></h2>
         <input type="radio" name="color" id="color-1" checked hidden>
         <input type="radio" name="color" id="color-2" hidden>
         <input type="radio" name="color" id="color-3" hidden>
         <input type="radio" name="color" id="color-4" hidden>
-        <div class="product">
-            <img src="{% static 'img/12x12_2_1-removebg-preview-1000x1000.png' %}" alt="Product" height="500px" width="500px" style="margin-top: -80px;">
+        <div class="product" id="image">
+            <img id="product-image" src="{% static 'img/growbag_regular.jpeg' %}" alt="Product" height="300px" width="300px">
+            <i class="fas fa-seedling icon" style="font-size: 70px;" id="hidden-seedling-icon" hidden></i>
+            <i class="fas fa-sun icon" style="font-size: 70px;" id="hidden-sun-icon" hidden></i>
+            <i class="fas fa-leaf icon" style="font-size: 70px;" id="hidden-leaf-icon" hidden></i>
+            <i class="fas fa-tint icon" style="font-size: 70px;" id="hidden-water-icon" hidden></i>
+            <i class="fas fa-globe icon" style="font-size: 70px;" id="hidden-globe-icon" hidden></i>
+            <i class="fas fa-heart icon" style="font-size: 70px;" id="hidden-heart-icon" hidden></i>
+            <i class="fas fa-moon icon" style="font-size: 70px;" id="hidden-moon-icon" hidden></i>
+            <i class="fas fa-carrot icon" style="font-size: 70px;" id="hidden-vegetable-icon" hidden></i>
+            <i class="fas fa-apple-alt icon" style="font-size: 70px;" id="hidden-fruit-icon" hidden></i>
+            <i class="fa-solid fa-wheat-awn icon" style="font-size: 70px;" id="hidden-wheat-icon" hidden></i>
+            <i class="fa-solid fa-tree icon" style="font-size: 70px;" id="hidden-tree-icon" hidden></i>
+            <i class="fa-solid fa-cannabis icon" style="font-size: 70px;" id="hidden-cannabis-icon" hidden></i>
         </div>
-        <div class="options pb-4" style="display: flex; margin-top: -50px;">
-            <h5>Choose your color:</h5>
-            <div class="product-nav ps-3">
-                <label for="color-1"></label>
-                <label for="color-2"></label>
-                <label for="color-3"></label>
-                <label for="color-4"></label>
-            </div>
-            <h5 class="ps-5">Size:</h5>
-            <!-- Size Selection -->
-            <div class="size-selection ps-2">
-                
-                <label for="size-small">Small</label>
-                <input type="radio" name="size" id="size-small" checked>
-
-                <label for="size-medium">Medium</label>
-                <input type="radio" name="size" id="size-medium">
-
-                <label for="size-large">Large</label>
-                <input type="radio" name="size" id="size-large">
-            </div>
+            
+        <div class="product-nav ps-3 mt-2">
+            <h5 class="mb-3">Choose your color:</h5>
+            <label for="color-1"></label>
+            <label for="color-2"></label>
+            <label for="color-3"></label>
+            <label for="color-4"></label>
         </div>
+        <button type="button" class="btn btn-warning mt-3 me-4 cart_btn">Add to Cart</button>
     </section>
+
+    <div class="border mt-2 shadow bg-white sub_type me-4">
+        <!-- Size Selection -->
+        <div class="size-selection ps-3 mt-4">   
+            <h5>Size:</h5>      
+                <input type="radio" name="size" id="size-small" class="me-4" onclick="changeProductSize('small')">
+                <label for="size-small"><b>Small (Grow Bag Small 9 x 9 HDPE)</b></label>
+                <br>
+                <input type="radio" name="size" id="size-medium" class="me-4" onclick="changeProductSize('medium')">
+                <label for="size-medium"><b>Medium (Grow Bag Medium 12 x 12 HDPE)</b></label>
+                <br>
+                <input type="radio" name="size" id="size-regular" class="me-4" onclick="changeProductSize('regular')" checked>
+                <label for="size-large"><b>Regular (Grow Bag Regular 15 x 12 HDPE)</b></label>
+                <br>
+                <!-- <input type="radio" name="size" id="size-large" class="me-4" onclick="changeProductSize('large')">
+                <label for="size-large"><b>Large (Grow Bag Large 30 x 18 HDPE)</b></label> -->
+                <label></label>
+        </div>
+        <!-- Additional Growbag Options -->
+        <div class="material-options ps-3">
+            <h5>Material:</h5>
+            <label for="material-cotton">Cotton</label>
+            <input type="radio" name="material" id="material-cotton" class="me-4">
+
+            <label for="material-polyester">Polyester</label>
+            <input type="radio" name="material" id="material-polyester" class="me-4">
+        </div>
+        <div class="additional-options ps-3 mt-3">
+            <h5>Additional:</h5>        
+            <label for="drainage-holes">Drainage Holes</label>
+            <input type="radio" name="drainage" id="drainage-holes">
+        </div>
+        <div class="icons-options ps-3 mt-3">
+            <h5>Icons:</h5>        
+            <label for="icon-sun"><i class="fas fa-sun"></i> Sun</label>
+            <input type="radio" name="icons" id="icon-sun"class="me-4" onclick="toggleIcon('hidden-sun-icon')">
+
+            <label for="icon-leaf"><i class="fas fa-leaf"></i> Leaf</label>
+            <input type="radio" name="icons" id="icon-leaf" class="me-4" onclick="toggleIcon('hidden-leaf-icon')">
+            
+            <label for="icon-water"><i class="fas fa-tint"></i> Water Droplet</label>
+            <input type="radio" name="icons" id="icon-water" class="me-4" onclick="toggleIcon('hidden-water-icon')">
+            
+            <label for="icon-globe"><i class="fas fa-globe"></i> Globe</label>
+            <input type="radio" name="icons" id="icon-globe" class="me-4" onclick="toggleIcon('hidden-globe-icon')">
+            
+            <label for="icon-heart"><i class="fas fa-heart"></i> Heart</label>
+            <input type="radio" name="icons" id="icon-heart" class="me-4" onclick="toggleIcon('hidden-heart-icon')">
+
+            <label for="icon-tree"><i class="fa-solid fa-tree"></i> Tree</label>
+            <input type="radio" name="icons" id="icon-tree" class="me-4" onclick="toggleIcon('hidden-tree-icon')">
+            
+            <label for="icon-moon"><i class="fas fa-moon"></i> Moon</label>
+            <input type="radio" name="icons" id="icon-moon" class="me-4" onclick="toggleIcon('hidden-moon-icon')">
+            
+            <label for="icon-plant"><i class="fas fa-seedling"></i>Seedling</label>
+            <input type="radio" name="icons" id="icon-plant" class="me-4" onclick="toggleIcon('hidden-seedling-icon')">
+            
+            <label for="icon-vegetable"><i class="fas fa-carrot"></i> Vegetable</label>
+            <input type="radio" name="icon" id="icon-vegetable" class="me-4" onclick="toggleIcon('hidden-vegetable-icon')">
+            
+            <label for="icon-fruit"><i class="fas fa-apple-alt"></i> Fruit</label>
+            <input type="radio" name="icon" id="icon-fruit" class="me-4" onclick="toggleIcon('hidden-fruit-icon')">
+            
+            <label for="icon-crops"><i class="fa-solid fa-wheat-awn"></i> Crop</label>
+            <input type="radio" name="icon" id="icon-crops" class="me-4" onclick="toggleIcon('hidden-wheat-icon')">
+
+            <label for="icon-cannabis"><i class="fa-solid fa-cannabis"></i> Cannabis</label>
+            <input type="radio" name="icon" id="icon-cannabis" class="me-4" onclick="toggleIcon('hidden-cannabis-icon')">
+        </div>
+        <button type="button" class="btn btn-danger mt-3 ms-3" onclick="clearIcons()">Clear</button>
+        
+    </div>
+    
+</div>
+
+        <!-- Footer -->
+        <footer class="footer mt-5 py-3 bg-dark">
+            <div class="container text-center">
+            <div class="row text-center text-md-left align-items-center">
+                <div class="col-md-5">
+                <p class="text-light">Copyright @2023 All rights are preserved</p>
+                </div>
+                <div class="col-md-7">
+                <a href="#" class="social-icons text-white"><i class="fab fa-facebook-f"></i></a>
+                <span class="mx-2"></span> <!-- Add space between icons using a span element with margin -->
+                <a href="#" class="social-icons text-white"><i class="fab fa-twitter"></i></a>
+                <span class="mx-2"></span> <!-- Add space between icons -->
+                <a href="#" class="social-icons text-white"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+            </div>
+        </footer>
+
+        <script>
+            function toggleIcon(iconId) {
+                // Array of icon IDs
+                var iconIds = [
+                    'hidden-sun-icon', 'hidden-leaf-icon', 'hidden-water-icon',
+                    'hidden-globe-icon', 'hidden-heart-icon', 'hidden-tree-icon',
+                    'hidden-moon-icon', 'hidden-seedling-icon', 'hidden-vegetable-icon',
+                    'hidden-fruit-icon', 'hidden-wheat-icon', 'hidden-cannabis-icon'
+                ];
+
+                // Hide all icons
+                iconIds.forEach(function (id) {
+                    var icon = document.getElementById(id);
+                    if (icon) {
+                        icon.setAttribute('hidden', 'true');
+                    }
+                });
+
+                // Show the selected icon
+                var selectedIcon = document.getElementById(iconId);
+                if (selectedIcon) {
+                    selectedIcon.removeAttribute('hidden');
+                }
+            }
+            function clearIcons() {
+                var radioButtons = document.querySelectorAll('input[name="icons"]');
+                radioButtons.forEach(function (radioButton) {
+                    radioButton.checked = false;
+                });
+
+                // Hide all icons
+                toggleIcon('');
+            }
+
+            function changeProductSize(size) {
+                var productImage = document.getElementById('product-image');
+                
+                switch (size) {
+                    case 'small':
+                        productImage.src = "{% static 'img/growbag_small1.jpg' %}";
+                        productImage.style.height = '330px'; // Set the desired height
+                        productImage.style.width = '350px';  // Set the desired width
+                        break;
+                    case 'medium':
+                        productImage.src = "{% static 'img/growbag_medium1.jpg' %}";
+                        productImage.style.height = '300px'; // Set the desired height
+                        productImage.style.width = '370px';  // Set the desired width
+                        break;
+                    case 'regular':
+                        productImage.src = "{% static 'img/growbag_regular.jpeg' %}";
+                        productImage.style.height = '300px'; // Set the desired height
+                        productImage.style.width = '300px';
+                        break;
+                    default:
+                        break;
+                }
+            }
+        </script>
 </body>
 
 </html>

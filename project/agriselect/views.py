@@ -1,7 +1,7 @@
 from django.shortcuts import render,redirect,get_object_or_404
 from django.http import JsonResponse
 from .forms import ProductForm
-from .models import Customer_Profile,Product, Wishlist, Address, CartItem, Order, ShippingAddress, CustomerReview
+from .models import Customer_Profile,Product, Wishlist, Address, CartItem, Order, ShippingAddress, CustomerReview, Growbag
 from userapp.models import CustomUser,SellerDetails
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import never_cache
@@ -97,6 +97,28 @@ def search_products(request):
 
     response_data = {'results': search_results}
     return JsonResponse(response_data)
+
+def search_product(request, product_name):
+    print(product_name)
+    
+    # Perform the search using a Q object to filter the Product model
+    results = Product.objects.filter(product_name__icontains=product_name)
+    
+    # Serialize the results to JSON
+    serialized_results = []
+    
+    if results.exists():  # Check if there are any results
+        for result in results:
+            serialized_results.append({
+                'id': result.id,
+                'product_name': result.product_name,
+                'product_image': result.product_image.url,
+            })
+            print(result.id)
+    else:
+        print("No results found.")
+
+    return JsonResponse({'results': serialized_results})
 
 
 def customer_allProducts(request, category='All'):
@@ -897,4 +919,18 @@ def product_seeds(request):
 
 
 def customer_growbag(request):
+    if request.method == 'POST':
+        growbag = Growbag()
+        growbag.color = request.POST.get('color', '')
+        growbag.size = request.POST.get('size', '')
+        growbag.material = request.POST.get('material', '')
+        growbag.drainage_holes = request.POST.get('drainage-holes') == 'on'  # Assuming it's a checkbox
+        growbag.icon = request.POST.get('icons', '')
+        growbag.save()
+        return redirect('customer_cart')
+    
     return render(request, 'customer_growbag.html')
+
+def add_growbag(request):
+
+    return render(request, 'customer_Cart.html')

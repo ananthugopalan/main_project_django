@@ -140,3 +140,11 @@ class CustomerReview(models.Model):
     
     def __str__(self):
         return f'{self.user.email} - {self.product.product_name}'
+    
+
+class Growbag(models.Model):
+    color = models.CharField(max_length=255)
+    size = models.CharField(max_length=255)
+    material = models.CharField(max_length=255)
+    drainage_holes = models.BooleanField(default=False)
+    icon = models.CharField(max_length=255, null=True, blank=True)

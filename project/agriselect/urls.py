@@ -64,5 +64,12 @@ urlpatterns = [
 
     path('product_crops/', views.product_crops, name='product_crops'),
     path('product_seeds/', views.product_seeds, name='product_seeds'),
+
+
+    path('add_growbag/', views.add_growbag, name='add_growbag'),
     path('customer_growbag/', views.customer_growbag, name='customer_growbag'),
+
+    path('search_product/<str:product_name>', views.search_product, name='search_product'),
+
+    
 ]
