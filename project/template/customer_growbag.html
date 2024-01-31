@@ -216,7 +216,7 @@
                                 <li>
                                     <form id="search-form" class="px-4 py-3">
                                         <div class="mb-3 d-flex">
-                                            <input type="text" class="form-control me-2" id="inputModalSearch" name="q" placeholder="Search ...">
+                                            <input type="text" class="form-control me-2" id="inputModalSearch" name="q" placeholder="Search ..." autocomplete="off">
                                         
                                         <button type="submit" class="btn btn-primary"><i class="fa fa-fw fa-search"></i></button></div>
                                         <div id="search-results"></div>
@@ -441,6 +441,61 @@
                         break;
                 }
             }
+        </script>
+
+        <script>
+            $(document).ready(function () {
+        // Function to perform AJAX search
+        function performSearch() {
+            const stringinput = $('#inputModalSearch').val();  // Get the search stringinput from the input field
+            console.log(stringinput)
+            
+            $.ajax({
+                url: "{% url 'search_product' 0 %}".replace("0", stringinput),  // URL to the search view
+                type: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    console.log(data)
+                    // Process the JSON response and update the modal's search results
+                    
+                    const results = data.results;
+                    const resultList = $('#search-results');
+                    resultList.empty();  // Clear previous results
+                    
+                    if (stringinput == "") {
+                        console.log("ss")
+                        resultList.empty();
+                        resultList.append('<li class="list-group-item">Please enter a search query.</li>');
+                    } else if (results.length > 0) {
+                        for (const result of results) {
+                            const productHtml = `
+                                <li class="list-group-item">
+                                    <a href="{% url 'customer_ProductView' 0 %}">
+                                    <div class="card" style="max-width: 200px;" >
+                                        <div class="card-body">
+                                            <h4 class="card-title">${result.product_name}</h4>
+                                        </div>
+                                    </div>
+                                    </a>
+                                </li>
+                            `.replace("0", result.id);
+                            resultList.append(productHtml);
+                        }
+                    } else {
+                        resultList.append('<li class="list-group-item">No results found.</li>');                    }
+                },
+                error: function () {
+                    console.error('Error occurred during the search request.');
+                }
+            });
+        }
+    
+        // Handle keyup event in the search input field
+        $('#inputModalSearch').on('keyup', function () {
+            performSearch();  // Call the search function on keyup
+        });
+    
+    });
         </script>
 </body>
 
