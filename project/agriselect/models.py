@@ -148,3 +148,9 @@ class Growbag(models.Model):
     material = models.CharField(max_length=255)
     drainage_holes = models.BooleanField(default=False)
     icon = models.CharField(max_length=255, null=True, blank=True)
+
+class Notification(models.Model):
+    seller = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    message = models.TextField()
+    read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)

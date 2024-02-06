@@ -98,95 +98,67 @@
     </nav>
     <!-- Close Header -->
 
-<!-- Products List Table -->
-<div class="container mt-4 shadow mb-5">
-    <table class="table">
+    <br>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 style="margin-left: 130px;">Your Order History</h3>
+        <form method="get" action="{% url 'seller_orders' %}" class="d-flex">
+            <div class="mb-3 me-2">
+                <input type="date" class="form-control" id="dateFilter" name="date_filter" value="{{ request.GET.date_filter }}">
+            </div>
+            <button type="submit" class="btn btn-secondary" style="height: 40px;">Filter</button>
+        </form>
+    </div>
+    
+    <table class="table table-bordered mt-4 mb-4" style="align-items: center; margin: auto; width: 80%;">
         <thead>
             <tr>
-                <th scope="col">Image</th>
-                <th scope="col">Product Name</th>
-                <th scope="col">Price</th>
-                <th scope="col">Category</th>
-                <th scope="col">Subcategory</th>
-                <th scope="col">Stock</th>
-                <th scope="col">Actions</th>
+                <th class="bg-warning"><b>Order Date</b></th>
+                <th class="bg-warning"><b>Total Price</b></th>
+                <th class="bg-warning"><b>Product Details(Item,Qty,Price)</b></th>
             </tr>
         </thead>
         <tbody>
-            {% for product in page %}
+            {% for order_info in orders_data %}
                 <tr>
-                    <td><img src="{{ product.product_image.url }}" alt="{{ product.product_name }}" style="height: 50px; width: 50px; object-fit: cover;"></td>
-                    <td>{{ product.product_name }}</td>
-                    <td>₹{{ product.price }}</td>
-                    <td>{{ product.product_category }}</td>
-                    <td>{{ product.product_subcategory }}</td>
-                    <td>{{ product.stock }}</td>
+                    <td>{{ order_info.order_date }}</td>
+                    <td>{{ order_info.total_price }}</td>
                     <td>
-                        <a href="{% url 'seller_updateProduct' product.id %}">
-                            <button class="btn btn-primary btn-sm me-2 mb-2">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                        </a>
-                        <!-- Delete Button -->
-                        <form method="post" action="{% url 'delete_product' product.id %}">
-                            {% csrf_token %}
-                            <button class="btn btn-danger btn-sm" onclick="return confirmDelete()">
-                                <i class="fas fa-trash-alt"></i>
-                            </button>
-                        </form>
+                        <table class="table table-bordered">
+                            <tbody>
+                                {% for item_info in order_info.items %}
+                                    <tr>
+                                        <td>
+                                            
+                                            <img src="{{ item_info.product_image }}" alt="{{ item_info.product_name }}" style="max-width: 50px; max-height: 50px;">
+                                        </td>
+                                        <td>{{ item_info.product_name }}</td>
+                                        <td>{{ item_info.quantity }}</td>
+                                        <td>{{ item_info.total_item_price }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
                     </td>
                 </tr>
             {% endfor %}
         </tbody>
     </table>
-
-    <div class="row mt-4">
-        <div class="col-md-12 text-center">
-            <ul class="pagination">
-                {% if page.has_previous %}
-                    <li class="page-item">
-                        <a class="page-link" href="?page=1">First</a>
-                    </li>
-                    <li class="page-item">
-                        <a class="page-link" href="?page={{ page.previous_page_number }}">Previous</a>
-                    </li>
-                {% endif %}
-                
-                {% for num in page.paginator.page_range %}
-                    <li class="page-item {% if num == page.number %}active{% endif %}">
-                        <a class="page-link" href="?page={{ num }}">{{ num }}</a>
-                    </li>
-                {% endfor %}
-                
-                {% if page.has_next %}
-                    <li class="page-item">
-                        <a class="page-link" href="?page={{ page.next_page_number }}">Next</a>
-                    </li>
-                    <li class="page-item">
-                        <a class="page-link" href="?page={{ page.paginator.num_pages }}">Last</a>
-                    </li>
-                {% endif %}
-            </ul>
-        </div>
-    </div>
-</div>
-
-
+    
 
 
         <!-- Footer -->
-    <footer class="footer mt-0 py-3 bg-dark">
-        <div class="container text-center">
-        <div class="row text-center text-md-left align-items-center">
-            <div class="col-md-5">
-            <p class="text-light">Copyright @2023 All rights are preserved</p>
-            </div>
-            <div class="col-md-7">
-            <a href="#" class="social-icons text-white"><i class="fab fa-facebook-f"></i></a>
-            <span class="mx-2"></span> <!-- Add space between icons using a span element with margin -->
-            <a href="#" class="social-icons text-white"><i class="fab fa-twitter"></i></a>
-            <span class="mx-2"></span> <!-- Add space between icons -->
-            <a href="#" class="social-icons text-white"><i class="fab fa-instagram"></i></a>
+        <footer class="footer mt-0 py-3 bg-dark">
+            <div class="container text-center">
+            <div class="row text-center text-md-left align-items-center">
+                <div class="col-md-5">
+                <p class="text-light">Copyright @2023 All rights are preserved</p>
+                </div>
+                <div class="col-md-7">
+                <a href="#" class="social-icons text-white"><i class="fab fa-facebook-f"></i></a>
+                <span class="mx-2"></span> <!-- Add space between icons using a span element with margin -->
+                <a href="#" class="social-icons text-white"><i class="fab fa-twitter"></i></a>
+                <span class="mx-2"></span> <!-- Add space between icons -->
+                <a href="#" class="social-icons text-white"><i class="fab fa-instagram"></i></a>
             </div>
         </div>
         </div>

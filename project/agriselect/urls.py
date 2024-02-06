@@ -43,11 +43,14 @@ urlpatterns = [
     path('seller_dashboard/',views.seller_dashboard,name='seller_dashboard'),
     path('sales_statistics/', views.sales_statistics, name='sales_statistics'),
     path('get_product_statistics/', views.get_product_statistics, name='get_product_statistics'),
-
+    path('seller_orders/', views.seller_orders, name='seller_orders'),
     path('seller_Profile/',views.seller_Profile,name='seller_Profile'),
     path('seller_addProducts/', views.seller_addProducts, name='seller_addProducts'),
     path('seller_updateProduct/<int:product_id>/', views.seller_updateProduct, name='seller_updateProduct'),
     path('seller_Products/',views.seller_Products,name='seller_Products'),
+    path('low-stock-notification/<int:seller_id>/', views.low_stock_notification, name='low_stock_notification'),
+    path('show_notification/<int:seller_id>',views.showNotification,name="show_notification"),
+    path('mark_notifications_as_read/',views.mark_notifications_as_read,name="mark_notifications_as_read"),
     path('delete_product/<int:product_id>/', views.delete_product, name='delete_product'),
 
 

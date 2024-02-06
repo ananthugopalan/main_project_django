@@ -132,10 +132,10 @@
    
         <!--nav ends -->
 
-        <div class="container mt-5" style="margin-left:2rem;">
+         <div class="container mt-5" style="margin-left:2rem;">
             <div class="row">
-                <div class="col-md-3 no-padding" style="font-family: Arial, Helvetica, sans-serif;">
-                    <!-- Category Section -->
+                <!--<div class="col-md-3 no-padding" style="font-family: Arial, Helvetica, sans-serif;">
+                    
                     <div class="category-section">
                         <h4>Categories</h4>
                         <ul class="list-group mt-3">
@@ -145,11 +145,8 @@
                             <li class="list-group-item mt-1 col-md-10">
                                 <a href="#" class="btn btn-block">Seeds</a>
                             </li>
-                            <!-- Add more categories as needed -->
                         </ul>
                     </div>
-
-                    <!-- Subcategory Section -->
                     <div class="subcategory-section mt-4">
                         <h4>Subcategories</h4>
                         <ul class="list-group mt-3">
@@ -168,11 +165,51 @@
                             <li class="list-group-item mt-1 col-md-10">
                                 <a href="#" class="btn btn-block">Cereals</a>
                             </li>
-                            <!-- Add more subcategories as needed -->
                         </ul>
                     </div>
+                </div> -->
+                <div class="col-sm-3 col-3 text-left m-b-20 bg-light>
+                    <form method="get" action="#">
+                        <div class="form-row">
+                            <div class="form-group col-md-3">
+                                <label class="col-form-label">Filter by Category:</label>
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input" id="cropsFilter" name="category" value="Crops">
+                                    <label class="form-check-label" for="cropsFilter">Crops</label>
+                                </div>
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input" id="seedsFilter" name="category" value="Seeds">
+                                    <label class="form-check-label" for="seedsFilter">Seeds</label>
+                                </div>
+                            </div>
+                        
+                            <div class="form-group col-md-3">
+                                <label class="col-form-label">Filter by Subcategory:</label>
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input" id="vegetablesFilter" name="subcategory" value="Vegetables">
+                                    <label class="form-check-label" for="vegetablerFilter">Vegetables</label>
+                                </div>                                
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input" id="fruitsFilter" name="subcategory" value="Fruits">
+                                    <label class="form-check-label" for="fruitsFilter">Fruits</label>
+                                </div>
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input" id="flowersFilter" name="subcategory" value="Flowers">
+                                    <label class="form-check-label" for="flowersFilter">Flowers</label>
+                                </div>
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input" id="cerealsFilter" name="subcategory" value="Cereals">
+                                    <label class="form-check-label" for="cerealsFilter">Cereals</label>
+                                </div>
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input" id="herbsFilter" name="subcategory" value="Herbs">
+                                    <label class="form-check-label" for="HerbsFilter">Herbs</label>
+                                </div>
+                            </div>
+                        </div>                    
+                        <!-- <button type="submit" class="btn btn-primary">Apply Filter</button> -->
+                    </form>
                 </div>
-                
 
 
                 <div class="col-md-9">

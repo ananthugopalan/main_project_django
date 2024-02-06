@@ -1,7 +1,7 @@
 from django.shortcuts import render,redirect,get_object_or_404
 from django.http import JsonResponse
 from .forms import ProductForm
-from .models import Customer_Profile,Product, Wishlist, Address, CartItem, Order, ShippingAddress, CustomerReview, Growbag
+from .models import Customer_Profile,Product, Wishlist, Address, CartItem, Order, ShippingAddress, CustomerReview, Growbag, Notification
 from userapp.models import CustomUser,SellerDetails
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import never_cache
@@ -312,7 +312,7 @@ def add_review(request, product_id):
     return redirect('customer_ProductView', product_id=product_id)
 
 
-
+@login_required(login_url='user_login')
 def customer_OrderView(request):
     user = request.user
     # Fetch the user's orders and related products
@@ -659,8 +659,10 @@ from django.db.models import Count
 def seller_dashboard(request):
     if request.user.is_authenticated:
         # Get the count of products for the logged-in seller
-        product_count = Product.objects.filter(seller=request.user).count()
-        seller_products = Product.objects.filter(seller=request.user)
+        current_seller = request.user
+        product_count = Product.objects.filter(seller=current_seller).count()
+        seller_products = Product.objects.filter(seller=current_seller)
+        notification = Notification.objects.filter(seller_id=request.user.id,read=False).count()
         order_count = Order.objects.filter(cart_items__product__in=seller_products).count()
         products_sold_quantity = CartItem.objects.filter(
                 user=request.user,
@@ -674,6 +676,7 @@ def seller_dashboard(request):
             'product_count': product_count,
             'order_count': order_count,
             'products_sold_quantity': products_sold_quantity,
+            'notification':notification
             # Add other counts to the context if needed
         }
 
@@ -735,11 +738,74 @@ def sales_statistics(request):
     return render(request, 'seller_dashboard.html', context)
 
 
+from datetime import datetime
+
+def seller_orders(request):
+    seller_id = request.user.id
+    date_filter = request.GET.get('date_filter')
+
+    # Step 1: Query orders for a specific seller with successful payment status
+    seller_orders = Order.objects.filter(cart_items__product__seller_id=seller_id, payment_status=Order.PaymentStatusChoices.SUCCESSFUL)
+
+    # Step 2: Filter orders based on the provided date
+    if date_filter:
+        date_filter = datetime.strptime(date_filter, '%Y-%m-%d').date()
+        seller_orders = seller_orders.filter(order_date__date=date_filter)
+
+    seller_orders = seller_orders.distinct()
+
+    # Step 3: Extract relevant information from orders
+    orders_data = []
+    for order in seller_orders:
+        order_info = {
+            'order_date': order.order_date,
+            'total_price': order.total_price,
+            'items': []
+        }
+
+        # Extract information about each bought item in the order
+        for cart_item in order.cart_items.all():
+            if cart_item.product.seller_id == seller_id:
+                item_info = {
+                    'product_image': cart_item.product.product_image.url,
+                    'product_name': cart_item.product.product_name,
+                    'quantity': cart_item.quantity,
+                    'total_item_price': cart_item.total_price,
+                }
+                order_info['items'].append(item_info)
+
+        orders_data.append(order_info)
+
+    # Step 4: Pass the data to the template
+    context = {'orders_data': orders_data}
+    
+    return render(request, 'seller_orders.html', context)
 
 
 
+@login_required
+def low_stock_notification(request, seller_id):
+    products=Product.objects.filter(seller_id=seller_id)
+    for i in products:
+        if i.stock<5:
+            stock=Notification(
+                seller_id=seller_id,
+                message="The product "+i.product_name+" is on low stock with "+str(i.stock),
+            )
+            stock.save()
+            print("stock")
+    return redirect("seller_dashboard")
 
+@login_required
+def showNotification(request,seller_id):
+    notifications=Notification.objects.filter(seller_id=seller_id)
+    return render(request,"notification_list.html",{'notifications':notifications})
 
+@login_required
+def mark_notifications_as_read(request):
+    noti=Notification.objects.filter(seller_id=request.user.id,read=False)
+    noti.delete()
+    return redirect('seller_dashboard')
 
 
 
@@ -888,7 +954,7 @@ def paymenthandler(request):
 
 
 
-
+@login_required(login_url='user_login')
 def product_crops(request):
     crop_products = Product.objects.filter(product_category='crops',status__in=['in_stock', 'out_of_stock'])
     products_per_page = 6  # You can adjust this number as needed
@@ -903,6 +969,7 @@ def product_crops(request):
     crop_products_page = paginator.get_page(page_number)
     return render(request, 'product_crops.html', {'crop_products_page': crop_products_page})
 
+@login_required(login_url='user_login')
 def product_seeds(request):
     seeds_products = Product.objects.filter(product_category='seeds',status__in=['in_stock', 'out_of_stock'])
     products_per_page = 6  # You can adjust this number as needed
@@ -917,7 +984,7 @@ def product_seeds(request):
     seeds_products_page = paginator.get_page(page_number)
     return render(request, 'product_seeds.html', {'seeds_products_page': seeds_products_page})
 
-
+@login_required(login_url='user_login')
 def customer_growbag(request):
     if request.method == 'POST':
         growbag = Growbag()

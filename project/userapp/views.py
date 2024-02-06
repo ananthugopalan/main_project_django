@@ -201,8 +201,9 @@ def user_login(request):
             user = authenticate(request, email=email, password=password)
             if user is not None:
                 auth_login(request, user) 
-                if user.is_seller:      
-                    return redirect('seller_dashboard')
+                if user.is_seller:  
+                    low_stock_notification_url = reverse('low_stock_notification', args=[user.id])
+                    return redirect(low_stock_notification_url)
                 elif user.is_customer: 
                     return redirect('/')
                 elif user.is_superuser: 

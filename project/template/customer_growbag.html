@@ -266,7 +266,8 @@
         <input type="radio" name="color" id="color-3" hidden>
         <input type="radio" name="color" id="color-4" hidden>
         <div class="product" id="image">
-            <img id="product-image" src="{% static 'img/growbag_regular.jpeg' %}" alt="Product" height="300px" width="300px">
+            <div id="description" class="text-success fw-bold fst-italic">Ideal for vegetables, flowering plants, small bushy plants</div>
+            <img id="product-image" src="{% static 'img/growbag_regular.jpeg' %}" alt="Product" height="300px" width="300px">    
             <i class="fas fa-seedling icon" style="font-size: 70px;" id="hidden-seedling-icon" hidden></i>
             <i class="fas fa-sun icon" style="font-size: 70px;" id="hidden-sun-icon" hidden></i>
             <i class="fas fa-leaf icon" style="font-size: 70px;" id="hidden-leaf-icon" hidden></i>
@@ -288,6 +289,7 @@
             <label for="color-3"></label>
             <label for="color-4"></label>
         </div>
+        <div id="price" class="mt-4">Price:₹ 140</div> <!-- Display initial price -->
         <button type="button" class="btn btn-warning mt-3 me-4 cart_btn">Add to Cart</button>
     </section>
 
@@ -304,63 +306,53 @@
                 <input type="radio" name="size" id="size-regular" class="me-4" onclick="changeProductSize('regular')" checked>
                 <label for="size-large"><b>Regular (Grow Bag Regular 15 x 12 HDPE)</b></label>
                 <br>
-                <!-- <input type="radio" name="size" id="size-large" class="me-4" onclick="changeProductSize('large')">
-                <label for="size-large"><b>Large (Grow Bag Large 30 x 18 HDPE)</b></label> -->
-                <label></label>
         </div>
-        <!-- Additional Growbag Options -->
-        <div class="material-options ps-3">
-            <h5>Material:</h5>
-            <label for="material-cotton">Cotton</label>
-            <input type="radio" name="material" id="material-cotton" class="me-4">
 
-            <label for="material-polyester">Polyester</label>
-            <input type="radio" name="material" id="material-polyester" class="me-4">
-        </div>
+        <!-- Additional Growbag Options -->        
         <div class="additional-options ps-3 mt-3">
             <h5>Additional:</h5>        
             <label for="drainage-holes">Drainage Holes</label>
-            <input type="radio" name="drainage" id="drainage-holes">
+            <input type="radio" name="drainage" id="drainage-holes" onclick="updatePrice()">
         </div>
         <div class="icons-options ps-3 mt-3">
             <h5>Icons:</h5>        
-            <label for="icon-sun"><i class="fas fa-sun"></i> Sun</label>
+            <label for="icon-sun"><i class="fas fa-sun"></i></label>
             <input type="radio" name="icons" id="icon-sun"class="me-4" onclick="toggleIcon('hidden-sun-icon')">
 
-            <label for="icon-leaf"><i class="fas fa-leaf"></i> Leaf</label>
+            <label for="icon-leaf"><i class="fas fa-leaf"></i></label>
             <input type="radio" name="icons" id="icon-leaf" class="me-4" onclick="toggleIcon('hidden-leaf-icon')">
             
-            <label for="icon-water"><i class="fas fa-tint"></i> Water Droplet</label>
+            <label for="icon-water"><i class="fas fa-tint"></i></label>
             <input type="radio" name="icons" id="icon-water" class="me-4" onclick="toggleIcon('hidden-water-icon')">
             
-            <label for="icon-globe"><i class="fas fa-globe"></i> Globe</label>
+            <label for="icon-globe"><i class="fas fa-globe"></i></label>
             <input type="radio" name="icons" id="icon-globe" class="me-4" onclick="toggleIcon('hidden-globe-icon')">
             
-            <label for="icon-heart"><i class="fas fa-heart"></i> Heart</label>
+            <label for="icon-heart"><i class="fas fa-heart"></i></label>
             <input type="radio" name="icons" id="icon-heart" class="me-4" onclick="toggleIcon('hidden-heart-icon')">
-
-            <label for="icon-tree"><i class="fa-solid fa-tree"></i> Tree</label>
-            <input type="radio" name="icons" id="icon-tree" class="me-4" onclick="toggleIcon('hidden-tree-icon')">
             
-            <label for="icon-moon"><i class="fas fa-moon"></i> Moon</label>
+            <label for="icon-tree"><i class="fa-solid fa-tree"></i></label>
+            <input type="radio" name="icons" id="icon-tree" class="me-4" onclick="toggleIcon('hidden-tree-icon')">
+            <br>
+            <label for="icon-moon"><i class="fas fa-moon"></i></label>
             <input type="radio" name="icons" id="icon-moon" class="me-4" onclick="toggleIcon('hidden-moon-icon')">
             
-            <label for="icon-plant"><i class="fas fa-seedling"></i>Seedling</label>
+            <label for="icon-plant"><i class="fas fa-seedling"></i></label>
             <input type="radio" name="icons" id="icon-plant" class="me-4" onclick="toggleIcon('hidden-seedling-icon')">
             
-            <label for="icon-vegetable"><i class="fas fa-carrot"></i> Vegetable</label>
+            <label for="icon-vegetable"><i class="fas fa-carrot"></i></label>
             <input type="radio" name="icon" id="icon-vegetable" class="me-4" onclick="toggleIcon('hidden-vegetable-icon')">
             
-            <label for="icon-fruit"><i class="fas fa-apple-alt"></i> Fruit</label>
+            <label for="icon-fruit"><i class="fas fa-apple-alt"></i></label>
             <input type="radio" name="icon" id="icon-fruit" class="me-4" onclick="toggleIcon('hidden-fruit-icon')">
             
-            <label for="icon-crops"><i class="fa-solid fa-wheat-awn"></i> Crop</label>
+            <label for="icon-crops"><i class="fa-solid fa-wheat-awn"></i></label>
             <input type="radio" name="icon" id="icon-crops" class="me-4" onclick="toggleIcon('hidden-wheat-icon')">
 
-            <label for="icon-cannabis"><i class="fa-solid fa-cannabis"></i> Cannabis</label>
+            <label for="icon-cannabis"><i class="fa-solid fa-cannabis"></i></label>
             <input type="radio" name="icon" id="icon-cannabis" class="me-4" onclick="toggleIcon('hidden-cannabis-icon')">
         </div>
-        <button type="button" class="btn btn-danger mt-3 ms-3" onclick="clearIcons()">Clear</button>
+        <button type="button" class="btn btn-danger mt-3 ms-3 mb-3" onclick="clearIcons()">Clear Icons</button>
         
     </div>
     
@@ -420,27 +412,52 @@
 
             function changeProductSize(size) {
                 var productImage = document.getElementById('product-image');
-                
+                let price; 
+                let description;
+                let hasDrainage = document.getElementById('drainage-holes').checked;
                 switch (size) {
                     case 'small':
                         productImage.src = "{% static 'img/growbag_small1.jpg' %}";
                         productImage.style.height = '330px'; // Set the desired height
                         productImage.style.width = '350px';  // Set the desired width
+                        price = 60;
+                        document.getElementById('price').innerText = 'Price:₹ ' + price;
+                        document.getElementById('description').innerText = 'Ideal for small flowering plants, greens and herbs';
                         break;
                     case 'medium':
                         productImage.src = "{% static 'img/growbag_medium1.jpg' %}";
                         productImage.style.height = '300px'; // Set the desired height
                         productImage.style.width = '370px';  // Set the desired width
+                        price = 110;
+                        document.getElementById('price').innerText = 'Price:₹ ' + price;
+                        document.getElementById('description').innerText = 'Ideal for vegetables and flowering plants';
                         break;
                     case 'regular':
                         productImage.src = "{% static 'img/growbag_regular.jpeg' %}";
                         productImage.style.height = '300px'; // Set the desired height
                         productImage.style.width = '300px';
+                        price = 140;
+                        document.getElementById('price').innerText = 'Price:₹ ' + price;
+                        document.getElementById('description').innerText = 'Ideal for vegetables, flowering plants, small bushy plants';
                         break;
                     default:
                         break;
                 }
             }
+            function updatePrice() {
+                // Get the current price
+                let currentPrice = parseInt(document.getElementById('price').innerText.split(' ')[1]);
+                console.log("Current Price: ", currentPrice);
+
+                // Add Rs 20 if drainage option is selected
+                let hasDrainage = document.getElementById('drainage-holes').checked;
+                if (hasDrainage) {
+                    currentPrice += 20;
+                }
+
+                // Update the price display
+                document.getElementById('price').innerText = "Price: ₹ " + currentPrice;
+            }            
         </script>
 
         <script>
