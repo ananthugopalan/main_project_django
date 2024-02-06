@@ -7,8 +7,9 @@ urlpatterns = [
     path('',views.index,name='index'),
 
     #customer
-    path('search/', views.search_products, name='search_products'),
+    # path('search/', views.search_products, name='search_products'),
     # path('search/', views.search_view, name='search_view'),
+    path('search_product/<str:product_name>', views.search_product, name='search_product'),
     path('customer_allProducts/',views.customer_allProducts,name='customer_allProducts'),
     
     path('customer_ProductView/<int:product_id>/',views.customer_ProductView,name='customer_ProductView'),
@@ -21,8 +22,6 @@ urlpatterns = [
     path('add_to_wishlist/<int:product_id>/', views.add_to_wishlist, name='add_to_wishlist'),
     path('remove_from_wishlist/<int:product_id>/', views.remove_from_wishlist, name='remove_from_wishlist'),
     path('customer_allProducts/<str:category>/', views.customer_allProducts, name='customer_allProducts'),
-
-
     path('customer_OrderView/',views.customer_OrderView,name='customer_OrderView'),
     path('customer/order/view/', CustomerOrderView.as_view(), name='customer_order_view'),
 
@@ -43,14 +42,11 @@ urlpatterns = [
     path('seller_dashboard/',views.seller_dashboard,name='seller_dashboard'),
     path('sales_statistics/', views.sales_statistics, name='sales_statistics'),
     path('get_product_statistics/', views.get_product_statistics, name='get_product_statistics'),
-    path('seller_orders/', views.seller_orders, name='seller_orders'),
+
     path('seller_Profile/',views.seller_Profile,name='seller_Profile'),
     path('seller_addProducts/', views.seller_addProducts, name='seller_addProducts'),
     path('seller_updateProduct/<int:product_id>/', views.seller_updateProduct, name='seller_updateProduct'),
     path('seller_Products/',views.seller_Products,name='seller_Products'),
-    path('low-stock-notification/<int:seller_id>/', views.low_stock_notification, name='low_stock_notification'),
-    path('show_notification/<int:seller_id>',views.showNotification,name="show_notification"),
-    path('mark_notifications_as_read/',views.mark_notifications_as_read,name="mark_notifications_as_read"),
     path('delete_product/<int:product_id>/', views.delete_product, name='delete_product'),
 
 
@@ -67,12 +63,5 @@ urlpatterns = [
 
     path('product_crops/', views.product_crops, name='product_crops'),
     path('product_seeds/', views.product_seeds, name='product_seeds'),
-
-
-    path('add_growbag/', views.add_growbag, name='add_growbag'),
     path('customer_growbag/', views.customer_growbag, name='customer_growbag'),
-
-    path('search_product/<str:product_name>', views.search_product, name='search_product'),
-
-    
 ]

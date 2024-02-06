@@ -66,37 +66,20 @@ def index(request):
     else:
         return render(request,'index.html', {'products_with_sentiment_sum': products_with_sentiment_sum })
     
-# def search_view(request):
-#     query = request.GET.get('query', '')
-#     results = []
+
+# def search_products(request):
+#     query = request.GET.get('q', '')
+#     results = [] 
 
 #     if query:
-#         # Perform a search query in your database based on the 'query' parameter
-#         # Replace this with your actual search logic
-#         products = Product.objects.filter(product_name__icontains=query)
+#         # Perform your search query here, for example, by filtering products based on the search query
+#         results = Product.objects.filter(product_name__icontains=query)
 
-#         for product in products:
-#             results.append({
-#                 'product_name': product.product_name,
-#                 'category': product.product_category,
-#                 'url': product.get_absolute_url(),  # Replace with the actual URL
-#             })
+#     # Prepare the search results as JSON data
+#     search_results = [{'id':product.id,'product_name': product.product_name, 'product_category': product.product_category} for product in results]
 
-#     return JsonResponse({'results': results})
-
-def search_products(request):
-    query = request.GET.get('q', '')
-    results = [] 
-
-    if query:
-        # Perform your search query here, for example, by filtering products based on the search query
-        results = Product.objects.filter(product_name__icontains=query)
-
-    # Prepare the search results as JSON data
-    search_results = [{'id':product.id,'product_name': product.product_name, 'product_category': product.product_category} for product in results]
-
-    response_data = {'results': search_results}
-    return JsonResponse(response_data)
+#     response_data = {'results': search_results}
+#     return JsonResponse(response_data)
 
 def search_product(request, product_name):
     print(product_name)

@@ -266,8 +266,9 @@
         <input type="radio" name="color" id="color-3" hidden>
         <input type="radio" name="color" id="color-4" hidden>
         <div class="product" id="image">
+            <img id="product-image" src="{% static 'img/growbag_regular.jpeg' %}" alt="Product" height="300px" width="300px">
             <div id="description" class="text-success fw-bold fst-italic">Ideal for vegetables, flowering plants, small bushy plants</div>
-            <img id="product-image" src="{% static 'img/growbag_regular.jpeg' %}" alt="Product" height="300px" width="300px">    
+    
             <i class="fas fa-seedling icon" style="font-size: 70px;" id="hidden-seedling-icon" hidden></i>
             <i class="fas fa-sun icon" style="font-size: 70px;" id="hidden-sun-icon" hidden></i>
             <i class="fas fa-leaf icon" style="font-size: 70px;" id="hidden-leaf-icon" hidden></i>
@@ -312,7 +313,7 @@
         <div class="additional-options ps-3 mt-3">
             <h5>Additional:</h5>        
             <label for="drainage-holes">Drainage Holes</label>
-            <input type="radio" name="drainage" id="drainage-holes" onclick="updatePrice()">
+            <input type="checkbox" name="drainage" id="drainage-holes" onclick="updatePrice()">
         </div>
         <div class="icons-options ps-3 mt-3">
             <h5>Icons:</h5>        
@@ -421,6 +422,9 @@
                         productImage.style.height = '330px'; // Set the desired height
                         productImage.style.width = '350px';  // Set the desired width
                         price = 60;
+                        if (document.getElementById('drainage-holes').checked) {
+                            price += 20; // Add Rs. 20 if drainage hole is checked
+                        }
                         document.getElementById('price').innerText = 'Price:₹ ' + price;
                         document.getElementById('description').innerText = 'Ideal for small flowering plants, greens and herbs';
                         break;
@@ -429,6 +433,9 @@
                         productImage.style.height = '300px'; // Set the desired height
                         productImage.style.width = '370px';  // Set the desired width
                         price = 110;
+                        if (document.getElementById('drainage-holes').checked) {
+                            price += 20; // Add Rs. 20 if drainage hole is checked
+                        }
                         document.getElementById('price').innerText = 'Price:₹ ' + price;
                         document.getElementById('description').innerText = 'Ideal for vegetables and flowering plants';
                         break;
@@ -437,6 +444,9 @@
                         productImage.style.height = '300px'; // Set the desired height
                         productImage.style.width = '300px';
                         price = 140;
+                        if (document.getElementById('drainage-holes').checked) {
+                            price += 20; // Add Rs. 20 if drainage hole is checked
+                        }
                         document.getElementById('price').innerText = 'Price:₹ ' + price;
                         document.getElementById('description').innerText = 'Ideal for vegetables, flowering plants, small bushy plants';
                         break;
@@ -453,10 +463,10 @@
                 let hasDrainage = document.getElementById('drainage-holes').checked;
                 if (hasDrainage) {
                     currentPrice += 20;
-                }
+                }                
 
                 // Update the price display
-                document.getElementById('price').innerText = "Price: ₹ " + currentPrice;
+                document.getElementById('price').innerText = "Price:₹ " + currentPrice;
             }            
         </script>
 
@@ -511,6 +521,20 @@
         $('#inputModalSearch').on('keyup', function () {
             performSearch();  // Call the search function on keyup
         });
+        $('#exampleModal').on('hidden.bs.modal', function (e) {
+        const resultList = $('#search-results');
+        resultList.empty();  // Clear search results when the modal is closed
+        $('#inputModalSearch').val('');  // Clear the search input field
+    });
+
+    // Clear search results when the document is clicked outside the modal
+    $(document).on('click', function (e) {
+        if (!$(e.target).closest('#exampleModal').length) {
+            const resultList = $('#search-results');
+            resultList.empty();  // Clear search results when clicked outside the modal
+            $('#inputModalSearch').val('');  // Clear the search input field
+        }
+    });
     
     });
         </script>
