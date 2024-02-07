@@ -162,7 +162,6 @@
                         <th scope="col">Ordered Products</th>
                         <th scope="col">Order Date</th>
                         <th scope="col">Total Price</th>
-                        <th scope="col">Payment Status</th>
                         <th scope="col">Invoice</th>
                     </tr>
                 </thead>
@@ -188,7 +187,6 @@
                             
                             <td>{{ order.order_date }}</td>
                             <td>₹{{ order.total_price }}</td>
-                            <td>{{ order.get_payment_status_display }}</td>
                             <td>
                                 {% if order.payment_status == 'successful' %}
                                     <a href="{% url 'generate_pdf' order.id %}" target="_blank">

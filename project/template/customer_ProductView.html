@@ -241,7 +241,7 @@
 </section>
 
 <!-- Add this section below the related products -->
-<section class="py-5">
+<section class="py-5 m-4">
     {% if user_has_purchased_product %}
 
     <div class="container px-4 px-lg-5 mt-5">
@@ -272,23 +272,7 @@
 
         <!-- Add space above the heading -->
         <div class="mt-4"></div>
-        <div class="customer-reviews-box border p-4">
-            <!-- Display existing reviews -->
-        {% for review in reviews %}
-            <div>
-                <p><strong>{{ review.user.email }}</strong> - {{ review.created_at|date:"F d, Y" }}</p>
-                <p>Rating: 
-                    {% for _ in ""|ljust:review.rating %}
-                        <i class="fas fa-star" style="color: #ffd700;"></i>
-                    {% endfor %}
-                    
-                </p>
-                <p>{{ review.comment }}</p>
-            </div>
-            <hr>
-        {% endfor %}
-
-        </div>
+        
     </div>
     {% else %}
     <p>You can only leave a review if you have purchased this product.</p>
@@ -296,7 +280,23 @@
 
 </section>
 
+<div class="customer-reviews-box border p-4 m-4">
+    <!-- Display existing reviews -->
+    {% for review in reviews %}
+        <div>
+            <p><strong>{{ review.user.email }}</strong> - {{ review.created_at|date:"F d, Y" }}</p>
+            <p>Rating: 
+                {% for _ in ""|ljust:review.rating %}
+                    <i class="fas fa-star" style="color: #ffd700;"></i>
+                {% endfor %}
+                
+            </p>
+            <p>{{ review.comment }}</p>
+        </div>
+        <hr>
+    {% endfor %}
 
+</div>
         <!-- Footer -->
     <footer class="footer mt-5 py-3 bg-dark">
         <div class="container text-center">

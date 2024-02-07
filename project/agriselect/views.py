@@ -1,7 +1,7 @@
 from django.shortcuts import render,redirect,get_object_or_404
 from django.http import JsonResponse
 from .forms import ProductForm
-from .models import Customer_Profile,Product, Wishlist, Address, CartItem, Order, ShippingAddress, CustomerReview, Growbag, Notification
+from .models import Customer_Profile,Product, Wishlist, Address, CartItem, Order, ShippingAddress, CustomerReview, Growbag, Notification, OrderNotification
 from userapp.models import CustomUser,SellerDetails
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import never_cache
@@ -299,7 +299,7 @@ def add_review(request, product_id):
 def customer_OrderView(request):
     user = request.user
     # Fetch the user's orders and related products
-    orders = Order.objects.filter(user=user).prefetch_related('cart_items').order_by('-order_date')
+    orders = Order.objects.filter(user=user, payment_status=Order.PaymentStatusChoices.SUCCESSFUL).prefetch_related('cart_items').order_by('-order_date')
 
     # Set the number of orders to display per page
     orders_per_page = 5
@@ -341,7 +341,7 @@ class CustomerOrderView(View):
         user = request.user
         date_filter = request.GET.get('date_filter')
 
-        orders = Order.objects.filter(user=user)
+        orders = Order.objects.filter(user=user, payment_status=Order.PaymentStatusChoices.SUCCESSFUL)
 
         if date_filter:
             # Check if date_filter is not None or empty
@@ -765,17 +765,22 @@ def seller_orders(request):
     return render(request, 'seller_orders.html', context)
 
 
+from django.db.models import Q
 
 @login_required
 def low_stock_notification(request, seller_id):
     products=Product.objects.filter(seller_id=seller_id)
     for i in products:
         if i.stock<5:
-            stock=Notification(
-                seller_id=seller_id,
-                message="The product "+i.product_name+" is on low stock with "+str(i.stock),
-            )
-            stock.save()
+            existing_notification = Notification.objects.filter(
+                Q(seller_id=seller_id) & Q(message__icontains=i.product_name)
+            ).exists()
+            if not existing_notification:
+                # Create a new notification only if a similar one does not exist
+                stock = Notification.objects.create(
+                    seller_id=seller_id,
+                    message=f"The product {i.product_name} is on low stock with {i.stock}",
+                )
             print("stock")
     return redirect("seller_dashboard")
 
@@ -791,9 +796,23 @@ def mark_notifications_as_read(request):
     return redirect('seller_dashboard')
 
 
+def order_notification(seller_id, product_id):
+    # Retrieve the order
+    print("function")
+    
+    # Assuming you have a list of products in the order
+    
 
-
-
+    product=Product.objects.get(id=product_id)
+    print(product_id)
+        # Create a notification for the seller if the product is associated with the seller
+    if product.seller_id == seller_id:
+        print("if")
+        notification = Notification(
+            seller_id=seller_id,
+            message=f"An order for the product {product.product_name} has been placed."
+        )
+        notification.save()
 
 
 
@@ -924,6 +943,9 @@ def paymenthandler(request):
                     if product.stock == 0:
                         product.status = Product.StatusChoices.OUT_OF_STOCK
                     product.save()
+
+                    
+                    order_notification(product.seller.id, product.id)
 
             cart_items = CartItem.objects.filter(user=request.user)
             for cart_item in cart_items:

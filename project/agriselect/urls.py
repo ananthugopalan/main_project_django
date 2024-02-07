@@ -42,6 +42,7 @@ urlpatterns = [
     path('seller_dashboard/',views.seller_dashboard,name='seller_dashboard'),
     path('sales_statistics/', views.sales_statistics, name='sales_statistics'),
     path('get_product_statistics/', views.get_product_statistics, name='get_product_statistics'),
+    path('seller_orders/',views.seller_orders,name='seller_orders'),
 
     path('seller_Profile/',views.seller_Profile,name='seller_Profile'),
     path('seller_addProducts/', views.seller_addProducts, name='seller_addProducts'),
@@ -63,5 +64,11 @@ urlpatterns = [
 
     path('product_crops/', views.product_crops, name='product_crops'),
     path('product_seeds/', views.product_seeds, name='product_seeds'),
+    
     path('customer_growbag/', views.customer_growbag, name='customer_growbag'),
+    
+    path('low-stock-notification/<int:seller_id>/', views.low_stock_notification, name='low_stock_notification'),
+    path('show_notification/<int:seller_id>',views.showNotification,name="show_notification"),
+    path('mark_notifications_as_read/',views.mark_notifications_as_read,name="mark_notifications_as_read"),
+    path('order-notification/<int:seller_id>/<int:order_id>/', views.order_notification, name='order_notification'),
 ]
