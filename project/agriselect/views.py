@@ -759,11 +759,23 @@ def seller_orders(request):
 
         orders_data.append(order_info)
 
+    # Paginate the orders_data
+    paginator = Paginator(orders_data, 6)  # Show 10 orders per page
+
+    page_number = request.GET.get('page')
+    try:
+        orders_data = paginator.page(page_number)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+        orders_data = paginator.page(1)
+    except EmptyPage:
+        # If page is out of range (e.g. 9999), deliver last page of results.
+        orders_data = paginator.page(paginator.num_pages)
+
     # Step 4: Pass the data to the template
     context = {'orders_data': orders_data}
     
     return render(request, 'seller_orders.html', context)
-
 
 from django.db.models import Q
 
@@ -992,17 +1004,23 @@ def product_seeds(request):
 @login_required(login_url='user_login')
 def customer_growbag(request):
     if request.method == 'POST':
-        growbag = Growbag()
-        growbag.color = request.POST.get('color', '')
-        growbag.size = request.POST.get('size', '')
-        growbag.material = request.POST.get('material', '')
-        growbag.drainage_holes = request.POST.get('drainage-holes') == 'on'  # Assuming it's a checkbox
-        growbag.icon = request.POST.get('icons', '')
+        color_chosen = request.POST.get('color')  # Get the chosen color from the form data
+        size_chosen = request.POST.get('size')  # Get the chosen size from the form data
+        drainage_holes = request.POST.get('drainage') == 'on'  # Check if drainage holes are selected
+        icon_chosen = request.POST.get('icons')  # Get the chosen icon from the form data
+        current_price = request.POST.get('price')  # Get the current price from the form data
+
+        # Create a new instance of the Growbag model with the form data
+        growbag = Growbag(
+            color_chosen=color_chosen,
+            size_chosen=size_chosen,
+            drainage_holes=drainage_holes,
+            icon_chosen=icon_chosen,
+            current_price=current_price
+        )
+
+        # Save the instance to the database
         growbag.save()
-        return redirect('customer_cart')
-    
+        return redirect('customer_growbag')
     return render(request, 'customer_growbag.html')
 
-def add_growbag(request):
-
-    return render(request, 'customer_Cart.html')

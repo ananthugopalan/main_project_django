@@ -143,11 +143,46 @@ class CustomerReview(models.Model):
     
 
 class Growbag(models.Model):
-    color = models.CharField(max_length=255)
-    size = models.CharField(max_length=255)
-    material = models.CharField(max_length=255)
-    drainage_holes = models.BooleanField(default=False)
-    icon = models.CharField(max_length=255, null=True, blank=True)
+    COLOR_CHOICES = [
+        ('brown', 'Brown'),
+        ('blue', 'Blue'),
+        ('green', 'Green'),
+        ('violet', 'Violet'),
+        ('red', 'Red'),
+        ('purple', 'Purple'),
+        # Add other color options as needed
+    ]
+    
+    SIZE_CHOICES = [
+        ('small', 'Small'),
+        ('medium', 'Medium'),
+        ('regular', 'Regular'),
+        # Add other size options as needed
+    ]
+    
+    ICON_CHOICES = [
+        ('sun', 'Sun'),
+        ('leaf', 'Leaf'),
+        ('water', 'Water'),
+        ('globe', 'Globe'),
+        ('heart', 'Heart'),
+        ('tree', 'Tree'),
+        ('moon', 'Moon'),
+        ('plant', 'Plant'),
+        ('vegetable', 'Vegetable'),
+        ('fruit', 'Fruit'),
+        ('crops', 'Crops'),
+        ('cannabis', 'Cannabis'),
+    ]
+
+    color_chosen = models.CharField(max_length=255, choices=COLOR_CHOICES, default='brown')
+    size_chosen = models.CharField(max_length=255, choices=SIZE_CHOICES, default='regular')
+    drainage_holes = models.BooleanField(default=False, null=True, blank=True)
+    icon_chosen = models.CharField(max_length=255, choices=ICON_CHOICES, null=True, blank=True)
+    current_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+
+    def __str__(self):
+        return f"Growbag - {self.color_chosen} - {self.size_chosen}"
 
 class Notification(models.Model):
     seller = models.ForeignKey(CustomUser, on_delete=models.CASCADE)

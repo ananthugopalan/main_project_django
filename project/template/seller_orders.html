@@ -128,7 +128,6 @@
                                 {% for item_info in order_info.items %}
                                     <tr>
                                         <td>
-                                            
                                             <img src="{{ item_info.product_image }}" alt="{{ item_info.product_name }}" style="max-width: 50px; max-height: 50px;">
                                         </td>
                                         <td>{{ item_info.product_name }}</td>
@@ -144,8 +143,34 @@
         </tbody>
     </table>
     
-
-
+    <div class="d-flex justify-content-center mb-3">
+        <ul class="pagination">
+            {% if orders_data.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page=1">&laquo; First</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ orders_data.previous_page_number }}">Previous</a>
+                </li>
+            {% endif %}
+            {% for num in orders_data.paginator.page_range %}
+                {% if num == orders_data.number %}
+                    <li class="page-item active"><a class="page-link bg-warning text-dark" href="#">{{ num }}</a></li>
+                {% else %}
+                    <li class="page-item"><a class="page-link text-dark" href="?page={{ num }}">{{ num }}</a></li>
+                {% endif %}
+            {% endfor %}
+            {% if orders_data.has_next %}
+                <li class="page-item">
+                    <a class="page-link text-dark" href="?page={{ orders_data.next_page_number }}">Next</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link text-dark" href="?page={{ orders_data.paginator.num_pages }}">Last &raquo;</a>
+                </li>
+            {% endif %}
+        </ul>
+    </div>
+    
         <!-- Footer -->
         <footer class="footer mt-0 py-3 bg-dark">
             <div class="container text-center">
