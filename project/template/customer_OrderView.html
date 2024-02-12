@@ -138,14 +138,7 @@
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h3>Your Order History</h3>
             <!-- Search input -->
-            <form method="get" action="{% url 'customer_order_view' %}" class="d-flex">
-                <div class="input-group me-2">
-                    <input type="text" class="form-control" placeholder="Search orders" name="search_query" autocomplete="off">
-                    <button type="submit" class="btn btn-outline-secondary">
-                        <i class="fas fa-search"></i>
-                    </button>
-                </div>
-            </form>
+            
             <form method="get" action="{% url 'customer_order_view' %}" class="d-flex">
                 <div class="mb-3 me-2">
                     <input type="date" class="form-control" id="dateFilter" name="date_filter">
