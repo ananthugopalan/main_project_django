@@ -278,7 +278,7 @@
         </div>
     </nav>
     <!-- Close Header -->
-    <form method="post" action="{% url 'customer_growbag' %}">
+    <form method="post" action="{% url 'customer_growbag' %}" enctype="multipart/form-data">
         {% csrf_token %}
     <div class="main_tab ms-4 mt-4" style="display: flex; align-items: center;">
         <section class="container_growbag" style="margin-left: 10px;">
@@ -290,9 +290,10 @@
             <input type="radio" name="color" id="color-5" value="red" hidden>
             <input type="radio" name="color" id="color-6" value="purple" hidden>
             <div class="product" id="image">
-                <img id="product-image" src="{% static 'img/growbag_regular.jpeg' %}" alt="Product" height="300px" width="300px">
-                <div id="description" class="text-success fw-bold fst-italic">Ideal for vegetables, flowering plants, small bushy plants</div>
-        
+                <img name="growbag-img" id="product-image" src="{% static 'img/growbag_regular.jpeg' %}" alt="Product" height="300px" width="300px">
+                <input type="hidden" name="image_snapshot" id="image-snapshot">
+                <div id="description" class="text-success fw-bold fs-5 border p-2" style="width: 95%;">Ideal for vegetables, flowering plants, small bushy plants</div>
+
                 <i class="fas fa-seedling icon" style="font-size: 70px;" id="hidden-seedling-icon" hidden></i>
                 <i class="fas fa-sun icon" style="font-size: 70px;" id="hidden-sun-icon" hidden></i>
                 <i class="fas fa-leaf icon" style="font-size: 70px;" id="hidden-leaf-icon" hidden></i>
@@ -307,7 +308,7 @@
                 <i class="fa-solid fa-cannabis icon" style="font-size: 70px;" id="hidden-cannabis-icon" hidden></i>
             </div>
                 
-            <div class="product-nav ps-3 mt-2">
+            <div class="product-nav ps-3 mt-2 border p-3" style="width: 95%;">
                 <h5 class="mb-3">Choose your color:</h5>
                 <label for="color-1"></label>
                 <label for="color-2"></label>
@@ -316,12 +317,23 @@
                 <label for="color-5"></label>
                 <label for="color-6"></label>
             </div>
-            <div id="price" class="mt-4 fw-bold fs-5 border p-3 w-75" >Price:₹ 140</div> <!-- Display initial price -->
-            <input type="hidden" name="price" id="price-input">
-            <button type="submit" class="btn btn-warning mt-3 me-4 cart_btn">Add to Cart</button>
+            <div class="border p-2 mt-2" style="display: flex; width: 95%;">
+                <div id="price" class="mt-2 fw-bold fs-5 me-5 text-secondary">Price:₹ 140</div> <!-- Display initial price -->
+                <input type="hidden" name="price" id="price-input">
+                <input type="hidden" name="quantity" id="quantity-input" value="1">
+                <div id="quantity" class="mt-2 ms-5">
+                    <label for="quantity-input" class="fw-bold">Quantity:</label>
+                    <div class="input-group">
+                        <button type="button" class="btn btn-outline-secondary" onclick="decreaseQuantity()">-</button>
+                        <span id="quantity-display" class="form-control">1</span>
+                        <button type="button" class="btn btn-outline-secondary" onclick="increaseQuantity()">+</button>
+                    </div>
+                </div>             
+            </div>            
+            <button id="buy-now-btn" type="submit" class="btn btn-warning mt-3 me-4 cart_btn fs-5" style="width: 95%;" disabled><b>Buy Now</b></button>
         </section>
 
-        <div class="shadow sub_type me-4">
+        <div class="shadow sub_type me-4" style="margin-top: -10%;">
             <!-- Size Selection -->
             <div class="size-selection ps-3 mt-4">   
                 <h5>Size:</h5>      
@@ -383,7 +395,7 @@
             <button type="button" class="btn btn-danger mt-3 ms-3 mb-3" onclick="clearIcons()">Clear Icons</button>
             
         </div>
-    
+
     </div>
     </form>
 
@@ -460,7 +472,7 @@
                 document.getElementById('price').innerText = "Price:₹ " + currentPrice;
                 document.getElementById('price-input').value = currentPrice;
             }
-            function changeProductSize(size) {
+            function changeProductSize(size) { 
                 var productImage = document.getElementById('product-image');
                 let price; 
                 let description;
@@ -523,9 +535,52 @@
                 // Update the price display
                 document.getElementById('price').innerText = "Price:₹ " + currentPrice;
                 document.getElementById('price-input').value = currentPrice;
-            }            
-        </script>
+            }      
+            
+            function decreaseQuantity() {
+                var quantityDisplay = document.getElementById('quantity-display');
+                var quantityInput = document.getElementById('quantity-input');
+                var currentQuantity = parseInt(quantityDisplay.textContent);
+                if (currentQuantity > 1) {
+                    currentQuantity--;
+                    quantityDisplay.textContent = currentQuantity;
+                    quantityInput.value = currentQuantity; // Update the hidden input field
+                }
+            }
 
+            // Function to increase the quantity
+            function increaseQuantity() {
+                var quantityDisplay = document.getElementById('quantity-display');
+                var quantityInput = document.getElementById('quantity-input');
+                var currentQuantity = parseInt(quantityDisplay.textContent);
+                currentQuantity++;
+                quantityDisplay.textContent = currentQuantity;
+                quantityInput.value = currentQuantity; // Update the hidden input field
+            }
+
+            function enableBuyNowButton() {
+        var btn = document.getElementById('buy-now-btn');
+        btn.removeAttribute('disabled');
+        btn.style.backgroundColor = ''; // Reset background color
+    }
+
+    // Add event listeners to elements that change product options
+    document.querySelectorAll('input[name="size"]').forEach(function(element) {
+        element.addEventListener('click', enableBuyNowButton);
+    });
+
+    document.querySelectorAll('input[name="color"]').forEach(function(element) {
+        element.addEventListener('click', enableBuyNowButton);
+    });
+
+    document.querySelectorAll('input[name="icons"]').forEach(function(element) {
+        element.addEventListener('click', enableBuyNowButton);
+    });
+
+    // Change background color to light gray when disabled
+    document.getElementById('buy-now-btn').style.backgroundColor = 'lightgray';
+        </script>
+        
         <script>
             $(document).ready(function () {
         // Function to perform AJAX search

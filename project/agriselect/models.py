@@ -180,6 +180,8 @@ class Growbag(models.Model):
     drainage_holes = models.BooleanField(default=False, null=True, blank=True)
     icon_chosen = models.CharField(max_length=255, choices=ICON_CHOICES, null=True, blank=True)
     current_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    qty = models.PositiveIntegerField(default=1)  # Field for quantity
+    image = models.ImageField(upload_to='growbag_images/', null=True, blank=True)
 
     def __str__(self):
         return f"Growbag - {self.color_chosen} - {self.size_chosen}"

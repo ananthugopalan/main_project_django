@@ -234,6 +234,17 @@ def remove_from_wishlist(request, product_id):
     else:
         return JsonResponse({'success': False})
 
+
+companion_crops_data = {
+    'Cherry Tomato': ['Basil', 'Carrot', 'Chive', 'Cucumber', 'Garlic', 'Lettuce', 'Marigold', 'Nasturtium', 'Onion', 'Parsley', 'Pepper', 'Spinach'],
+    'Carrot': ['Bean', 'Chive', 'Lettuce', 'Onion', 'Pea', 'Radish', 'Rosemary', 'Sage', 'Tomato', 'Marigold', 'Garlic'],
+    'Lettuce': ['Beetroot', 'Carrot', 'Chive', 'Cucumber', 'Garlic', 'Onion', 'Parsley', 'Radish', 'Strawberry', 'Tomato', 'Marigold'],
+    'Cucumber': ['Bean', 'Beetroot', 'Carrot', 'Celery', 'Corn', 'Lettuce', 'Onion', 'Pea', 'Radish', 'Sunflower', 'Tomato'],
+    'Pepper': ['Basil', 'Carrot', 'Chive', 'Eggplant', 'Lettuce', 'Onion', 'Parsley', 'Spinach', 'Tomato', 'Marigold'],
+    'Onion': ['Beetroot', 'Carrot', 'Chamomile', 'Lettuce', 'Pepper', 'Radish', 'Spinach', 'Tomato', 'Marigold', 'Garlic'],
+    # Add more products and their companion crops as needed
+}
+
 @login_required(login_url='user_login')
 def customer_ProductView(request, product_id):
     product = get_object_or_404(Product, pk=product_id)
@@ -253,7 +264,9 @@ def customer_ProductView(request, product_id):
             cart_items__product=product,
             payment_status=Order.PaymentStatusChoices.SUCCESSFUL
         ).exists()
-   
+    
+    companion_crops = companion_crops_data.get(product.product_name, [])
+
     print(user_has_purchased_product)
     context = {
         'product': product,
@@ -261,7 +274,8 @@ def customer_ProductView(request, product_id):
         'product_subcategory': product_subcategory,
         'related_products': related_products,
         'reviews': reviews,
-        'user_has_purchased_product': user_has_purchased_product
+        'user_has_purchased_product': user_has_purchased_product,
+        'companion_crops': companion_crops
     }
 
     return render(request, 'customer_ProductView.html', context)
@@ -1009,6 +1023,8 @@ def customer_growbag(request):
         drainage_holes = request.POST.get('drainage') == 'on'  # Check if drainage holes are selected
         icon_chosen = request.POST.get('icons')  # Get the chosen icon from the form data
         current_price = request.POST.get('price')  # Get the current price from the form data
+        qty = request.POST.get('quantity')  # Get the quantity from the form data
+        image = request.FILES.get('growbag-img')
 
         # Create a new instance of the Growbag model with the form data
         growbag = Growbag(
@@ -1016,7 +1032,9 @@ def customer_growbag(request):
             size_chosen=size_chosen,
             drainage_holes=drainage_holes,
             icon_chosen=icon_chosen,
-            current_price=current_price
+            current_price=current_price,
+            qty=qty,
+            image=image
         )
 
         # Save the instance to the database

@@ -205,6 +205,24 @@
                 </div>
             </div>
         </section>
+
+        <!-- Companion crops recommendation section -->
+<section class="py-5 ">
+    <div class="container px-4 px-lg-5">
+        <h2 class="fw-bolder mb-4">Companion Crops Recommendation</h2>
+        <div class="row">
+            <div class="col">
+                <p class="fw-bold">{{ selected_product }}</p>
+                <ul class="list-unstyled">
+                    {% for crop in companion_crops %}
+                    <li>{{ crop }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
         
 <!-- Related items section-->
 <section class="py-5 bg-light">
