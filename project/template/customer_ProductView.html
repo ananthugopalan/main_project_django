@@ -206,23 +206,36 @@
             </div>
         </section>
 
-        <!-- Companion crops recommendation section -->
-<section class="py-5 ">
-    <div class="container px-4 px-lg-5">
-        <h2 class="fw-bolder mb-4">Companion Crops Recommendation</h2>
-        <div class="row">
-            <div class="col">
-                <p class="fw-bold">{{ selected_product }}</p>
-                <ul class="list-unstyled">
-                    {% for crop in companion_crops %}
-                    <li>{{ crop }}</li>
+        <section class="py-3">
+            <div class="container px-4 px-lg-5 my-5">
+                <!-- Recommended companion crops section -->
+                <div class="row">
+                    <h2 class="mb-4">Recommended Companion Crops</h2>
+                    {% for recommended_product in recommended_products %}
+                        <div class="col-md-3 mb-4">
+                            <div class="card">
+                                <img src="{{ recommended_product.product_image.url }}" class="card-img-top" alt="{{ recommended_product.product_name }}" style="height: 350px; object-fit: cover; border-radius: 10px;">
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ recommended_product.product_name }}</h5>
+                                    <div class="fs-5 mb-3">
+                                        <strong style="color: #151515">₹{{ recommended_product.price }}</strong><br>
+                                        {% if recommended_product.product_category == "seeds" %}
+                                                    /100gm
+                                        {% endif %}
+                                        {% if recommended_product.status == 'in_stock' %}
+                                            <span class="badge bg-success text-white">In Stock</span>
+                                        {% elif recommended_product.status == 'out_of_stock' %}
+                                            <span class="badge bg-danger text-white">Out of Stock</span>
+                                        {% endif %}   
+                                    </div>
+                                    <a href="{% url 'customer_ProductView' recommended_product.id %}" class="btn btn-warning">View Product</a>
+                                </div>
+                            </div>
+                        </div>
                     {% endfor %}
-                </ul>
+                </div>
             </div>
-        </div>
-    </div>
-</section>
-
+        </section>
         
 <!-- Related items section-->
 <section class="py-5 bg-light">

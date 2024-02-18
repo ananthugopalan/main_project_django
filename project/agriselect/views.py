@@ -236,12 +236,18 @@ def remove_from_wishlist(request, product_id):
 
 
 companion_crops_data = {
-    'Cherry Tomato': ['Basil', 'Carrot', 'Chive', 'Cucumber', 'Garlic', 'Lettuce', 'Marigold', 'Nasturtium', 'Onion', 'Parsley', 'Pepper', 'Spinach'],
-    'Carrot': ['Bean', 'Chive', 'Lettuce', 'Onion', 'Pea', 'Radish', 'Rosemary', 'Sage', 'Tomato', 'Marigold', 'Garlic'],
-    'Lettuce': ['Beetroot', 'Carrot', 'Chive', 'Cucumber', 'Garlic', 'Onion', 'Parsley', 'Radish', 'Strawberry', 'Tomato', 'Marigold'],
-    'Cucumber': ['Bean', 'Beetroot', 'Carrot', 'Celery', 'Corn', 'Lettuce', 'Onion', 'Pea', 'Radish', 'Sunflower', 'Tomato'],
-    'Pepper': ['Basil', 'Carrot', 'Chive', 'Eggplant', 'Lettuce', 'Onion', 'Parsley', 'Spinach', 'Tomato', 'Marigold'],
-    'Onion': ['Beetroot', 'Carrot', 'Chamomile', 'Lettuce', 'Pepper', 'Radish', 'Spinach', 'Tomato', 'Marigold', 'Garlic'],
+    'Cherry Tomato': [9,11,12,13],
+    'Carrot': [1,11],
+    'Tulsi': [1,11],
+    'Green Chilli': [9,1,12],
+    'Eggplant': [9,11,14,15,16],
+    'Apple': [11,12],
+    'Tulsi': [1,11],
+    'Mango': [17,18],
+    'Jasmine': [19,20,21],
+    'Lotus': [],
+    'Marigold': [1,12,9,13,5],
+    'Cucumber': [12,11,1],
     # Add more products and their companion crops as needed
 }
 
@@ -264,10 +270,13 @@ def customer_ProductView(request, product_id):
             cart_items__product=product,
             payment_status=Order.PaymentStatusChoices.SUCCESSFUL
         ).exists()
+            
+    # Get companion crops for the selected product
+    companion_crops_ids = companion_crops_data.get(product.product_name, [])
     
-    companion_crops = companion_crops_data.get(product.product_name, [])
-
-    print(user_has_purchased_product)
+    # Retrieve details of recommended products from the Product model
+    recommended_products = Product.objects.filter(pk__in=companion_crops_ids)
+    
     context = {
         'product': product,
         'product_category': product_category,
@@ -275,7 +284,7 @@ def customer_ProductView(request, product_id):
         'related_products': related_products,
         'reviews': reviews,
         'user_has_purchased_product': user_has_purchased_product,
-        'companion_crops': companion_crops
+        'recommended_products': recommended_products 
     }
 
     return render(request, 'customer_ProductView.html', context)
