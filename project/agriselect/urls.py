@@ -26,7 +26,7 @@ urlpatterns = [
     path('customer/order/view/', CustomerOrderView.as_view(), name='customer_order_view'),
 
     path('generate-pdf/<int:order_id>/', GeneratePDF.as_view(), name='generate_pdf'),
-
+    path('seasonal_sale/',views.seasonal_sale, name='seasonal_sale'),
 
     # Cart
     # path('add_to_Cart/<int:product_id>/', views.add_to_Cart, name='add_to_Cart'),

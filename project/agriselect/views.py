@@ -1,7 +1,7 @@
 from django.shortcuts import render,redirect,get_object_or_404
 from django.http import JsonResponse
 from .forms import ProductForm
-from .models import Customer_Profile,Product, Wishlist, Address, CartItem, Order, ShippingAddress, CustomerReview, Growbag, Notification, OrderNotification
+from .models import Customer_Profile,Product, Wishlist, Address, CartItem, Order, ShippingAddress, CustomerReview, Growbag, Notification, Season
 from userapp.models import CustomUser,SellerDetails
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import never_cache
@@ -1051,3 +1051,22 @@ def customer_growbag(request):
         return redirect('customer_growbag')
     return render(request, 'customer_growbag.html')
 
+def seasonal_sale(request):
+    current_season = Season.objects.get(name='summer')  # Assuming 'summer' is the current season
+    seasonal_products = Product.objects.filter(season=current_season)
+
+    paginator = Paginator(seasonal_products, 6)  # Show 9 products per page
+    page_number = request.GET.get('page')
+    try:
+        seasonal_products = paginator.page(page_number)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+        seasonal_products = paginator.page(1)
+    except EmptyPage:
+        # If page is out of range (e.g. 9999), deliver last page of results.
+        seasonal_products = paginator.page(paginator.num_pages)
+
+    context = {
+        'seasonal_products': seasonal_products
+    }
+    return render(request, 'seasonal_sale.html', context)

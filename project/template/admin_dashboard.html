@@ -12,97 +12,82 @@
     <title>Admin Dashboard</title>
     <style>
         /* Reset some default styles for better consistency */
-            body, h1, h2, h3, p, ul, li {
-                margin: 0;
-                padding: 0;
-            }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+        }
 
-            body {
-                font-family: Arial, sans-serif;
-                background-color: #f0f0f0;
-            }
+        header {
+            background-color: #242424;
+            color: #fff;
+            text-align: center;
+            padding: 20px;
+            box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+        }
 
-            header {
-                background-color: #6a5959;
-                color: #fff;
-                text-align: center;
-                padding: 20px;
-            }
+        header h1 {
+            margin: 0;
+        }
 
-            header h1 {
-                margin: 0;
-            }
+        .sidenav {
+            width: 200px;
+            background-color: #2c3e50; /* Change sidebar color here */
+            color: #fff;
+            height: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            padding-top: 60px;
+            border-right: 1px solid #333;
+            overflow-y: auto;
+        }
 
-            .sidenav {
-                width: 180px;  /* Adjust the width to your preference */
-                background-color: #333;
-                color: #fff;
-                height: 100%;
-                position: fixed;
-                top: 0;
-                left: 0;
-                padding: 20px 0; /* Add padding to the top and bottom */
-                border-right: 1px solid #555;  /* Add a border on the right side of the sidenav */
-            }
+        .sidenav ul {
+            list-style: none;
+            padding: 0;
+            margin-top: 20px;
+        }
 
+        .sidenav a {
+            display: block;
+            text-decoration: none;
+            color: #fff;
+            padding: 10px 20px;
+            transition: all 0.3s ease;
+        }
 
-            .sidenav ul {
-                list-style: none;
-                padding: 0;
-            }
+        .sidenav a:hover {
+            background-color: #34495e; /* Change sidebar hover color here */
+        }
 
-            .sidenav li {
-                margin: 10px 0 0 15px;
-            }
+        main {
+            margin-left: 200px;
+            padding: 20px;
+        }
 
-            .sidenav a {
-                display: block;
-                text-decoration: none;
-                color: #fff;
-                font-weight: bold;
-                padding: 10px;
-            }
+        .content {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
 
-            .sidenav a:hover {
-                background-color: #444; /* Slightly darker background color on hover */
-            }
-
-            .sidenav h1 {
-                margin: 0;
-                padding: 20px; /* Add padding to the top for the header */
-            }
-
-            /* Add a border on the right side of the sidenav */
-            .sidenav {
-                border-right: 1px solid #555;
-            }
-
-            /* Style the main content area */
-            main {
-                margin-left: 250px;
-                padding: 20px;
-            }
-
-            .content {
-                background-color: #fff;
-                padding: 20px;
-                border-radius: 5px;
-                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            }
-
-            /* Footer styling */
-            footer {
-                background-color: #6a5959;
-                color: #fff;
-                text-align: center;
-                padding: 10px;
-            }
-
+        footer {
+            background-color: #242424;
+            color: #fff;
+            text-align: center;
+            padding: 10px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
     </style>
 </head>
 <body>
     <header>
-        <h1  style="margin-left: 25%;">Admin Dashboard</h1>
+        <h1>Admin Dashboard</h1>
     </header>
     <div class="sidenav">
         <ul>
@@ -118,7 +103,7 @@
             <!-- Your dashboard content goes here -->
             <div class="row mb-4">
                 <div class="col-md-6">
-                    <div class="card border-primary bg-primary text-white">
+                    <div class="card border-primary">
                         <div class="card-body">
                             <h5 class="card-title">Total Users</h5>
                             <p class="card-text">{{ total_users }}</p>
@@ -126,7 +111,7 @@
                     </div>
                 </div>
                 <div class="col-md-6">
-                    <div class="card border-success bg-success text-white">
+                    <div class="card border-success">
                         <div class="card-body">
                             <h5 class="card-title">Total Products</h5>
                             <p class="card-text">{{ total_products }}</p>
@@ -136,7 +121,7 @@
             </div>
             <div class="row mb-4">
                 <div class="col-md-6">
-                    <div class="card border-warning bg-warning text-white">
+                    <div class="card border-warning">
                         <div class="card-body">
                             <h5 class="card-title">Total Orders</h5>
                             <p class="card-text">{{ total_orders }}</p>
@@ -144,7 +129,7 @@
                     </div>
                 </div>
                 <div class="col-md-6">
-                    <div class="card border-danger bg-danger text-white">
+                    <div class="card border-danger">
                         <div class="card-body">
                             <h5 class="card-title">Total Revenue</h5>
                             <p class="card-text">{{ total_revenue }}</p>
@@ -156,7 +141,7 @@
         </section>
     </main>
     <footer>
-        <p style="margin-left: 25%;">&copy; 2023 AgriSelect-Smarter Crop Choices</p>
+        <p>&copy; 2023 AgriSelect-Smarter Crop Choices</p>
     </footer>
 </body>
 </html>

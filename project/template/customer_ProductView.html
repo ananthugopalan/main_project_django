@@ -211,31 +211,38 @@
                 <!-- Recommended companion crops section -->
                 <div class="row">
                     <h2 class="mb-4">Recommended Companion Crops</h2>
-                    {% for recommended_product in recommended_products %}
-                        <div class="col-md-3 mb-4">
-                            <div class="card">
-                                <img src="{{ recommended_product.product_image.url }}" class="card-img-top" alt="{{ recommended_product.product_name }}" style="height: 350px; object-fit: cover; border-radius: 10px;">
-                                <div class="card-body">
-                                    <h5 class="card-title">{{ recommended_product.product_name }}</h5>
-                                    <div class="fs-5 mb-3">
-                                        <strong style="color: #151515">₹{{ recommended_product.price }}</strong><br>
-                                        {% if recommended_product.product_category == "seeds" %}
-                                                    /100gm
-                                        {% endif %}
-                                        {% if recommended_product.status == 'in_stock' %}
-                                            <span class="badge bg-success text-white">In Stock</span>
-                                        {% elif recommended_product.status == 'out_of_stock' %}
-                                            <span class="badge bg-danger text-white">Out of Stock</span>
-                                        {% endif %}   
+                    <div class="col-md-12">
+                        <div class="overflow-auto">
+                            <div class="row flex-nowrap">
+                                {% for recommended_product in recommended_products %}
+                                    <div class="col-md-3 mb-4">
+                                        <div class="card">
+                                            <img src="{{ recommended_product.product_image.url }}" class="card-img-top" alt="{{ recommended_product.product_name }}" style="height: 350px; object-fit: cover; border-radius: 10px;">
+                                            <div class="card-body">
+                                                <h5 class="card-title">{{ recommended_product.product_name }}</h5>
+                                                <div class="fs-5 mb-3">
+                                                    <strong style="color: #151515">₹{{ recommended_product.price }}</strong><br>
+                                                    {% if recommended_product.product_category == "seeds" %}
+                                                        /100gm
+                                                    {% endif %}
+                                                    {% if recommended_product.status == 'in_stock' %}
+                                                        <span class="badge bg-success text-white">In Stock</span>
+                                                    {% elif recommended_product.status == 'out_of_stock' %}
+                                                        <span class="badge bg-danger text-white">Out of Stock</span>
+                                                    {% endif %}   
+                                                </div>
+                                                <a href="{% url 'customer_ProductView' recommended_product.id %}" class="btn btn-warning">View Product</a>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <a href="{% url 'customer_ProductView' recommended_product.id %}" class="btn btn-warning">View Product</a>
-                                </div>
+                                {% endfor %}
                             </div>
                         </div>
-                    {% endfor %}
+                    </div>
                 </div>
             </div>
         </section>
+        
         
 <!-- Related items section-->
 <section class="py-5 bg-light">

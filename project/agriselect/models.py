@@ -9,6 +9,14 @@ class Product(models.Model):
         IN_STOCK = 'in_stock', 'In Stock'
         DEACTIVATED = 'deactivated', 'Deactivated'
         OUT_OF_STOCK = 'out_of_stock', 'Out of Stock'
+
+    class SeasonChoices(models.TextChoices):
+        SPRING = 'spring', 'Spring'
+        SUMMER = 'summer', 'Summer'
+        AUTUMN = 'autumn', 'Autumn'
+        WINTER = 'winter', 'Winter'
+        MONSOON = 'monsoon', 'Monsoon' 
+
     seller = models.ForeignKey(CustomUser, on_delete=models.CASCADE, default=None)
     product_name = models.CharField(max_length=100)
     description = models.TextField()
@@ -21,9 +29,18 @@ class Product(models.Model):
     status = models.CharField(
         max_length=20, choices=StatusChoices.choices, default=StatusChoices.IN_STOCK
     )
+    season = models.ManyToManyField(
+        'Season', related_name='products', blank=True
+    )
 
     def __str__(self):
         return self.product_name
+
+class Season(models.Model):
+    name = models.CharField(max_length=20, choices=Product.SeasonChoices.choices, unique=True)
+
+    def __str__(self):
+        return self.name
   
 
 class Customer_Profile(models.Model):
