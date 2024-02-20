@@ -34,24 +34,18 @@
                 <div class="flex-fill">
                     <ul class="nav navbar-nav d-flex justify-content-between mx-lg-auto custom-nav-links">
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'seller_home' %}">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">About</a>
+                            <a class="nav-link" href="{% url 'seller_dashboard' %}">Home</a>
                         </li>
                 
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'seller_addProducts' %}">Add Products</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">My Orders</a>
+                            <a class="nav-link" href="{% url 'seller_orders' %}">My Orders</a>
                         </li>    
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'seller_Products' %}">My Products</a>
-                        </li>            
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">Contact</a>
-                        </li>
+                        </li>    
                     </ul>
                 </div>
                 <div class="navbar align-self-center d-flex">

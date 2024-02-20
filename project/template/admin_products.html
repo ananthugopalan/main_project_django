@@ -5,207 +5,131 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css">
-    <!-- Add this to your HTML file within the <head> section -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.7.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
 
     <title>Admin Dashboard</title>
-    <style>
-        /* Reset some default styles for better consistency */
-            body, h1, h2, h3, p, ul, li {
-                margin: 0;
-                padding: 0;
-            }
-
-            body {
-                font-family: Arial, sans-serif;
-                background-color: #f0f0f0;
-            }
-
-            header {
-                background-color: #333;
-                color: #fff;
-                text-align: center;
-                padding: 20px;
-            }
-
-            header h1 {
-                margin: 0;
-            }
-
-            .sidenav {
-                width: 250px;
-                background-color: #333;
-                color: #fff;
-                height: 100%;
-                position: fixed;
-                top: 0;
-                left: 0;
-                padding: 20px 0; /* Add padding to the top and bottom */
-            }
-
-            .sidenav ul {
-                list-style: none;
-                padding: 0;
-            }
-
-            .sidenav li {
-                margin: 10px 0 0 15px;
-            }
-
-            .sidenav a {
-                display: block;
-                text-decoration: none;
-                color: #fff;
-                font-weight: bold;
-                padding: 10px;
-            }
-
-            .sidenav a:hover {
-                background-color: #444; /* Slightly darker background color on hover */
-            }
-
-            .sidenav h1 {
-                margin: 0;
-                padding: 20px; /* Add padding to the top for the header */
-            }
-
-            /* Add a border on the right side of the sidenav */
-            .sidenav {
-                border-right: 1px solid #555;
-            }
-
-            /* Style the main content area */
-            main {
-                margin-left: 250px;
-                padding: 20px;
-            }
-
-            .content {
-                background-color: #fff;
-                padding: 20px;
-                border-radius: 5px;
-                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            }
-
-            /* Footer styling */
-            footer {
-                background-color: #333;
-                color: #fff;
-                text-align: center;
-                padding: 10px;
-            }
-            table {
-            border-collapse: collapse;
-            width: 100%;
-        }
-
-        /* Add borders to table headers (th elements) */
-        th {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-            background-color: #f2f2f2;
-        }
-
-        /* Add borders to table data cells (td elements) */
-        td {
-            border: 1px solid #ddd;
-            padding: 8px;
-        }
-        .pagination {
-        display: flex;
-        justify-content: center;
-        list-style: none;
-        padding: 0;
-    }
-
-    .pagination li {
-        margin-right: 10px;
-        padding: 5px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-    }
-
-    .pagination a {
-        text-decoration: none;
-        color: #007BFF;
-    }
-
-    .pagination a:hover {
-        background-color: #007BFF;
-        color: #fff;
-    }
-
-    .current-page {
-        font-weight: bold;
-    }
-
-    </style>
 </head>
 <body>
-    <header>
-        <h1  style="margin-left: 25%;">Admin Dashboard</h1>
+    <header class="py-3 d-flex" style="background-color: #45B063 ;padding-right: 5%;">
+        <div class="container text-center">
+            <h1 class="mb-0 text-white">Admin Dashboard</h1>
+        </div>
+        <div class="dropdown">
+            <img src="{% static "img/admin_icon.jpg" %}" alt="User Avatar" class="rounded-circle dropdown-toggle mt-1" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="width: 40px; height: 40px; cursor: pointer;">
+            <ul class="dropdown-menu dropdown-menu-end mt-2" aria-labelledby="userDropdown">
+                <li><a class="dropdown-item" href="{% url 'user_logout' %}">Logout</a></li>
+            </ul>
+        </div>     
     </header>
-    <div class="sidenav">
-        <ul>
-            <li><a href="{% url 'admin_dashboard' %}">Home</a></li>
-            <li><a href="{% url 'admin_products' %}">Products</a></li>
-            <li><a href="{% url 'admin_orders' %}">Orders</a></li>
-            <li><a href="{% url 'admin_users' %}">Users</a></li>
-            <li><a href="{% url 'user_logout' %}">Logout</a></li>
-        </ul>
-    </div>
-    <main>
-        <section class="content">
-            <!-- Your dashboard content goes here -->
-            <h1>Product List</h1><br>
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Product Name</th>
-                        <th>Description</th>
-                        <th>Stock</th>
-                        <th>Price</th>
-                        <th>Category</th>
-                        <th>Subcategory</th>
-                        <th>Image</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for product in products %}
+    
+    <div class="d-flex">
+        <nav class="sidenav shadow p-4" style="width: 250px; height: calc(100vh - 80px);background-color: #D3E5D8;"">
+            <ul class="list-unstyled">
+                <li><a href="{% url 'admin_dashboard' %}" class="text-dark text-decoration-none fs-5">Home</a></li>
+                <li class="pb-2" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1);">
+                <li><a href="{% url 'admin_products' %}" class="text-dark text-decoration-none fs-5">Products</a></li>
+                <li class="pb-2" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1);">
+                <li><a href="{% url 'admin_orders' %}" class="text-dark text-decoration-none fs-5">Orders</a></li>
+                <li class="pb-2" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1);">
+                <li><a href="{% url 'admin_users' %}" class="text-dark text-decoration-none fs-5">Users</a></li>
+                <li class="pb-2" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1);">
+                <li><a href="#" class="text-dark text-decoration-none fs-5">Report</a></li>
+                <li class="pb-2" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1);">
+            </ul>
+        </nav>
+        <main class="ms-4">
+            <section class="content">
+                <!-- Your dashboard content goes here -->
+                <h1>Product List</h1><br>
+                <table class="table">
+                    <thead>
                         <tr>
-                            <td>{{ product.product_name }}</td>
-                            <td>{{ product.description }}</td>
-                            <td>{{ product.stock }}</td>
-                            <td>${{ product.price }}</td>
-                            <td>{{ product.product_category }}</td>
-                            <td>{{ product.product_subcategory }}</td>
-                            <td><img src="{{ product.product_image.url }}" alt="{{ product.product_name }}" width="100" height="70"></td>
+                            <th>Product Name</th>
+                            <th>Description</th>
+                            <th>Stock</th>
+                            <th>Price</th>
+                            <th>Category</th>
+                            <th>Subcategory</th>
+                            <th>Image</th>
                         </tr>
-                    {% endfor %}
-                </tbody>
-            </table><br>
-            <div class="pagination">
-                <span class="step-links">
-                    {% if products.has_previous %}
-                        <a href="?page=1">&laquo; First</a>
-                        <a href="?page={{ products.previous_page_number }}"><i class="fas fa-angle-left"></i></a>
-                    {% endif %}
-                    <span class="current-page">
-                        Page {{ products.number }} of {{ products.paginator.num_pages }}.
-                    </span>
-                    {% if products.has_next %}
-                        <a href="?page={{ products.next_page_number }}"><i class="fas fa-angle-right"></i></a>
-                        <a href="?page={{ products.paginator.num_pages }}">Last &raquo;</a>
-                    {% endif %}
+                    </thead>
+                    <tbody>
+                        {% for product in products %}
+                            <tr>
+                                <td>{{ product.product_name }}</td>
+                                <td>{{ product.description }}</td>
+                                <td>{{ product.stock }}</td>
+                                <td>${{ product.price }}</td>
+                                <td>{{ product.product_category }}</td>
+                                <td>{{ product.product_subcategory }}</td>
+                                <td><img src="{{ product.product_image.url }}" alt="{{ product.product_name }}" width="100" height="70"></td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table><br>
+                <div class="pagination">
+                    <span class="step-links">
+                        {% if products.has_previous %}
+                            <a href="?page=1" class="text-dark">&laquo; First</a>
+                            <a href="?page={{ products.previous_page_number }}" class="text-dark"><i class="fas fa-angle-left"></i></a>
+                        {% endif %}
+                        <span class="current-page">
+                            Page {{ products.number }} of {{ products.paginator.num_pages }}.
+                        </span>
+                        {% if products.has_next %}
+                            <a href="?page={{ products.next_page_number }}" class="text-dark"><i class="fas fa-angle-right"></i></a>
+                            <a href="?page={{ products.paginator.num_pages }}" class="text-dark">Last &raquo;</a>
+                        {% endif %}
 
-                </span>
+                    </span>
+                </div>
+            </section>
+        </main>
+    </div>
+
+
+    <!-- Footer -->
+    <footer class="footer mt-0 py-3 bg-dark">
+        <div class="container text-center">
+        <div class="row text-center text-md-left align-items-center">
+            <div class="col-md-5">
+            <p class="text-light">Copyright @2023 All rights are preserved</p>
             </div>
-        </section>
-    </main>
-    <footer>    
-        <p style="margin-left: 25%;">&copy; 2023 AgriSelect-Smarter Crop Choices</p>
+            <div class="col-md-7">
+            <a href="#" class="social-icons text-white"><i class="fab fa-facebook-f"></i></a>
+            <span class="mx-2"></span> <!-- Add space between icons using a span element with margin -->
+            <a href="#" class="social-icons text-white"><i class="fab fa-twitter"></i></a>
+            <span class="mx-2"></span> <!-- Add space between icons -->
+            <a href="#" class="social-icons text-white"><i class="fab fa-instagram"></i></a>
+            </div>
+        </div>
+        </div>
     </footer>
+
+    <script>
+        // Function to adjust sidebar height
+        function adjustSidebarHeight() {
+            const sidebar = document.querySelector('.sidenav');
+            const footer = document.querySelector('.footer');
+            if (sidebar && footer) {
+                const windowHeight = window.innerHeight;
+                const footerTop = footer.offsetTop;
+                const sidebarHeight = footerTop - sidebar.offsetTop;
+                sidebar.style.height = sidebarHeight + 'px';
+            }
+        }
+
+        // Adjust sidebar height when the window is resized
+        window.addEventListener('resize', adjustSidebarHeight);
+
+        // Initial adjustment of sidebar height
+        adjustSidebarHeight();
+    </script>
+    <!-- Footer -->
 </body>
 </html>

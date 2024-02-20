@@ -16,7 +16,8 @@ def admin_dashboard(request):
     total_users = CustomUser.objects.count()
     total_products = Product.objects.count()
     total_orders = Order.objects.count()
-    total_revenue = Order.objects.aggregate(revenue=Sum('total_price'))['revenue'] or Decimal('0.00')
+    total_revenue = Order.objects.filter(payment_status=Order.PaymentStatusChoices.SUCCESSFUL) \
+                                  .aggregate(revenue=Sum('total_price'))['revenue'] or Decimal('0.00')    
     context = {
         'total_users': total_users,
         'total_products': total_products,
@@ -28,7 +29,7 @@ def admin_dashboard(request):
 @login_required(login_url='user_login')
 def admin_products(request):
     products = Product.objects.all()
-    paginator = Paginator(products, 6)  # Show 8 products per page
+    paginator = Paginator(products, 5)  # Show 8 products per page
 
     page = request.GET.get('page')
     try:
@@ -47,7 +48,19 @@ def admin_users(request):
 
 @login_required(login_url='user_login')
 def admin_orders(request):
-    orders = Order.objects.all()
+    orders_list = Order.objects.all()
+    paginator = Paginator(orders_list, 10)  # Show 10 orders per page
+
+    page = request.GET.get('page')
+    try:
+        orders = paginator.page(page)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+        orders = paginator.page(1)
+    except EmptyPage:
+        # If page is out of range (e.g. 9999), deliver last page of results.
+        orders = paginator.page(paginator.num_pages)
+
     context = {'orders': orders}
     return render(request, 'admin_orders.html', context)
 
@@ -799,6 +812,40 @@ def seller_orders(request):
     context = {'orders_data': orders_data}
     
     return render(request, 'seller_orders.html', context)
+
+def seller_report(request):
+    return render(request, 'seller_report.html')
+
+from django.http import HttpResponse, HttpResponseNotAllowed
+
+def generate_sales_report(request):
+    if request.method == 'POST':
+        start_date = request.POST.get('start_date')
+        end_date = request.POST.get('end_date')
+
+        # Filter orders based on the selected date range
+        orders = Order.objects.filter(order_date__range=[start_date, end_date])
+
+        # Generate PDF
+        template_path = 'seller_sales_report.html'  # Create a HTML template for the PDF
+        context = {'orders': orders}
+        response = HttpResponse(content_type='application/pdf')
+        response['Content-Disposition'] = 'filename="sales_report.pdf"'
+
+        template = get_template(template_path)
+        html = template.render(context)
+
+        # Create PDF
+        pisa_status = pisa.CreatePDF(html, dest=response)
+        if pisa_status.err:
+            return HttpResponse('Error creating PDF', status=500)
+        return response
+    else:
+        # Handle GET request or other methods if needed
+        return HttpResponseNotAllowed(['POST'])
+
+def seller_sales_report(request):
+    return render(request, 'seller_sales_report.html')
 
 from django.db.models import Q
 

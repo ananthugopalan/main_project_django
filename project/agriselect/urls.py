@@ -43,12 +43,14 @@ urlpatterns = [
     path('sales_statistics/', views.sales_statistics, name='sales_statistics'),
     path('get_product_statistics/', views.get_product_statistics, name='get_product_statistics'),
     path('seller_orders/',views.seller_orders,name='seller_orders'),
-
+    path('seller_report/',views.seller_report,name='seller_report'),
     path('seller_Profile/',views.seller_Profile,name='seller_Profile'),
     path('seller_addProducts/', views.seller_addProducts, name='seller_addProducts'),
     path('seller_updateProduct/<int:product_id>/', views.seller_updateProduct, name='seller_updateProduct'),
     path('seller_Products/',views.seller_Products,name='seller_Products'),
     path('delete_product/<int:product_id>/', views.delete_product, name='delete_product'),
+    path('generate_sales_report/', views.generate_sales_report, name='generate_sales_report'),
+    path('seller_sales_report/',views.seller_sales_report,name='seller_sales_report'),
 
 
     #payment
@@ -71,4 +73,5 @@ urlpatterns = [
     path('show_notification/<int:seller_id>',views.showNotification,name="show_notification"),
     path('mark_notifications_as_read/',views.mark_notifications_as_read,name="mark_notifications_as_read"),
     path('order-notification/<int:seller_id>/<int:order_id>/', views.order_notification, name='order_notification'),
+
 ]
