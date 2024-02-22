@@ -110,6 +110,11 @@ class Order(models.Model):
         PENDING = 'pending', 'Pending'
         SUCCESSFUL = 'successful', 'Successful'
         FAILED = 'failed', 'Failed'
+    
+    class OrderStatusChoices(models.TextChoices):
+        REQUESTED = 'Requested', 'Requested'
+        DISPATCHED = 'Dispatched', 'Dispatched'
+        DELIVERED = 'Delivered', 'Delivered'
 
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     cart_items = models.ManyToManyField('CartItem')  # Assuming the CartItem model has a reference to Product
@@ -119,6 +124,8 @@ class Order(models.Model):
     razorpay_order_id = models.CharField(max_length=255, default=None)
     payment_status = models.CharField(
         max_length=20, choices=PaymentStatusChoices.choices, default=PaymentStatusChoices.PENDING)
+    order_status = models.CharField(
+        max_length=20, choices=OrderStatusChoices.choices, default=OrderStatusChoices.REQUESTED)
     def __str__(self):
         return self.user.email
 

@@ -74,6 +74,8 @@ def admin_settings(request):
     
     return render(request, 'admin_settings.html', {'admin_settings_obj': admin_settings_obj})
 
+def admin_hubs(request):
+    return render(request, 'admin_hubs.html')
 
 
 #Customer
@@ -772,6 +774,14 @@ def sales_statistics(request):
 from datetime import datetime
 
 def seller_orders(request):
+    if request.method == 'POST':  # Check if the form is submitted via POST
+        order_id = request.POST.get('order_id')  # Get the order ID from the form
+        order = Order.objects.get(pk=order_id)  # Retrieve the order object
+        print(order)
+        order.order_status = Order.OrderStatusChoices.DISPATCHED  # Update the order status to Dispatched
+        order.save()  # Save the changes to the database
+        return redirect('seller_orders')
+    
     seller_id = request.user.id
     date_filter = request.GET.get('date_filter')
 
@@ -789,8 +799,10 @@ def seller_orders(request):
     orders_data = []
     for order in seller_orders:
         order_info = {
+            'order_id': order.id,
             'order_date': order.order_date,
             'total_price': order.total_price,
+            'order_status': order.order_status,
             'items': []
         }
 
@@ -824,6 +836,7 @@ def seller_orders(request):
     context = {'orders_data': orders_data}
     
     return render(request, 'seller_orders.html', context)
+
 
 def seller_report(request):
     return render(request, 'seller_report.html')
@@ -916,24 +929,6 @@ def order_notification(seller_id, product_id):
             message=f"An order for the product {product.product_name} has been placed."
         )
         notification.save()
-
-from django.utils import timezone
-from datetime import timedelta
-
-def seller_order_notification(request):
-    seller = request.user
-    # Calculate the date one week ago
-    one_week_ago = timezone.now() - timedelta(days=7)
-    
-    # Filter orders for the logged-in seller with successful payment status and order date within the last week
-    recent_orders = Order.objects.filter(user=seller,
-                                         payment_status=Order.PaymentStatusChoices.SUCCESSFUL, 
-                                         order_date__gte=one_week_ago)
-
-    context = {'recent_orders': recent_orders}
-    return render(request, 'seller_order_notification.html', context)
-
-
 
 #payment
 import razorpay
@@ -1152,6 +1147,14 @@ def seasonal_sale(request):
         seasonal_products = paginator.page(paginator.num_pages)
 
     context = {
-        'seasonal_products': seasonal_products
+        'seasonal_products': seasonal_products,
+        'selected_season': selected_season  # Pass selected season to template
     }
     return render(request, 'seasonal_sale.html', context)
+
+
+
+
+
+def delivery_agent(request):
+    return render(request, 'delivery_agent.html')

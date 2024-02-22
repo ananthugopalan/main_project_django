@@ -99,7 +99,7 @@
     <!-- Close Header -->
 
     <br>
-    <div class="d-flex justify-content-between align-items-center mb-3">
+    <div class="d-flex justify-content-between align-items-center mb-3 me-4">
         <h3 style="margin-left: 130px;">Your Order History</h3>
         <form method="get" action="{% url 'seller_orders' %}" class="d-flex">
             <div class="mb-3 me-2">
@@ -115,6 +115,8 @@
                 <th class="bg-warning"><b>Order Date</b></th>
                 <th class="bg-warning"><b>Total Price</b></th>
                 <th class="bg-warning"><b>Product Details(Item,Qty,Price)</b></th>
+                <th class="bg-warning"><b>Status</b></th>
+                <th class="bg-warning"><b>Action</b></th>
             </tr>
         </thead>
         <tbody>
@@ -138,6 +140,20 @@
                             </tbody>
                         </table>
                     </td>
+                    <td>{{ order_info.order_status }}</td>
+                    <td>
+                        <form method="post" action="{% url 'seller_orders' %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="order_id" value="{{ order_info.order_id }}">
+                            {% if order_info.order_status == 'Dispatched' %}
+                            <button type="submit" class="bg-success rounded shadow" disabled><i class="fas fa-check"></i></button>
+                            {% else %}
+                            <button type="submit" class="bg-success rounded shadow" onclick="return confirm('Are you sure you want to dispatch this order?')">
+                                Dispatch<!-- Font Awesome tick icon -->
+                            </button>                            
+                            {% endif %}                        
+                        </form>
+                    </td>
                 </tr>
             {% endfor %}
         </tbody>
@@ -155,7 +171,7 @@
             {% endif %}
             {% for num in orders_data.paginator.page_range %}
                 {% if num == orders_data.number %}
-                    <li class="page-item active"><a class="page-link bg-warning text-dark" href="#">{{ num }}</a></li>
+                    <li class="page-item active"><a class="page-link bg-light text-dark" href="#">{{ num }}</a></li>
                 {% else %}
                     <li class="page-item"><a class="page-link text-dark" href="?page={{ num }}">{{ num }}</a></li>
                 {% endif %}

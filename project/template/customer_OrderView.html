@@ -20,6 +20,7 @@
     <style>
         body {
             font-family: 'Arial', sans-serif; 
+            background-color:  white;
         }
         .custom-dropdown-width {
             width: 300px; 
@@ -133,7 +134,7 @@
 
     <!--nav ends -->
     
-    <div class="container mt-5 shadow mb-5">
+    <div class="container mt-5 mb-5">
         <br>
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h3>Your Order History</h3>
@@ -161,7 +162,7 @@
                 <tbody>
                     {% for order in orders %}
                         <tr>
-                            <td><span class="me-2">{{ forloop.counter }}</span></td>
+                            <td><span class="me-2">{{ forloop.counter }}.</span></td>
 
                             <td>
                                 <ul class="list-unstyled">
@@ -191,14 +192,33 @@
                                 {% endif %}
                             </td>
                         </tr>
+                        <tr>
+                            <td colspan="5"> <!-- Span across all columns -->
+                                <p class="fs-5"><strong>Status:</strong></p>
+                                <div class="delivery-status mt-3">
+                                    <div class="d-flex align-items-center">
+                                        <span class="badge bg-light text-dark position-relative"><i class="far fa-circle text-secondary bg-success"></i> Order Placed</span></span>
+                                        <hr class="mx-1" style="height: 2px; width: 100px; border: none; background-color: #000;">
+                                        <span class="badge bg-light text-dark position-relative"><i class="far fa-circle text-secondary"></i> Pick Up by Store</span></span>
+                                        <hr class="mx-1" style="height: 2px; width: 100px; border: none; background-color: #000;">
+                                        <span class="badge bg-light text-dark position-relative"><i class="far fa-circle text-secondary"></i> On the Way</span></span>
+                                        <hr class="mx-1" style="height: 2px; width: 100px; border: none; background-color: #000;">
+                                        <span class="badge bg-light text-dark position-relative"><i class="far fa-circle text-secondary"></i> Ready for Pickup</span></span>
+                                        <hr class="mx-1" style="height: 2px; width: 100px; border: none; background-color: #000;">
+                                        <span class="badge bg-light text-dark position-relative"><i class="far fa-circle text-secondary"></i> Delivered</span>                                   
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr style="border-left: white;border-right: white;">
+                            <td colspan="5">&nbsp;</td>
+                        </tr>
                     {% endfor %}
-                </tbody>
-                
+                </tbody>                
             </table>
-        </div>
-        
+        </div>        
     </div>
-    <div class="pagination justify-content-center mt-4">
+    <div class="pagination justify-content-center mt-4 mb-4">
         <ul class="pagination">
             {% if orders.has_previous %}
                 <li class="page-item">
