@@ -208,6 +208,8 @@ def user_login(request):
                     return redirect('/')
                 elif user.is_superuser: 
                     return redirect('admin_dashboard')
+                elif user.hub_status:  
+                    return redirect('hub_dashboard')
             else:
                 error_message = "Invalid login credentials."
                 return render(request, 'login.html', {'error_message': error_message})

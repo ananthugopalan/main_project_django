@@ -80,8 +80,15 @@ urlpatterns = [
     path('admin_settings/', views.admin_settings, name='admin_settings'),
     path('admin_hubs/', views.admin_hubs, name='admin_hubs'),
 
+    path('delete_hub/<int:hub_id>/', views.delete_hub, name='delete_hub'),
+
 
     #delivery agent
     path('delivery_agent/', views.delivery_agent, name='delivery_agent'),
+
+    #hub
+    path('hub_dashboard/', views.hub_dashboard, name='hub_dashboard'),
+    path('hub_orders/', views.hub_orders, name='hub_orders'),
+
 
 ]

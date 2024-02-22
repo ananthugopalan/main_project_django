@@ -75,7 +75,46 @@ def admin_settings(request):
     return render(request, 'admin_settings.html', {'admin_settings_obj': admin_settings_obj})
 
 def admin_hubs(request):
-    return render(request, 'admin_hubs.html')
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+        place = request.POST.get('place')
+        confirm_password = request.POST.get('confirm-password')
+        
+        if CustomUser.objects.filter(email=email).exists():
+            messages.error(request, 'Email already exists.')
+        elif password != confirm_password:
+            messages.error(request, 'Passwords do not match.')
+        elif CustomUser.objects.filter(first_name=place, hub_status=True).exists():
+            messages.error(request, 'A hub already exists for the selected place.')
+        else:
+            user = CustomUser.objects.create(
+                email=email,
+                first_name=place,
+                hub_status=True,
+                is_customer=False
+            )
+            user.set_password(password) 
+            user.save()
+        return redirect('admin_hubs')
+    
+    hubs = CustomUser.objects.filter(hub_status=True)
+
+    return render(request, 'admin_hubs.html',{'hubs': hubs})
+
+def delete_hub(request, hub_id):
+    hub = CustomUser.objects.get(id=hub_id)
+    hub.delete()
+    return redirect('admin_hubs')
+
+
+#Hub
+
+def hub_dashboard(request):
+    return render(request, 'hub_dashboard.html')
+
+def hub_orders(request):
+    return render(request, 'hub_orders.html')
 
 
 #Customer

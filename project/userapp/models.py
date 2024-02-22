@@ -19,6 +19,7 @@ class CustomUser(AbstractUser):
     # role = models.PositiveSmallIntegerField(choices=ROLE_CHOICE, blank=True, null=True,default=CUSTOMER)
     is_customer = models.BooleanField(default=False)
     is_seller = models.BooleanField(default=False)
+    hub_status = models.BooleanField(default=False)
     pan_number = models.CharField(max_length=25, null=True)
     
     REQUIRED_FIELDS = []
@@ -28,6 +29,8 @@ class CustomUser(AbstractUser):
         # set the default role to customer.
         if not self.pk and not self.is_seller:
             self.is_customer = True
+        if self.hub_status:
+            self.is_customer = False
         super().save(*args, **kwargs)
         
     def __str__(self):
