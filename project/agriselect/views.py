@@ -1,7 +1,7 @@
 from django.shortcuts import render,redirect,get_object_or_404
 from django.http import JsonResponse
 from .forms import ProductForm
-from .models import Customer_Profile,Product, Wishlist, Address, CartItem, Order, ShippingAddress, CustomerReview, Growbag, Notification, Season
+from .models import Customer_Profile,Product, Wishlist, Address, CartItem, Order, ShippingAddress, CustomerReview, Growbag, Notification, Season, SellerRevenue, AdminSettings
 from userapp.models import CustomUser,SellerDetails
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import never_cache
@@ -63,6 +63,18 @@ def admin_orders(request):
 
     context = {'orders': orders}
     return render(request, 'admin_orders.html', context)
+
+
+def admin_settings(request):
+    admin_settings_obj, created = AdminSettings.objects.get_or_create(pk=1)
+    if request.method == 'POST':
+        selected_season = request.POST.get('selected_season')
+        admin_settings_obj.selected_season = selected_season
+        admin_settings_obj.save()
+    
+    return render(request, 'admin_settings.html', {'admin_settings_obj': admin_settings_obj})
+
+
 
 #Customer
 
@@ -684,25 +696,25 @@ def seller_dashboard(request):
         notification = Notification.objects.filter(seller_id=request.user.id,read=False).count()
         order_count = Order.objects.filter(cart_items__product__in=seller_products).count()
         products_sold_quantity = CartItem.objects.filter(
-                user=request.user,
-                status=CartItem.StatusChoices.ORDERED,
-                order__payment_status=Order.PaymentStatusChoices.SUCCESSFUL
-            ).aggregate(Sum('quantity'))['quantity__sum'] or 0
+            product__seller=current_seller,
+            status=CartItem.StatusChoices.ORDERED,
+            order__payment_status=Order.PaymentStatusChoices.SUCCESSFUL
+        ).aggregate(Sum('quantity'))['quantity__sum'] or 0
 
+        total_revenue = SellerRevenue.objects.filter(seller=current_seller).aggregate(Sum('revenue'))['revenue__sum'] or 0
 
         # Pass the counts to the template
         context = {
             'product_count': product_count,
             'order_count': order_count,
             'products_sold_quantity': products_sold_quantity,
-            'notification':notification
+            'notification':notification,
+            'total_revenue': total_revenue,
             # Add other counts to the context if needed
         }
 
         return render(request, 'seller_dashboard.html', context)
     else:
-        # Handle the case where the user is not authenticated
-        # You might want to redirect them to the login page or show an error message
         return render(request, 'error.html', {'error_message': 'User not authenticated'})
 
 # def get_sales_data(request):
@@ -822,23 +834,32 @@ def generate_sales_report(request):
     if request.method == 'POST':
         start_date = request.POST.get('start_date')
         end_date = request.POST.get('end_date')
-
-        # Filter orders based on the selected date range
-        orders = Order.objects.filter(order_date__range=[start_date, end_date])
-
+        
+        start_date = datetime.strptime(start_date, '%Y-%m-%d').date()
+        end_date = datetime.strptime(end_date, '%Y-%m-%d').date()
+        seller_id = request.user.id
+        
+        seller_products = Product.objects.filter(seller_id=seller_id)
+        
+        # Filter orders based on the selected date range and seller's products
+        orders = Order.objects.filter(
+            Q(order_date_only__gte=start_date) & Q(order_date_only__lte=end_date),
+            cart_items__product__in=seller_products
+        ).distinct()
+        print(orders)
+        print(start_date)
+        print(end_date)
         # Generate PDF
-        template_path = 'seller_sales_report.html'  # Create a HTML template for the PDF
+        template_path = 'seller_sales_report.html'  # HTML template for the PDF
         context = {'orders': orders}
         response = HttpResponse(content_type='application/pdf')
         response['Content-Disposition'] = 'filename="sales_report.pdf"'
-
+        
         template = get_template(template_path)
         html = template.render(context)
-
+        
         # Create PDF
-        pisa_status = pisa.CreatePDF(html, dest=response)
-        if pisa_status.err:
-            return HttpResponse('Error creating PDF', status=500)
+        pisa.CreatePDF(html, dest=response)
         return response
     else:
         # Handle GET request or other methods if needed
@@ -896,8 +917,21 @@ def order_notification(seller_id, product_id):
         )
         notification.save()
 
+from django.utils import timezone
+from datetime import timedelta
 
+def seller_order_notification(request):
+    seller = request.user
+    # Calculate the date one week ago
+    one_week_ago = timezone.now() - timedelta(days=7)
+    
+    # Filter orders for the logged-in seller with successful payment status and order date within the last week
+    recent_orders = Order.objects.filter(user=seller,
+                                         payment_status=Order.PaymentStatusChoices.SUCCESSFUL, 
+                                         order_date__gte=one_week_ago)
 
+    context = {'recent_orders': recent_orders}
+    return render(request, 'seller_order_notification.html', context)
 
 
 
@@ -1028,6 +1062,9 @@ def paymenthandler(request):
 
                     
                     order_notification(product.seller.id, product.id)
+                
+                revenue_amount = cart_item.total_price * Decimal('0.70')  # Calculate revenue (70% of total price)
+                SellerRevenue.objects.create(order=order, seller=product.seller, revenue=revenue_amount)
 
             cart_items = CartItem.objects.filter(user=request.user)
             for cart_item in cart_items:
@@ -1099,18 +1136,19 @@ def customer_growbag(request):
     return render(request, 'customer_growbag.html')
 
 def seasonal_sale(request):
-    current_season = Season.objects.get(name='summer')  # Assuming 'summer' is the current season
+    admin_settings_obj, created = AdminSettings.objects.get_or_create(pk=1)
+    selected_season = admin_settings_obj.selected_season
+    
+    current_season = Season.objects.get(name=selected_season)
     seasonal_products = Product.objects.filter(season=current_season)
 
-    paginator = Paginator(seasonal_products, 6)  # Show 9 products per page
+    paginator = Paginator(seasonal_products, 6)
     page_number = request.GET.get('page')
     try:
         seasonal_products = paginator.page(page_number)
     except PageNotAnInteger:
-        # If page is not an integer, deliver first page.
         seasonal_products = paginator.page(1)
     except EmptyPage:
-        # If page is out of range (e.g. 9999), deliver last page of results.
         seasonal_products = paginator.page(paginator.num_pages)
 
     context = {

@@ -65,8 +65,9 @@
                     <div class="list-group">
                         <a href="{% url 'seller_dashboard' %}" class="list-group-item list-group-item-action" style="background-color:     #4A235A; color: #fff;">Dashboard</a>
                         <a href="{% url 'seller_addProducts' %}" class="list-group-item list-group-item-action">Add Products</a>
-                        <a href="{% url 'seller_Products' %}" class="list-group-item list-group-item-action">View Products</a>
+                        <a href="{% url 'seller_Products' %}" class="list-group-item list-group-item-action">My Products</a>
                         <a href="{% url 'seller_orders' %}" class="list-group-item list-group-item-action">Orders</a>
+                        <a href="{% url 'seller_order_notification' %}" class="list-group-item list-group-item-action">Notifcations</a>
                         <a href="{% url 'seller_report' %}" class="list-group-item list-group-item-action">Report</a>
                     </div>
                 </div>
@@ -106,7 +107,7 @@
                                 <div class="card-body d-flex justify-content-between align-items-center">
                                     <div>
                                         <h5 class="card-title">Products Sold</h5>
-                                        <p class="card-text">13</p>
+                                        <p class="card-text">{{ products_sold_quantity }}</p>
                                     </div>
                                     <i class="fas fa-check-circle fa-2x"></i>
                                 </div>
@@ -117,7 +118,7 @@
                                 <div class="card-body d-flex justify-content-between align-items-center">
                                     <div>
                                         <h5 class="card-title">Revenue</h5>
-                                        <p class="card-text">Rs. 4970</p>
+                                        <p class="card-text">₹ {{ total_revenue }}</p>
                                     </div>
                                     <i class="fas fa-chart-line fa-2x"></i>
                                 </div>

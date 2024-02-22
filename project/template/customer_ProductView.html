@@ -61,9 +61,6 @@
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'index' %}">Home</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">About</a>
-                        </li>
                         {% if user.is_authenticated %}
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'customer_allProducts' %}">All Products</a>
@@ -83,7 +80,10 @@
                             <a class="nav-link" href="#">Contact</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">Gallery</a>
+                            <a class="nav-link" href="{% url 'customer_growbag' %}">Growbag</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'seasonal_sale' %}">Seasonal Sale</a>
                         </li>
                     </ul>
                 </div>

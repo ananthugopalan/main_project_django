@@ -28,6 +28,12 @@ urlpatterns = [
     path('generate-pdf/<int:order_id>/', GeneratePDF.as_view(), name='generate_pdf'),
     path('seasonal_sale/',views.seasonal_sale, name='seasonal_sale'),
 
+
+    path('product_crops/', views.product_crops, name='product_crops'),
+    path('product_seeds/', views.product_seeds, name='product_seeds'),
+    
+    path('customer_growbag/', views.customer_growbag, name='customer_growbag'),
+
     # Cart
     # path('add_to_Cart/<int:product_id>/', views.add_to_Cart, name='add_to_Cart'),
     path('add_to_cart/<int:product_id>/', views.add_to_cart, name='add_to_cart'),
@@ -49,8 +55,17 @@ urlpatterns = [
     path('seller_updateProduct/<int:product_id>/', views.seller_updateProduct, name='seller_updateProduct'),
     path('seller_Products/',views.seller_Products,name='seller_Products'),
     path('delete_product/<int:product_id>/', views.delete_product, name='delete_product'),
+
     path('generate_sales_report/', views.generate_sales_report, name='generate_sales_report'),
     path('seller_sales_report/',views.seller_sales_report,name='seller_sales_report'),
+
+    path('seller_order_notification/',views.seller_order_notification,name='seller_order_notification'),
+    
+    
+    path('low-stock-notification/<int:seller_id>/', views.low_stock_notification, name='low_stock_notification'),
+    path('show_notification/<int:seller_id>',views.showNotification,name="show_notification"),
+    path('mark_notifications_as_read/',views.mark_notifications_as_read,name="mark_notifications_as_read"),
+    path('order-notification/<int:seller_id>/<int:order_id>/', views.order_notification, name='order_notification'),
 
 
     #payment
@@ -63,15 +78,7 @@ urlpatterns = [
     path('admin_products/', views.admin_products, name='admin_products'),
     path('admin_users/', views.admin_users, name='admin_users'),
     path('admin_orders/', views.admin_orders, name='admin_orders'),
+    path('admin_settings/', views.admin_settings, name='admin_settings'),
 
-    path('product_crops/', views.product_crops, name='product_crops'),
-    path('product_seeds/', views.product_seeds, name='product_seeds'),
-    
-    path('customer_growbag/', views.customer_growbag, name='customer_growbag'),
-    
-    path('low-stock-notification/<int:seller_id>/', views.low_stock_notification, name='low_stock_notification'),
-    path('show_notification/<int:seller_id>',views.showNotification,name="show_notification"),
-    path('mark_notifications_as_read/',views.mark_notifications_as_read,name="mark_notifications_as_read"),
-    path('order-notification/<int:seller_id>/<int:order_id>/', views.order_notification, name='order_notification'),
 
 ]

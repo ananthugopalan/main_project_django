@@ -15,14 +15,14 @@
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
 
     <!-- Load fonts style after rendering the layout styles -->
-    {% comment %} <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;200;300;400;500;700;900&display=swap"> {% endcomment %}
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;200;300;400;500;700;900&display=swap">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <style>
         body {
-            font-family: 'Arial', sans-serif; /* Use a web-safe font like Arial */
+            font-family: 'Arial', sans-serif; 
         }
         .custom-dropdown-width {
-            width: 300px; /* Adjust the width as needed */
+            width: 300px; 
         }
     </style>
 </head>
@@ -44,15 +44,12 @@
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'index' %}">Home</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">About</a>
-                        </li>
                         {% if user.is_authenticated %}
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'customer_allProducts' %}">All Products</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">Orders</a>
+                            <a class="nav-link" href="{% url 'customer_OrderView' %}">Orders</a>
                         </li>
                         {%else%}
                         <li class="nav-item">
@@ -66,7 +63,10 @@
                             <a class="nav-link" href="#">Contact</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">Gallery</a>
+                            <a class="nav-link" href="{% url 'customer_growbag' %}">Growbag</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'seasonal_sale' %}">Seasonal Sale</a>
                         </li>
                     </ul>
                 </div>

@@ -15,7 +15,7 @@
     <title>Admin Dashboard</title>
 </head>
 <body>
-    <header class="py-3 d-flex" style="background-color: #45B063 ;padding-right: 5%;">
+    <header class="py-3 d-flex" style="background-color: #1b6c32 ;padding-right: 5%;">
         <div class="container text-center">
             <h1 class="mb-0 text-white">Admin Dashboard</h1>
         </div>
@@ -28,21 +28,23 @@
     </header>
     
     <div class="d-flex">
-        <nav class="sidenav shadow p-4" style="width: 250px; height: calc(100vh - 80px);background-color: #D3E5D8;"">
+        <nav class="sidenav shadow p-4" style="width: 350px; height: calc(100vh - 80px);background-color: #bee2c8;">
             <ul class="list-unstyled">
                 <li><a href="{% url 'admin_dashboard' %}" class="text-dark text-decoration-none fs-5">Home</a></li>
-                <li class="pb-2" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1);">
+                <li class="pb-2 mb-2" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1);">
                 <li><a href="{% url 'admin_products' %}" class="text-dark text-decoration-none fs-5">Products</a></li>
-                <li class="pb-2" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1);">
+                <li class="pb-2 mb-2" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1);">
                 <li><a href="{% url 'admin_orders' %}" class="text-dark text-decoration-none fs-5">Orders</a></li>
-                <li class="pb-2" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1);">
+                <li class="pb-2 mb-2" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1);">
                 <li><a href="{% url 'admin_users' %}" class="text-dark text-decoration-none fs-5">Users</a></li>
-                <li class="pb-2" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1);">
+                <li class="pb-2 mb-2" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1);">
                 <li><a href="#" class="text-dark text-decoration-none fs-5">Report</a></li>
-                <li class="pb-2" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1);">
+                <li class="pb-2 mb-2" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1);">
+                <li><a href="{% url 'admin_settings' %}" class="text-dark text-decoration-none fs-5">Settings</a></li>
+                <li class="pb-2 mb-2" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1);">
             </ul>
         </nav>
-        <main class="ms-4">
+        <main class="ms-4 mt-4">
             <section class="content">
                 <!-- Your dashboard content goes here -->
                 <h1>Product List</h1><br>
