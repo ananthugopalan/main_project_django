@@ -89,6 +89,7 @@ urlpatterns = [
     #hub
     path('hub_dashboard/', views.hub_dashboard, name='hub_dashboard'),
     path('hub_orders/', views.hub_orders, name='hub_orders'),
+    path('hub_report/', views.hub_report, name='hub_report'),
 
 
 ]

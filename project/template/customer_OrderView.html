@@ -171,7 +171,7 @@
                                             <div class="d-flex align-items-center mb-2">
                                                 <img class="me-3" src="{{ cart_item.product.product_image.url }}" alt="{{ cart_item.product.product_name }}" width="50" height="50">
                                                 <div class="ml-2">
-                                                    {{ cart_item.product.product_name }} - ₹{{ cart_item.product.price }} - Qty:{{ cart_item.quantity }}
+                                                   <strong>{{ cart_item.product.product_name }}  - ₹{{ cart_item.product.price }} - Qty:{{ cart_item.quantity }}</strong>
                                                     {% if cart_item.dispatched %}
                                                         <i class="fas fa-check-circle text-success"></i>
                                                     {% endif %}
@@ -183,8 +183,8 @@
                             </td>
                             
                             
-                            <td>{{ order.order_date }}</td>
-                            <td>₹{{ order.total_price }}</td>
+                            <td><strong>{{ order.order_date }}</strong></td>
+                            <td><strong>₹{{ order.total_price }}</strong></td>
                             <td>
                                 {% if order.payment_status == 'successful' %}
                                     <a href="{% url 'generate_pdf' order.id %}" target="_blank">
@@ -202,17 +202,18 @@
                                 <div class="delivery-status mt-3">
                                     <div class="d-flex align-items-center">
                                         <span class="badge bg-light text-dark position-relative"><i class="far fa-circle text-secondary bg-success"></i> Order Placed</span>
+                                        <hr class="mx-1" style="height: 2px; width: 100px; border: none; background-color: #000;">                                        
+                                        {% if order.order_status == 'Dispatched' %}
+                                            <span class="badge bg-light text-dark position-relative"><i class="far fa-circle text-secondary bg-success"></i>Pick Up by Store</span>
+                                        {% else %}
+                                            <span class="badge bg-light text-dark position-relative"><i class="far fa-circle text-secondary"></i>Pick Up by Store</span>
+                                        {% endif %}                                        
                                         <hr class="mx-1" style="height: 2px; width: 100px; border: none; background-color: #000;">
-                                        
-                                            {% if order.order_status == 'Dispatched' %}
-                                                <span class="badge bg-light text-dark position-relative"><i class="far fa-circle text-secondary bg-success"></i>Pick Up by Store</span>
-                                            {% else %}
-                                                <span class="badge bg-light text-dark position-relative"><i class="far fa-circle text-secondary"></i>Pick Up by Store</span>
-                                            {% endif %}
-                                        
-                                        <hr class="mx-1" style="height: 2px; width: 100px; border: none; background-color: #000;">
-                                        <span class="badge bg-light text-dark position-relative"><i class="far fa-circle text-secondary"></i> On the Way</span>
-                                        <hr class="mx-1" style="height: 2px; width: 100px; border: none; background-color: #000;">
+                                        {% if order.accepted_by_store %}
+                                            <span class="badge bg-light text-dark position-relative"><i class="far fa-circle text-secondary bg-success  "></i> On the Way</span>
+                                        {% else %}
+                                            <span class="badge bg-light text-dark position-relative"><i class="far fa-circle text-secondary"></i> On the Way</span>
+                                        {% endif %}                                        <hr class="mx-1" style="height: 2px; width: 100px; border: none; background-color: #000;">
                                         <span class="badge bg-light text-dark position-relative"><i class="far fa-circle text-secondary"></i> Ready for Pickup</span>
                                         <hr class="mx-1" style="height: 2px; width: 100px; border: none; background-color: #000;">
                                         <span class="badge bg-light text-dark position-relative"><i class="far fa-circle text-secondary"></i> Delivered</span>                                   

@@ -48,7 +48,7 @@
                         <li class="pb-2 mb-2" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1);">
                             
                         <li class="nav-item">
-                            <a class="nav-link text-dark" href="#"><strong>Report</strong></a>
+                            <a class="nav-link text-dark" href="{% url 'hub_report' %}"><strong>Report</strong></a>
                         </li>
                         <li class="pb-2 mb-2" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1);">
                     </ul>
@@ -58,35 +58,56 @@
             <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
                 <div class="container mt-5">
                     <h4>Orders List</h4>
-                    <div class="table-responsive mt-4">
-                        <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th>Order ID</th>
-                                    <th>User</th>
-                                    <th>Total Price</th>
-                                    <th>Order Date</th>
-                                    <th>Status</th>
-                                    <th>Action</th>
-                                    <!-- Add more columns as needed -->
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for order in dispatched_orders %}
-                                <tr>
-                                    <td>{{ order.id }}</td>
-                                    <td>{{ order.user.email }}</td>
-                                    <td>₹ {{ order.total_price }}</td>
-                                    <td>{{ order.order_date }}</td>
-                                    <td>{{ order.order_status }}</td>
-                                    <td><button class="bg-warning" onclick="acceptOrder(this)">Accept</button></td>
-                                    <!-- Add more columns as needed -->
-                                </tr>
+                    <table class="table table-bordered mt-4">
+                        <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>User Email</th>
+                                <th>Product Name</th>
+                                <th>Quantity</th>
+                                <th>Price</th>
+                                <th>Order Date</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for order in orders %}
+                                {% for cart_item in order.cart_items.all %}
+                                    {% if cart_item.dispatched %}
+                                        <tr>
+                                            <td>{{ order.id }}</td>
+                                            <td>{{ order.user.email }}</td>
+                                            <td style="width: 25%"><img class="me-3" src="{{ cart_item.product.product_image.url }}" alt="{{ cart_item.product.product_name }}" width="50" height="50">{{ cart_item.product.product_name }}</td>
+                                            <td>{{ cart_item.quantity }}</td>
+                                            <td>₹{{ cart_item.total_price }}</td>
+                                            <td>{{ order.order_date }}</td>
+                                            <td>
+                                                {% if cart_item.dispatched %}
+                                                    Dispatched
+                                                {% else %}
+                                                    Requested
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <form method="post" action="{% url 'hub_orders' %}">
+                                                    {% csrf_token %}
+                                                    <input type="hidden" name="cart_item_id" value="{{ cart_item.id }}">
+                                                    {% if cart_item.accepted_by_store %}
+                                                        <button type="submit" class="bg-success rounded" disabled><i class="fas fa-check"></i></button>
+                                                    {% else %}
+                                                        <button type="submit" class="bg-warning rounded" onclick="return confirm('Are you sure you want to accept this order?')">Accept</button>
+                                                    {% endif %}
+                                                </form>
+                                            </td>
+                                        </tr>
+                                    {% endif %}
                                 {% endfor %}
-                            </tbody>
-                        </table>
+                            {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
-            </main>
+            </main>            
         </div>
     </div>
 
@@ -108,15 +129,6 @@
         </div>
     </footer>
     <!-- Footer -->
-    <script>
-        function acceptOrder(button) {
-            // Change button text and class
-            button.innerHTML = '<span class="bg-success rounded px-2 py-1"><i class="fas fa-check text-white"></i></span>'; // Change button text to a green tick icon within a green background
-            button.classList.remove('bg-warning'); // Remove background color
-            button.disabled = true; // Disable the button
-        }
-    </script>
-    
     
 
     <!-- Bootstrap JS (Optional, for Bootstrap components that require JS) -->

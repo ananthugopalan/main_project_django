@@ -93,8 +93,8 @@ class CartItem(models.Model):
     status = models.CharField(
         max_length=10,null=True, choices=StatusChoices.choices, default=StatusChoices.ACTIVE
     )
-    dispatched = models.BooleanField(default=False)  # New field
-
+    dispatched = models.BooleanField(default=False)  
+    accepted_by_store = models.BooleanField(default=False)
 
     def __str__(self):
         return f'{self.quantity} x {self.product.product_name} ({self.status})'
@@ -128,6 +128,8 @@ class Order(models.Model):
         max_length=20, choices=PaymentStatusChoices.choices, default=PaymentStatusChoices.PENDING)
     order_status = models.CharField(
         max_length=20, choices=OrderStatusChoices.choices, default=OrderStatusChoices.REQUESTED)
+    accepted_by_store = models.BooleanField(default=False)
+
     def __str__(self):
         return self.user.email
     

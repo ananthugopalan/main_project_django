@@ -132,7 +132,7 @@
                         <td style="width:30%"><img class="me-3" src="{{ item_info.product_image }}" alt="{{ item_info.product_name }}" style="max-width: 50px; max-height: 50px;">
                             {{ item_info.product_name }}</td>
                         <td>{{ item_info.quantity }}</td>
-                        <td>{{ item_info.total_item_price }}</td>
+                        <td>₹{{ item_info.total_item_price }}</td>
                         <td>
                             <form method="post" action="{% url 'seller_orders' %}">
                                 {% csrf_token %}

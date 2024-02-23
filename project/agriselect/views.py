@@ -113,9 +113,27 @@ def delete_hub(request, hub_id):
 def hub_dashboard(request):
     return render(request, 'hub_dashboard.html')
 
-def hub_orders(request):
-    dispatched_orders = Order.objects.filter(order_status=Order.OrderStatusChoices.DISPATCHED)    
-    return render(request, 'hub_orders.html', {'dispatched_orders': dispatched_orders})
+def hub_orders(request): 
+    orders = Order.objects.filter(cart_items__dispatched=True).distinct()
+    if request.method == 'POST':  
+        cart_item_id = request.POST.get('cart_item_id')  
+        cart_item = CartItem.objects.get(pk=cart_item_id)  
+        cart_item.accepted_by_store = True
+        cart_item.save()
+        for order in Order.objects.filter(cart_items=cart_item):
+            if not all(item.dispatched for item in order.cart_items.all()):
+                break
+        else:
+            order.accepted_by_store = True
+            order.save()
+
+        return redirect('hub_orders')
+    context = {'orders': orders}
+    return render(request, 'hub_orders.html', context)
+
+
+def hub_report(request):
+    return render(request, 'hub_report.html')
 
 
 #Customer
