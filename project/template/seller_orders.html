@@ -114,6 +114,55 @@
             <tr>
                 <th class="bg-warning"><b>Order Date</b></th>
                 <th class="bg-warning"><b>Total Price</b></th>
+                <th class="bg-warning"><b>Product Name</b></th>
+                <th class="bg-warning"><b>Quantity</b></th>
+                <th class="bg-warning"><b>Price</b></th>
+                <th class="bg-warning"><b>Action</b></th>
+                <th class="bg-warning"><b>Status</b></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for order_info in orders_data %}
+                {% for item_info in order_info.items %}
+                    <tr>
+                        {% if forloop.first %}
+                            <td rowspan="{{ order_info.items|length }}">{{ order_info.order_date }}</td>
+                            <td rowspan="{{ order_info.items|length }}">{{ order_info.total_price }}</td>
+                        {% endif %}
+                        <td style="width:30%"><img class="me-3" src="{{ item_info.product_image }}" alt="{{ item_info.product_name }}" style="max-width: 50px; max-height: 50px;">
+                            {{ item_info.product_name }}</td>
+                        <td>{{ item_info.quantity }}</td>
+                        <td>{{ item_info.total_item_price }}</td>
+                        <td>
+                            <form method="post" action="{% url 'seller_orders' %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="cart_item_id" value="{{ item_info.cart_item_id }}">
+                                {% if not item_info.dispatched %}
+                                <button type="submit" class="bg-secondary text-white rounded shadow" onclick="return confirm('Are you sure you want to dispatch this order?')">Dispatch</button>
+                                {% else %}
+                                    <button type="button" class="bg-success rounded shadow" disabled><i class="fas fa-check"></i></button>
+                                {% endif %}
+                            </form>
+                        </td>
+                        <td>
+                            {% if item_info.dispatched %}
+                                Dispatched
+                            {% else %}
+                                Requested
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            {% endfor %}
+        </tbody>
+    </table>
+    
+    
+    <!-- <table class="table table-bordered mt-4 mb-4" style="align-items: center; margin: auto; width: 80%;">
+        <thead>
+            <tr>
+                <th class="bg-warning"><b>Order Date</b></th>
+                <th class="bg-warning"><b>Total Price</b></th>
                 <th class="bg-warning"><b>Product Details(Item,Qty,Price)</b></th>
                 <th class="bg-warning"><b>Status</b></th>
                 <th class="bg-warning"><b>Action</b></th>
@@ -149,7 +198,7 @@
                             <button type="submit" class="bg-success rounded shadow" disabled><i class="fas fa-check"></i></button>
                             {% else %}
                             <button type="submit" class="bg-success rounded shadow" onclick="return confirm('Are you sure you want to dispatch this order?')">
-                                Dispatch<!-- Font Awesome tick icon -->
+                                Dispatch
                             </button>                            
                             {% endif %}                        
                         </form>
@@ -157,7 +206,7 @@
                 </tr>
             {% endfor %}
         </tbody>
-    </table>
+    </table> -->
     
     <div class="d-flex justify-content-center mb-3">
         <ul class="pagination">

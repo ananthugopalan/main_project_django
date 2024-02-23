@@ -114,7 +114,8 @@ def hub_dashboard(request):
     return render(request, 'hub_dashboard.html')
 
 def hub_orders(request):
-    return render(request, 'hub_orders.html')
+    dispatched_orders = Order.objects.filter(order_status=Order.OrderStatusChoices.DISPATCHED)    
+    return render(request, 'hub_orders.html', {'dispatched_orders': dispatched_orders})
 
 
 #Customer
@@ -813,12 +814,19 @@ def sales_statistics(request):
 from datetime import datetime
 
 def seller_orders(request):
-    if request.method == 'POST':  # Check if the form is submitted via POST
-        order_id = request.POST.get('order_id')  # Get the order ID from the form
-        order = Order.objects.get(pk=order_id)  # Retrieve the order object
-        print(order)
-        order.order_status = Order.OrderStatusChoices.DISPATCHED  # Update the order status to Dispatched
-        order.save()  # Save the changes to the database
+    if request.method == 'POST':  
+        cart_item_id = request.POST.get('cart_item_id')  
+        cart_item = CartItem.objects.get(pk=cart_item_id)  
+        cart_item.dispatched = True
+        cart_item.save()
+        # Check if all products of the order are dispatched
+        for order in Order.objects.filter(cart_items=cart_item):
+            if not all(item.dispatched for item in order.cart_items.all()):
+                break
+        else:
+            order.order_status = Order.OrderStatusChoices.DISPATCHED
+            order.save()
+
         return redirect('seller_orders')
     
     seller_id = request.user.id
@@ -853,6 +861,8 @@ def seller_orders(request):
                     'product_name': cart_item.product.product_name,
                     'quantity': cart_item.quantity,
                     'total_item_price': cart_item.total_price,
+                    'cart_item_id': cart_item.id,
+                    'dispatched': cart_item.dispatched
                 }
                 order_info['items'].append(item_info)
 

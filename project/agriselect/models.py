@@ -93,6 +93,8 @@ class CartItem(models.Model):
     status = models.CharField(
         max_length=10,null=True, choices=StatusChoices.choices, default=StatusChoices.ACTIVE
     )
+    dispatched = models.BooleanField(default=False)  # New field
+
 
     def __str__(self):
         return f'{self.quantity} x {self.product.product_name} ({self.status})'
@@ -128,8 +130,7 @@ class Order(models.Model):
         max_length=20, choices=OrderStatusChoices.choices, default=OrderStatusChoices.REQUESTED)
     def __str__(self):
         return self.user.email
-
-
+    
 class Site_Logo(models.Model):
     logo_img = models.ImageField(upload_to='images')
 
