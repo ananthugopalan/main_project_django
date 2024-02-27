@@ -40,57 +40,22 @@
                 <li><a href="{% url 'admin_users' %}" class="text-dark text-decoration-none fs-5">Users</a></li>
                 <li class="pb-2 mb-2" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1);">
                 <li><a href="{% url 'admin_report' %}" class="text-dark text-decoration-none fs-5">Report</a></li>
-                <li class="pb-2 mb-2" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1);">
+                <li class="pb-2 mb-2" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1);">  
                 <li><a href="{% url 'admin_hubs' %}" class="text-dark text-decoration-none fs-5">Manage Hubs</a></li>
                 <li class="pb-2 mb-2" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1);">
                 <li><a href="{% url 'admin_settings' %}" class="text-dark text-decoration-none fs-5">Settings</a></li>
                 <li class="pb-2 mb-2" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1);">
-                
             </ul>
         </nav>
-        <main class="p-4 flex-grow-1">
+        <main class="ms-4 mt-4">
             <section class="content">
-                <!-- Your dashboard content goes here -->
-                <div class="row mb-4">
-                    <div class="col-md-6">
-                        <div class="card border-primary" style="background-color: #B6E8E4;">
-                            <div class="card-body">
-                                <h5 class="card-title">Total Users</h5>
-                                <p class="card-text"><strong>{{ total_users }}</strong></p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="card border-success" style="background-color: #E0B6E8;">
-                            <div class="card-body">
-                                <h5 class="card-title">Total Products</h5>
-                                <p class="card-text"><strong>{{ total_products }}</strong></p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row mb-4">
-                    <div class="col-md-6">
-                        <div class="card border-warning" style="background-color: #E8E6B6;">
-                            <div class="card-body">
-                                <h5 class="card-title">Total Orders</h5>
-                                <p class="card-text"><strong>{{ total_orders }}</strong></p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="card border-danger" style="background-color: #E8B6C8;">
-                            <div class="card-body">
-                                <h5 class="card-title">Total Revenue</h5>
-                                <p class="card-text"><strong>{{ total_revenue }}</strong></p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <hr>
+                <h2>Generate Report</h2>
+                
             </section>
-        </main>
+        </main>        
     </div>
+
+
     <!-- Footer -->
     <footer class="footer mt-0 py-3 bg-dark">
         <div class="container text-center">

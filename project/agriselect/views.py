@@ -74,6 +74,54 @@ def admin_settings(request):
     
     return render(request, 'admin_settings.html', {'admin_settings_obj': admin_settings_obj})
 
+from easy_pdf.views import PDFTemplateView
+
+class UserReportPDFView(PDFTemplateView):
+    template_name = 'user_report_pdf.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Add context data for user report generation here
+        context['users'] = CustomUser.objects.all()  # Example: Fetch all users
+        return context
+
+class ProductReportPDFView(PDFTemplateView):
+    template_name = 'product_report_pdf.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Add context data for product report generation here
+        context['products'] = Product.objects.all()  # Example: Fetch all products
+        return context
+
+class OrderReportPDFView(PDFTemplateView):
+    template_name = 'order_report_pdf.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Add context data for order report generation here
+        context['orders'] = Order.objects.all()  # Example: Fetch all orders
+        return context
+
+class SalesReportPDFView(PDFTemplateView):
+    template_name = 'sales_report_pdf.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Add context data for sales report generation here
+        # Example: Calculate sales based on orders and products
+        context['sales'] = self.calculate_sales()
+        return context
+    
+    def calculate_sales(self):
+        # Perform the sales calculation here
+        total_sales = Order.objects.aggregate(total_sales=Sum('total_price')).get('total_sales', 0)
+        return total_sales
+
+
+def admin_report(request):
+    return render(request, 'admin_report.html')
+
 def admin_hubs(request):
     if request.method == 'POST':
         email = request.POST.get('email')
