@@ -18,8 +18,10 @@
         <div class="container-fluid">
             <h4 class="text-center">Delivery Agent Dashboard</h4>
             <div class="dropdown">
-                <img src="{% static "img/delivery_agent_avatar.jpg" %}" alt="User Avatar" class="rounded-circle dropdown-toggle mt-1 me-4" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="width: 50px; height: 50px; cursor: pointer;">
+                <img src="{% static 'img/delivery_agent_avatar.jpg' %}" alt="User Avatar" class="rounded-circle dropdown-toggle mt-1 me-4" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false" style="width: 50px; height: 50px; cursor: pointer;">
                 <ul class="dropdown-menu dropdown-menu-end mt-2" aria-labelledby="userDropdown">
+                    <li><a class="dropdown-item" href="{% url 'delivery_agent_profile' %}">Profile</a></li>
+                    <li><a class="dropdown-item" href="#">Change Password</a></li>
                     <li><a class="dropdown-item" href="{% url 'user_logout' %}">Logout</a></li>
                 </ul>
             </div>     
@@ -65,7 +67,7 @@
                             <div class="card" style="background: #F5B7B1;">
                                 <div class="card-body">
                                     <h5 class="card-title">Customers</h5>
-                                    <p class="card-text">Insert Customer Count Here</p>
+                                    <p class="card-text"></p>
                                 </div>
                             </div>
                         </div>
@@ -73,7 +75,7 @@
                             <div class="card" style="background: #F5B7B1;">
                                 <div class="card-body">
                                     <h5 class="card-title">Count</h5>
-                                    <p class="card-text">Insert Count Here</p>
+                                    <p class="card-text"></p>
                                 </div>
                             </div>
                         </div>
@@ -81,7 +83,7 @@
                             <div class="card" style="background: #F5B7B1;">
                                 <div class="card-body">
                                     <h5 class="card-title">Total Delivery</h5>
-                                    <p class="card-text">Insert Total Delivery Here</p>
+                                    <p class="card-text"></p>
                                 </div>
                             </div>
                         </div>
@@ -89,7 +91,7 @@
                             <div class="card" style="background: #F5B7B1;">
                                 <div class="card-body">
                                     <h5 class="card-title">Total Revenue</h5>
-                                    <p class="card-text">Insert Total Revenue Here</p>
+                                    <p class="card-text"></p>
                                 </div>
                             </div>
                         </div>

@@ -1,7 +1,7 @@
 from django.shortcuts import render,redirect,get_object_or_404
 from django.http import JsonResponse
 from .forms import ProductForm
-from .models import Customer_Profile,Product, Wishlist, Address, CartItem, Order, ShippingAddress, CustomerReview, Growbag, Notification, Season, SellerRevenue, AdminSettings
+from .models import Customer_Profile,Product, Wishlist, Address, CartItem, Order, ShippingAddress, CustomerReview, Growbag, Notification, Season, SellerRevenue, AdminSettings, DeliveryAgentProfile
 from userapp.models import CustomUser,SellerDetails
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import never_cache
@@ -11,18 +11,43 @@ from django.core.paginator import Paginator
 # Create your views here.
 
 #admin
+import matplotlib.pyplot as plt
+import base64
+from io import BytesIO
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+
+
+def generate_bar_plot(data, title):
+    plt.figure(figsize=(8, 6))
+    plt.bar(data.keys(), data.values())
+    plt.title(title)
+    plt.xlabel('Category')
+    plt.ylabel('Count')
+    plt.xticks(rotation=45)
+    buffer = BytesIO()
+    plt.savefig(buffer, format='png')
+    buffer.seek(0)
+    plt.close()
+    return base64.b64encode(buffer.getvalue()).decode()
+
 @login_required(login_url='user_login')
 def admin_dashboard(request):
     total_users = CustomUser.objects.count()
     total_products = Product.objects.count()
     total_orders = Order.objects.count()
     total_revenue = Order.objects.filter(payment_status=Order.PaymentStatusChoices.SUCCESSFUL) \
-                                  .aggregate(revenue=Sum('total_price'))['revenue'] or Decimal('0.00')    
+                                  .aggregate(revenue=Sum('total_price'))['revenue'] or Decimal('0.00')  
+
+    counts_plot = generate_bar_plot({'Users': total_users, 'Products': total_products, 'Orders': total_orders}, 'Counts')
+  
     context = {
         'total_users': total_users,
         'total_products': total_products,
         'total_orders': total_orders,
         'total_revenue': total_revenue,
+        'counts_plot': counts_plot,
     }
     return render(request, 'admin_dashboard.html', context)
 
@@ -110,6 +135,10 @@ def delete_hub(request, hub_id):
     hub = CustomUser.objects.get(id=hub_id)
     hub.delete()
     return redirect('admin_hubs')
+
+
+def admin_delivery_agents(request):
+    return render(request, 'admin_delivery_agents.html')
 
 
 #Hub
@@ -1226,6 +1255,52 @@ def seasonal_sale(request):
 
 
 
+#delivery agent
+def delivery_agent_home(request):
+    return render(request, 'delivery_agent_home.html')
+
+def delivery_agent_reg(request):
+    alert_message = None
+    if request.method == 'POST':
+        # Extract data from the form
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+        first_name = request.POST.get('first_name')
+        last_name = request.POST.get('last_name')
+        
+        # Create a CustomUser instance
+        user = CustomUser(email=email, password=password, first_name=first_name, last_name=last_name, is_delivery_agent=True, is_active=False)
+        user.save()
+
+        delivery_agent_profile = DeliveryAgentProfile(
+            delivery_agent=user,
+            profile_photo=request.FILES.get('profilePhoto'),
+            gender=request.POST.get('gender'),
+            address=request.POST.get('address'),
+            phone=request.POST.get('phone'),
+            location=request.POST.get('location'),
+            aadhaar_number=request.POST.get('id_number'),
+            driver_license_number=request.POST.get('driver_license_number'),
+            date_of_joining=request.POST.get('date_of_joining'),
+            vehicle_type=request.POST.get('vehicle_type'),
+            vehicle_number=request.POST.get('vehicle_number'),
+            bank_name=request.POST.get('bank_name'),
+            branch=request.POST.get('branch'),
+            account_number=request.POST.get('account_number'),
+            ifsc_code=request.POST.get('ifsc_code'),
+            id_document=request.FILES.get('id_document')
+        )
+        
+        # Save the DeliveryAgentProfile instance
+        delivery_agent_profile.save()
+        alert_message = "Successfully registered!"
+    return render(request, 'delivery_agent_reg.html',  {'alert_message': alert_message})
+
+def delivery_agent_login(request):
+    return render(request, 'delivery_agent_login.html')
 
 def delivery_agent(request):
     return render(request, 'delivery_agent.html')
+
+def delivery_agent_profile(request):
+    return render(request, 'delivery_agent_profile.html')

@@ -1,0 +1,696 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Delivery Agent Register</title>
+  <link rel="icon" href="{% static 'img/Agriselect1.png' %}" width='30' height='30'>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-APkiNv6V6Zzv5SZ/gO4if/XvJ21foE94OcC96vgt1z3xJlZnuB+KqYfhmG1tY2NqCfyWQZC53GoN3R9kbbDvQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <style>
+    .invalid-tooltip {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      z-index: 5;
+      width: 100%;
+      margin-top: .1rem;
+      font-size: 0.875rem;
+      color: #dc3545;
+    }
+    .error {
+    font-size: 0.75rem; /* Smaller font size for error messages */
+    padding-top: 0.1rem; /* Reduce top padding for error messages */
+    color: #dc3545; /* Error message text color */
+  }
+  </style>
+
+</head>
+<body style="background-color: white;">
+{% if alert_message %}
+    <script>
+        alert("{{ alert_message }}");
+    </script>
+{% endif %} 
+<!-- Side Navigation and Main Content Area -->
+<div class="container-fluid">
+        <!-- Main Content Area -->
+        <div class="container d-flex justify-content-center" style="margin-top: 20px;"> <!-- Add "margin-top" style -->
+            <a class="navbar-brand" href="#">
+              <img src="{% static 'img/Agriselect1.png'%}" width='100' height='auto' class='logo'>
+            </a>
+          </div>
+        <main class="shadow">
+            <div class="container mt-3">
+                <div class="row">
+                    
+                    <div class="col-12">
+                        <h2 class="mt-1 text-center">Delivery Agent Register</h2>
+                    </div>
+                    
+                <form action="{% url 'delivery_agent_reg' %}" method="POST" id="register_form" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <!-- Personal Information -->
+                    <h4 class="mt-3">Personal Information</h4>
+                    <div class="col-md-6">
+                        <!-- Profile Photo Upload -->
+                        <div class="mb-3">
+                            <label for="profilePhoto" class="form-label">Change Profile Photo</label>
+                            <input class="form-control" type="file" id="profilePhoto" name="profilePhoto" onchange="validateProfilePhoto()" required>
+                            <small id="profilePhotoHelp" class="form-text text-muted">Upload PNG, JPG, or JPEG files only.</small>
+                            <div id="fileError" class="text-danger" style="display: none;">Please upload a valid PNG, JPG, or JPEG file.</div>                        </div>
+                    </div>
+                
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="first_name" class="form-label">First Name</label>
+                            <input type="text" class="form-control" id="first_name" name="first_name" autocomplete="off" oninput="validateFirstName()" required>
+                            <div id="firstNameError" class="text-danger" style="display: none;">Please enter only alphabets without spaces.</div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="last_name" class="form-label">Last Name</label>
+                            <input type="text" class="form-control" id="last_name" name="last_name" autocomplete="off" oninput="validateLastName()" required>
+                            <div id="lastNameError" class="text-danger" style="display: none;">Please enter only alphabets without spaces.</div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="gender" class="form-label">Gender</label>
+                            <select class="form-select" id="gender" name="gender" oninput="validateGender()" required>
+                                <option value="">Select Gender</option>
+                                <option value="male">Male</option>
+                                <option value="female">Female</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div id="genderError" class="text-danger" style="display: none;">Please select a gender.</div>
+
+                        <div class="col-md-6 mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email" name="email" autocomplete="off" oninput="validateEmail()" required>
+                            <div id="emailError" class="text-danger" style="display: none;"></div>
+                        </div>
+                    </div>           
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="password" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="password" name="password" autocomplete="off" oninput="validatePassword()" required>
+                            <div id="passwordError" class="text-danger" style="display: none;">Password must contain at least one uppercase letter, one lowercase letter, one special character, one digit, and be at least 6 characters long.</div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="confirmPassword" class="form-label">Confirm Password</label>
+                            <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" autocomplete="off" oninput="validateConfirmPassword()" required>
+                            <div id="confirmPasswordError" class="text-danger" style="display: none;">Passwords do not match.</div>
+                        </div>
+                    </div>                    
+                    <div class="mb-3">
+                        <label for="address" class="form-label">Address</label>
+                        <textarea class="form-control" id="address" name="address" autocomplete="off" oninput="validateAddress()" required></textarea>
+                        <div id="addressError" class="text-danger" style="display: none;"></div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="phone" class="form-label">Phone Number(+91)</label>
+                            <input type="tel" class="form-control" id="phone" name="phone" autocomplete="off" oninput="validatePhoneNumber()" required>
+                            <div id="phoneError" class="text-danger" style="display: none;"></div>
+                        </div>
+                        <!-- Location Information -->
+                        <div class="col-md-6 mb-3">
+                            <label for="location" class="form-label">Nearest Location</label>
+                            <select class="form-select" id="location" name="location" oninput="validateLocation()" required>
+                                <option value="" disabled selected>Select Location</option>
+                                <option value="ernakulam">Ernakulam</option>
+                                <option value="malappuram">Malappuram</option>
+                                <option value="pathanamthitta">Pathanamthitta</option>
+                                <option value="kannur">Kannur</option>
+                                <!-- Add more locations as needed -->
+                            </select>
+                            <div id="locationError" class="text-danger" style="display: none;"></div>
+                        </div>
+                    </div>
+
+                    <!-- Identification Details -->
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="id_number" class="form-label">Aadhaar Number</label>
+                            <input type="text" class="form-control" id="id_number" name="id_number" autocomplete="off" oninput="validateAadhaarNumber()" required>
+                            <div id="aadhaarError" class="text-danger" style="display: none;"></div>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="driver_license_number" class="form-label">Driver License Number</label>
+                            <input type="text" class="form-control" id="driver_license_number" name="driver_license_number" autocomplete="off" oninput="validateDriverLicenseNumber()" required>
+                            <div id="licenseError" class="text-danger" style="display: none;"></div>
+                        </div>
+                    </div>
+                    <!-- Employment Details -->
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="id_document" class="form-label">Upload ID Document (Aadhaar/Driving License)</label>
+                            <input type="file" class="form-control" id="id_document" name="id_document" accept=".pdf, .jpg, .jpeg, .png" onchange="validateIdDocument()" required>
+                            <small id="idDocumentHelp" class="form-text text-muted">Upload PDF, JPG, or PNG files only.</small>
+                            <div id="idDocumentError" class="text-danger" style="display: none;"></div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="date_of_joining" class="form-label">Date of Joining</label>
+                            <input type="date" class="form-control" id="date_of_joining" name="date_of_joining" autocomplete="off" required>
+                        </div>
+                    </div>
+    
+                    <!-- Vehicle Information -->
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="vehicle_type" class="form-label">Vehicle Type</label>
+                            <input type="text" class="form-control" id="vehicle_type" name="vehicle_type" autocomplete="off" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="vehicle_number" class="form-label">Vehicle Number</label>
+                            <input type="text" class="form-control" id="vehicle_number" name="vehicle_number" autocomplete="off" oninput="validateVehicleNumber()" required>
+                            <div id="vehicleError" class="text-danger" style="display: none;"></div>
+                        </div>
+                    </div>
+                    <!-- Bank Account Information -->
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="bank_name" class="form-label">Bank Name</label>
+                            <select class="form-select" id="bank_name" name="bank_name" oninput="validateBankName()" required>
+                                <option value="" disabled selected>Select Bank</option>
+                                <option value="ALLAHABAD BANK">Allahabad Bank</option>
+                                <option value="ANDHRA BANK">Andhra Bank</option>
+                                <option value="AXIS BANK">Axis Bank</option>
+                                <option value="BANK OF BARODA">Bank of Baroda</option>
+                                <option value="BANK OF INDIA">Bank of India</option>
+                                <option value="BANK OF MAHARASHTRA">Bank of Maharashtra</option>
+                                <option value="CANARA BANK">Canara Bank</option>
+                                <option value="CORPORATION BANK">Corporation Bank</option>
+                                <option value="HONG KONG & SHANGHAI BANK">Hong Kong & Shanghai Bank</option>
+                                <option value="INDIAN BANK">Indian Bank</option>
+                                <option value="INDIAN OVERSEAS BANK">Indian Overseas Bank</option>
+                                <option value="KARUR VYSYA BANK">Karur Vysya Bank</option>
+                                <option value="NORTH MALABAR GRAMIN BANK">North Malabar Gramin Bank</option>
+                                <option value="ORIENTAL BANK OF COMMERCE">Oriental Bank of Commerce</option>
+                                <option value="PUNJAB AND SIND BANK">Punjab and Sind Bank</option>
+                                <option value="PUNJAB NATIONAL BANK">Punjab National Bank</option>
+                                <option value="RESERVE BANK OF INDIA">Reserve Bank of India</option>
+                                <option value="SOUTH INDIAN BANK">South Indian Bank</option>
+                                <option value="STANDARD CHARTERED BANK">Standard Chartered Bank</option>
+                                <option value="STATE BANK OF BIKANER AND JAIPUR">State Bank of Bikaner and Jaipur</option>
+                                <option value="STATE BANK OF HYDERABAD">State Bank of Hyderabad</option>
+                                <option value="STATE BANK OF MYSORE">State Bank of Mysore</option>
+                                <option value="STATE BANK OF PATIALA">State Bank of Patiala</option>
+                                <option value="STATE BANK OF TRAVANCORE">State Bank of Travancore</option>
+                                <option value="SYNDICATE BANK">Syndicate Bank</option>
+                                <option value="LAKSHMI VILAS BANK LTD">Lakshmi Vilas Bank Ltd</option>
+                                <option value="UCO BANK">UCO Bank</option>
+                                <option value="UNION BANK OF INDIA">Union Bank of India</option>
+                                <option value="UNITED BANK OF INDIA">United Bank of India</option>
+                                <option value="VIJAYA BANK">Vijaya Bank</option>
+                                <option value="CENTRAL BANK OF INDIA">Central Bank of India</option>
+                                <option value="DENA BANK">Dena Bank</option>
+                                <option value="BANDHAN BANK LIMITED">Bandhan Bank Limited</option>
+                                <option value="KERALA GRAMIN BANK">Kerala Gramin Bank</option>
+                                <option value="LAXMI VILAS BANK">Laxmi Vilas Bank</option>
+                                <option value="BANK OF BAHARAIN AND KUWAIT BSC">Bank of Baharain and Kuwait BSC</option>
+                                <option value="BHARATIYA MAHILA BANK LIMITED">Bharatiya Mahila Bank Limited</option>
+                                <option value="CATHOLIC SYRIAN BANK">Catholic Syrian Bank</option>
+                                <option value="CITIBANK NA">Citibank NA</option>
+                                <option value="CITY UNION BANK LTD">City Union Bank Ltd</option>
+                                <option value="DEVELOPMENT CREDIT BANK">Development Credit Bank</option>
+                                <option value="DHANALAXMI BANK">Dhanalaxmi Bank</option>
+                                <option value="DOHA BANK">Doha Bank</option>
+                                <option value="FEDERAL BANK LTD">Federal Bank Ltd</option>
+                                <option value="HDFC BANK LTD">HDFC Bank Ltd</option>
+                                <option value="ICICI BANK LTD">ICICI Bank Ltd</option>
+                                <option value="IDBI BANK LTD">IDBI Bank Ltd</option>
+                                <option value="ING VYSYA BANK LTD">ING Vysya Bank Ltd</option>
+                                <option value="INDUSIND BANK LTD">IndusInd Bank Ltd</option>
+                                <option value="JAMMU AND KASHMIR BANK LTD">Jammu and Kashmir Bank Ltd</option>
+                                <option value="KARNATAKA BANK LTD">Karnataka Bank Ltd</option>
+                                <option value="KOTAK MAHINDRA BANK">Kotak Mahindra Bank</option>
+                                <option value="STATE BANK OF INDIA">State Bank of India</option>
+                                <option value="TAMILNAD MERCANTILE BANK LTD">Tamilnad Mercantile Bank Ltd</option>
+                                <option value="YES BANK LTD">Yes Bank Ltd</option>
+                                <option value="OTHER">Other</option>
+                            </select>
+                            <div id="bankError" class="text-danger" style="display: none;"></div>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="branch" class="form-label">Branch</label>
+                            <input type="text" class="form-control" id="branch" name="branch" autocomplete="off" oninput="validateBranch()" required>
+                            <div id="branchError" class="text-danger" style="display: none;"></div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="account_number" class="form-label">Account Number</label>
+                            <input type="text" class="form-control" id="account_number" name="account_number" autocomplete="off" oninput="validateAccountNumber()" required>
+                            <div id="accountNumberError" class="text-danger" style="display: none;"></div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="ifsc_code" class="form-label">IFSC Code</label>
+                            <input type="text" class="form-control" id="ifsc_code" name="ifsc_code" autocomplete="off" oninput="validateIFSCCode()" required>
+                            <div id="ifscCodeError" class="text-danger" style="display: none;"></div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-success mb-4" id="submit_btn">Submit</button>
+                </form>
+                <p class="small mt-2">Existing User? Login here <a href="{% url 'delivery_agent_login' %}" class="link-danger">Login</a></p>
+              <p class="small mt-2"><a href="{% url 'delivery_agent_home' %}" class="link-secondary">Back to Home </a></p>
+            </div>
+        </main>
+</div>
+
+<!-- Footer -->
+<footer class="footer mt-5 py-3 bg-dark">
+  <div class="container text-center">
+    <div class="row text-center text-md-left align-items-center">
+      <div class="col-md-5">
+        <p class="text-light">Copyright @2023 All rights are preserved</p>
+      </div>
+      <div class="col-md-7">
+        <a href="#" class="social-icons text-white"><i class="fab fa-facebook-f"></i></a>
+        <span class="mx-2"></span> <!-- Add space between icons using a span element with margin -->
+        <a href="#" class="social-icons text-white"><i class="fab fa-twitter"></i></a>
+        <span class="mx-2"></span> <!-- Add space between icons -->
+        <a href="#" class="social-icons text-white"><i class="fab fa-instagram"></i></a>
+      </div>
+    </div>
+  </div>
+</footer>
+<!-- Footer -->
+
+<script>
+    document.getElementById('register_form').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        console.log("Form submit event triggered.");
+
+        if (validateForm()) {
+            console.log("Form validation successful. Submitting form...");
+            this.submit();
+        } else {
+            console.log("Form validation failed. Please correct the errors.");
+            alert('Please correct the errors in the form before submitting.');
+        }
+    });
+
+    function validateForm() {
+        let isValid = true;
+
+        isValid = isValid && validateProfilePhoto();
+        isValid = isValid && validateFirstName();
+        isValid = isValid && validateLastName();
+        isValid = isValid && validateGender();
+        isValid = isValid && validateEmail();
+        isValid = isValid && validatePassword();
+        isValid = isValid && validateConfirmPassword();
+        isValid = isValid && validatePhoneNumber();
+        isValid = isValid && validateAddress();
+        isValid = isValid && validateLocation();
+        isValid = isValid && validateAadhaarNumber();
+        isValid = isValid && validateDriverLicenseNumber();
+        isValid = isValid && validateVehicleNumber();
+        isValid = isValid && validateBankName();
+        isValid = isValid && validateBranch();
+        isValid = isValid && validateAccountNumber();
+        isValid = isValid && validateIFSCCode();
+        isValid = isValid && validateIdDocument();
+
+        return isValid;
+    }
+
+
+    function validateProfilePhoto() {
+        const fileInput = document.getElementById('profilePhoto');
+        const file = fileInput.files[0];
+        const allowedExtensions = /(\.jpg|\.jpeg|\.png)$/i;
+    
+        if (!allowedExtensions.exec(file.name)) {
+            document.getElementById('fileError').style.display = 'block';
+            fileInput.value = '';
+            return false;
+        } else {
+            document.getElementById('fileError').style.display = 'none';
+            return true;
+        }
+    }
+
+    function validateIdDocument() {
+        const idDocumentInput = document.getElementById('id_document');
+        const idDocumentError = document.getElementById('idDocumentError');
+        const file = idDocumentInput.files[0];
+        const allowedExtensions = /(\.pdf|\.jpg|\.jpeg|\.png)$/i;
+
+        if (!file) {
+            idDocumentInput.classList.add('is-invalid');
+            idDocumentError.innerText = 'Please select a file.';
+            idDocumentError.style.display = 'block';
+            return false;
+        } else if (!allowedExtensions.exec(file.name)) {
+            idDocumentInput.classList.add('is-invalid');
+            idDocumentError.innerText = 'Please upload a file with a valid extension (PDF, JPG, JPEG, or PNG).';
+            idDocumentError.style.display = 'block';
+            return false;
+        } else {
+            idDocumentInput.classList.remove('is-invalid');
+            idDocumentError.innerText = '';
+            idDocumentError.style.display = 'none';
+            return true;
+        }
+    }
+    
+    function validateFirstName() {
+        const firstNameInput = document.getElementById('first_name');
+        const firstName = firstNameInput.value.trim();
+        const containsOnlyAlphabets = /^[A-Za-z]+$/.test(firstName);
+    
+        if (!containsOnlyAlphabets) {
+            document.getElementById('firstNameError').style.display = 'block';
+            return false;
+        } else {
+            document.getElementById('firstNameError').style.display = 'none';
+            return true;
+        }
+    }
+    
+    function validateLastName() {
+        const lastNameInput = document.getElementById('last_name');
+        const lastName = lastNameInput.value.trim();
+        const containsOnlyAlphabets = /^[A-Za-z\s]+$/.test(lastName);
+    
+        if (!containsOnlyAlphabets) {
+            document.getElementById('lastNameError').style.display = 'block';
+            return false;
+        } else {
+            document.getElementById('lastNameError').style.display = 'none';
+            return true;
+        }
+    }
+    
+    function validateGender() {
+        const genderInput = document.getElementById('gender');
+    
+        if (genderInput.value === '') {
+            document.getElementById('genderError').style.display = 'block';
+            return false;
+        } else {
+            document.getElementById('genderError').style.display = 'none';
+            return true;
+        }
+    }
+    
+    function validateEmail() {
+        const emailInput = document.getElementById('email');
+        const emailError = document.getElementById('emailError');
+        const email = emailInput.value.trim();
+        const validProviders = ["gmail", "yahoo", "outlook", "hotmail", "aol", "icloud", "protonmail", "zoho"];
+        const validTLDs = ["com", "org", "net", "edu", "gov", "mil", "co", "info", "io", "uk", "in"];
+        const emailParts = email.split("@");
+        if (emailParts.length !== 2) {
+            emailInput.classList.add('is-invalid');
+            emailError.innerText = 'Please enter a valid email address.';
+            emailError.style.display = 'block';
+            return false;
+        }
+        const provider = emailParts[1].split(".")[0].toLowerCase();
+        const tld = emailParts[1].split(".").pop().toLowerCase();
+        const emailRegex = /^[a-z0-9._%+-]+@[a-z.-]+$/;
+        const afterTLD = emailParts[1].split(".").slice(1).join(".");
+        if (afterTLD.includes("..") || afterTLD.split(".").length > 2) {
+            emailInput.classList.add('is-invalid');
+            emailError.innerText = 'Please enter a valid email address.';
+            emailError.style.display = 'block';
+            return false;
+        }
+        if (
+            !emailRegex.test(email) ||
+            !validProviders.includes(provider) ||
+            !validTLDs.includes(tld)
+        ) {
+            emailInput.classList.add('is-invalid');
+            emailError.innerText = 'Please enter a valid email address with a supported provider and TLD.';
+            emailError.style.display = 'block';
+            return false;
+        } else {
+            emailInput.classList.remove('is-invalid');
+            emailError.innerText = '';
+            emailError.style.display = 'none';
+            return true;
+        }
+    }
+    
+    function validatePassword() {
+        var passwordInput = document.getElementById('password');
+        var password = passwordInput.value;
+    
+        var passwordError = document.getElementById('passwordError');
+        var valid = true;
+    
+        if (!/[A-Z]/.test(password)) {
+            valid = false;
+        }
+        if (!/[a-z]/.test(password)) {
+            valid = false;
+        }
+        if (!/[0-9]/.test(password)) {
+            valid = false;
+        }
+        if (!/[^A-Za-z0-9]/.test(password)) {
+            valid = false;
+        }
+        if (password.length < 6) {
+            valid = false;
+        }
+        if (valid) {
+            passwordError.style.display = 'none';
+            return true;
+        } else {
+            passwordError.style.display = 'block';
+            return false;
+        }
+    }
+    
+    function validateConfirmPassword() {
+        var confirmPasswordInput = document.getElementById('confirmPassword');
+        var confirmPassword = confirmPasswordInput.value;
+        var passwordInput = document.getElementById('password');
+        var password = passwordInput.value;
+    
+        var confirmPasswordError = document.getElementById('confirmPasswordError');
+    
+        if (confirmPassword === password) {
+            confirmPasswordError.style.display = 'none';
+            return true;
+        } else {
+            confirmPasswordError.style.display = 'block';
+            return false;
+        }
+    }
+    
+    function validatePhoneNumber() {
+        const phoneInput = document.getElementById('phone');
+        const phoneError = document.getElementById('phoneError');
+        const phoneNumber = phoneInput.value.trim();
+        const phoneRegex = /^[6-9]\d{9}$/;
+    
+        if (!phoneRegex.test(phoneNumber)) {
+            phoneInput.classList.add('is-invalid');
+            phoneError.innerText = 'Please enter a valid 10-digit phone number starting with 6, 7, 8, or 9.';
+            phoneError.style.display = 'block';
+            return false;
+        } else {
+            phoneInput.classList.remove('is-invalid');
+            phoneError.innerText = '';
+            phoneError.style.display = 'none';
+            return true;
+        }
+    }
+    
+    function validateAddress() {
+        // Validation logic for address field goes here
+        const addressInput = document.getElementById('address');
+    
+        if (addressInput.value === '') {
+            document.getElementById('addressError').style.display = 'block';
+            return false;
+        } else {
+            document.getElementById('addressError').style.display = 'none';
+            return true;
+        }
+    }
+    
+    function validateLocation() {
+        // Validation logic for location field goes here
+        const locationInput = document.getElementById('location');
+    
+        if (locationInput.value === '') {
+            document.getElementById('locationError').style.display = 'block';
+            return false;
+        } else {
+            document.getElementById('locationError').style.display = 'none';
+            return true;
+        }
+    }
+    
+    function validateAadhaarNumber() {
+        // Get the Aadhaar number value
+        const aadhaarInput = document.getElementById('id_number');
+        const aadhaarError = document.getElementById('aadhaarError');
+        const aadhaarNumber = aadhaarInput.value;
+    
+        // Regular expression to validate Aadhaar number format (exactly 12 digits, not starting with 0)
+        const aadhaarRegex = /^[1-9]\d{11}$/;
+    
+        // Check if the Aadhaar number is valid
+        if (!aadhaarRegex.test(aadhaarNumber)) {
+            // Show error message and add 'is-invalid' class
+            aadhaarInput.classList.add('is-invalid');
+            aadhaarError.innerText = 'Please enter a valid Aadhaar number containing exactly 12 digits and not starting with 0.';
+            aadhaarError.style.display = 'block';
+            return false; 
+        } else {
+            // Remove error message and 'is-invalid' class
+            aadhaarInput.classList.remove('is-invalid');
+            aadhaarError.innerText = '';
+            aadhaarError.style.display = 'none';
+            return true;
+        }
+    
+        return true;
+    }
+    
+    
+    function validateVehicleNumber() {
+        // Validation logic for vehicle number field goes here
+        const allowedStateCodes = ['AP', 'AR', 'AS', 'BR', 'CG', 'GA', 'GJ', 'HR', 'HP', 'JK', 'JH', 'KA', 'KL', 'MP', 'MH', 'MN', 'ML', 'MZ', 'NL', 'OR', 'PB', 'RJ', 'SK', 'TN', 'TR', 'UK', 'UP', 'WB'];
+    
+        // Get the Vehicle Number input element and error message element
+        const vehicleInput = document.getElementById('vehicle_number');
+        const vehicleError = document.getElementById('vehicleError');
+        const vehicleNumber = vehicleInput.value.toUpperCase();
+    
+            // Check if the first two characters (state code) are in the allowed state codes
+            const stateCode = vehicleNumber.substring(0, 2);
+            if (!allowedStateCodes.includes(stateCode)) {
+                // Show error message and add 'is-invalid' class
+                vehicleInput.classList.add('is-invalid');
+                vehicleError.innerText = 'Please enter a valid Vehicle Number with a valid state code.';
+                vehicleError.style.display = 'block';
+            } else {
+                // Remove error message and 'is-invalid' class
+                vehicleInput.classList.remove('is-invalid');
+                vehicleError.innerText = '';
+                vehicleError.style.display = 'none';
+            }
+        
+        return true;
+    }
+    
+    function validateDriverLicenseNumber() {
+        // Validation logic for driver license number field goes here
+        const licenseInput = document.getElementById('driver_license_number');
+        const licenseError = document.getElementById('licenseError');
+        const licenseNumber = licenseInput.value;
+    
+            // Regular expression to validate Kerala Driver License Number format
+            // Format: KL-XX-YYYY-NNNNNN (X: Letter, Y: Digit)
+            const licenseRegex = /^KL-[A-Z]{2}-\d{4}-\d{6}$/;
+    
+            // Check if the Driver License Number is valid
+            if (!licenseRegex.test(licenseNumber)) {
+                // Show error message and add 'is-invalid' class
+                licenseInput.classList.add('is-invalid');
+                licenseError.innerText = 'Please enter a valid Kerala Driver License Number in the format KL-XX-YYYY-NNNNNN.';
+                licenseError.style.display = 'block';
+            } else {
+                // Remove error message and 'is-invalid' class
+                licenseInput.classList.remove('is-invalid');
+                licenseError.innerText = '';
+                licenseError.style.display = 'none';
+            }
+        return true;
+    }
+    
+    function validateBankName() {
+        // Validation logic for bank name field goes here
+        const bankInput = document.getElementById('bank_name');
+    
+        if (bankInput.value === '') {
+            document.getElementById('bankError').style.display = 'block';
+            return false;
+        } else {
+            document.getElementById('bankError').style.display = 'none';
+            return true;
+        }
+    }
+    
+    function validateBranch() {
+        const branchInput = document.getElementById('branch');
+        const branchError = document.getElementById('branchError');
+        const regex = /^[a-zA-Z]+$/;
+    
+        if (!regex.test(branchInput.value)) {
+            branchInput.classList.add('is-invalid');
+            branchError.innerText = 'Branch name should contain only alphabets without spaces.';
+            branchError.style.display = 'block';
+            return false;
+        } else {
+            branchInput.classList.remove('is-invalid');
+            branchError.innerText = '';
+            branchError.style.display = 'none';
+            return true;
+        }
+    }
+    
+    function validateAccountNumber() {
+        const accountNumberInput = document.getElementById('account_number');
+        const accountNumberError = document.getElementById('accountNumberError');
+        const accountNumber = accountNumberInput.value.trim();
+    
+        if (!/^\d{9,18}$/.test(accountNumber)) {
+            accountNumberInput.classList.add('is-invalid');
+            accountNumberError.innerText = 'Account number must contain 9 to 18 digits.';
+            accountNumberError.style.display = 'block';
+            return false;
+        } else {
+            accountNumberInput.classList.remove('is-invalid');
+            accountNumberError.innerText = '';
+            accountNumberError.style.display = 'none';
+            return true;
+        }
+    }
+    
+    function validateIFSCCode() {
+        const ifscCodeInput = document.getElementById('ifsc_code');
+        const ifscCodeError = document.getElementById('ifscCodeError');
+        const ifscCode = ifscCodeInput.value.trim();
+        const ifscRegex = /^[A-Z]{4}[0][A-Z0-9]{6}$/;
+    
+        if (!ifscRegex.test(ifscCode)) {
+            ifscCodeInput.classList.add('is-invalid');
+            ifscCodeError.innerText = 'IFSC code should be in the format XXXX0000XXX.';
+            ifscCodeError.style.display = 'block';
+            return false;
+        } else {
+            ifscCodeInput.classList.remove('is-invalid');
+            ifscCodeError.innerText = '';
+            ifscCodeError.style.display = 'none';
+            return true;
+        }
+    }
+    
+</script>
+
+<!-- Bootstrap and other scripts -->
+  <script src="https://kit.fontawesome.com/abaaeb8089.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>
+</body>
+</html>

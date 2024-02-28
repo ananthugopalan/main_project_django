@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 
     <title>Admin Dashboard</title>
@@ -40,6 +41,8 @@
                 <li><a href="{% url 'admin_users' %}" class="text-dark text-decoration-none fs-5">Users</a></li>
                 <li class="pb-2 mb-2" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1);">
                 <li><a href="{% url 'admin_report' %}" class="text-dark text-decoration-none fs-5">Report</a></li>
+                <li class="pb-2 mb-2" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1);">
+                <li><a href="{% url 'admin_delivery_agents' %}" class="text-dark text-decoration-none fs-5">Manage Delivery Agents</a></li>
                 <li class="pb-2 mb-2" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1);">
                 <li><a href="{% url 'admin_hubs' %}" class="text-dark text-decoration-none fs-5">Manage Hubs</a></li>
                 <li class="pb-2 mb-2" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1);">
@@ -88,8 +91,17 @@
                     </div>
                 </div>
                 <hr>
+                <!-- Display counts plot -->
+                <div class="row">
+                    <div class="col-md-8">
+                        <img src="data:image/png;base64,{{ counts_plot }}" alt="Counts Plot" class="img-fluid">
+                    </div>
+                    
+                </div>
+                <hr>            
             </section>
         </main>
+        
     </div>
     <!-- Footer -->
     <footer class="footer mt-0 py-3 bg-dark">
@@ -128,6 +140,7 @@
         // Initial adjustment of sidebar height
         adjustSidebarHeight();
     </script>
+    
     <!-- Footer -->
 </body>
 </html>

@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.urls import path,include
 from .import views
-from .views import GeneratePDF,CustomerOrderView, UserReportPDFView, ProductReportPDFView, OrderReportPDFView, SalesReportPDFView
+from .views import GeneratePDF,CustomerOrderView
 
 urlpatterns = [
     path('',views.index,name='index'),
@@ -80,17 +80,19 @@ urlpatterns = [
     path('admin_settings/', views.admin_settings, name='admin_settings'),
     path('admin_report/', views.admin_report, name='admin_report'),
     path('admin_hubs/', views.admin_hubs, name='admin_hubs'),
+    path('admin_delivery_agents/', views.admin_delivery_agents, name='admin_delivery_agents'),
+
 
     path('delete_hub/<int:hub_id>/', views.delete_hub, name='delete_hub'),
 
 
-    path('user_report/', UserReportPDFView.as_view(), name='user_report_pdf'),
-    path('product_report/', ProductReportPDFView.as_view(), name='product_report_pdf'),
-    path('order_report/', OrderReportPDFView.as_view(), name='order_report_pdf'),
-    path('sales_report/', SalesReportPDFView.as_view(), name='sales_report_pdf'),
-
     #delivery agent
+    path('delivery_agent_home/', views.delivery_agent_home, name='delivery_agent_home'),
+    path('delivery_agent_reg/', views.delivery_agent_reg, name='delivery_agent_reg'),
+    path('delivery_agent_login/', views.delivery_agent_login, name='delivery_agent_login'),
     path('delivery_agent/', views.delivery_agent, name='delivery_agent'),
+    path('delivery_agent_profile/', views.delivery_agent_profile, name='delivery_agent_profile'),
+
 
     #hub
     path('hub_dashboard/', views.hub_dashboard, name='hub_dashboard'),

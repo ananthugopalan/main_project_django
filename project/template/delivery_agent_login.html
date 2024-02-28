@@ -1,0 +1,95 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Login</title>
+  <link rel="icon" href="{% static 'img/Agriselect1.png' %}" width='30' height='30'>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-APkiNv6V6Zzv5SZ/gO4if/XvJ21foE94OcC96vgt1z3xJlZnuB+KqYfhmG1tY2NqCfyWQZC53GoN3R9kbbDvQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+</head>
+<body style="background-color: white;">
+
+
+  <!-- Login starts -->
+  <!-- {% if messages %}
+  <div class="messages">
+    {% for message in messages %}
+      <div class="alert alert-success">{{ message }}</div>
+    {% endfor %}
+  </div>
+{% endif %} -->
+
+  <section class="min-vh-100 d-flex flex-column">
+    <div class="container">
+      <div class="row justify-content-center align-items-center min-vh-100">
+        <div class="container d-flex justify-content-center" style="margin-top: 20px;"> <!-- Add "margin-top" style -->
+          <a class="navbar-brand" href="#">
+            <img src="{% static 'img/Agriselect1.png'%}" width='100' height='auto' class='logo'>
+          </a>
+        </div>
+        <div class="col-md-8 col-lg-6 col-xl-4 shadow-lg p-3 bg-body rounded form-container">
+          <div class="h3 text-center mt-5">
+            <h4>Sign in</h4>
+          </div>
+          <form class="m-3" autocomplete="off" method="post">
+            {% csrf_token %}
+            <!-- Email input -->
+            <div class="mb-3">
+              <input type="email" id="email" name="email" class="form-control" placeholder="Enter a valid email address" />
+            </div>
+  
+            <!-- Password input -->
+            <div class="mb-3">
+              <input type="password" id="password" name="password" class="form-control" placeholder="Enter password" />
+            </div>
+  
+            <div class="d-flex justify-content-between align-items-center">
+              <!-- Checkbox -->
+              <div class="form-check mb-0">
+                <!-- Checkbox content here -->
+              </div>
+              <a href="{% url 'password_reset' %}" class="text-body">Forgot password?</a>
+            </div>
+            {% load socialaccount %}
+            <div class="text-center mt-4">
+              <button id="login" type="submit" class="btn btn-success" style="padding-left: 2.5rem; padding-right: 2.5rem;">Sign in</button>
+              <p class="small mt-2">New User? Create your account here <a href="{% url 'delivery_agent_reg' %}" class="link-danger">Register</a></p>
+              <p class="small mt-2"><a href="{% url 'delivery_agent_home' %}" class="link-secondary">Back to Home </a></p>
+
+              <!-- <hr>
+              <a href="{% provider_login_url 'google'%}" class="btn btn-outline-danger mt-2" style="padding-left: 2rem; padding-right: 2rem;">
+                <i class="fab fa-google me-2"></i> Sign in with Google
+              </a> -->
+              {% if error_message %}
+                        <div class="d-flex justify-content-center"><p class="text-danger mt-2 fs-6">{{error_message}}</p></div>
+              {% endif %}
+            </div>
+
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <!-- Login ends -->
+
+ <!-- Footer -->
+  <footer class="footer mt-5 py-3">
+  
+</footer>
+<!-- Footer -->
+
+
+  <!-- Bootstrap and other scripts -->
+  <script src="https://kit.fontawesome.com/abaaeb8089.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>
+</body>
+</html>

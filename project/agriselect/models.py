@@ -251,3 +251,103 @@ class AdminSettings(models.Model):
     # Add fields for various settings, including the selected season
     selected_season = models.CharField(max_length=20, choices=SEASON_CHOICES,default='summer')
 
+
+class DeliveryAgentProfile(models.Model):
+    delivery_agent = models.ForeignKey(CustomUser, on_delete=models.CASCADE, default=None)
+    profile_photo = models.ImageField(upload_to='profile_photos/', blank=True, null=True)
+    GENDER_CHOICES = (
+        ('male', 'Male'),
+        ('female', 'Female'),
+        ('other', 'Other'),
+    )
+    gender = models.CharField(max_length=10, choices=GENDER_CHOICES)
+    address = models.TextField()
+    phone = models.CharField(max_length=15)
+    LOCATION_CHOICES = (
+        ('ernakulam', 'Ernakulam'),
+        ('malappuram', 'Malappuram'),
+        ('pathanamthitta', 'Pathanamthitta'),
+        ('kannur', 'Kannur'),
+        # Add more locations as needed
+    )
+    location = models.CharField(max_length=100, choices=LOCATION_CHOICES)
+    aadhaar_number = models.CharField(max_length=12)
+    driver_license_number = models.CharField(max_length=50)
+    employee_id = models.CharField(max_length=10, unique=True, default=None)
+    date_of_joining = models.DateField()
+    vehicle_type = models.CharField(max_length=100, blank=True, null=True)
+    vehicle_number = models.CharField(max_length=20)
+    BANK_CHOICES = (
+        ('ALLAHABAD BANK', 'Allahabad Bank'),
+        ('ANDHRA BANK', 'Andhra Bank'),
+        ('AXIS BANK', 'Axis Bank'),
+        ('BANK OF BARODA', 'Bank of Baroda'),
+        ('BANK OF INDIA', 'Bank of India'),
+        ('BANK OF MAHARASHTRA', 'Bank of Maharashtra'),
+        ('CANARA BANK', 'Canara Bank'),
+        ('CORPORATION BANK', 'Corporation Bank'),
+        ('HONG KONG & SHANGHAI BANK', 'Hong Kong & Shanghai Bank'),
+        ('INDIAN BANK', 'Indian Bank'),
+        ('INDIAN OVERSEAS BANK', 'Indian Overseas Bank'),
+        ('KARUR VYSYA BANK', 'Karur Vysya Bank'),
+        ('NORTH MALABAR GRAMIN BANK', 'North Malabar Gramin Bank'),
+        ('ORIENTAL BANK OF COMMERCE', 'Oriental Bank of Commerce'),
+        ('PUNJAB AND SIND BANK', 'Punjab and Sind Bank'),
+        ('PUNJAB NATIONAL BANK', 'Punjab National Bank'),
+        ('RESERVE BANK OF INDIA', 'Reserve Bank of India'),
+        ('SOUTH INDIAN BANK', 'South Indian Bank'),
+        ('STANDARD CHARTERED BANK', 'Standard Chartered Bank'),
+        ('STATE BANK OF BIKANER AND JAIPUR', 'State Bank of Bikaner and Jaipur'),
+        ('STATE BANK OF HYDERABAD', 'State Bank of Hyderabad'),
+        ('STATE BANK OF MYSORE', 'State Bank of Mysore'),
+        ('STATE BANK OF PATIALA', 'State Bank of Patiala'),
+        ('STATE BANK OF TRAVANCORE', 'State Bank of Travancore'),
+        ('SYNDICATE BANK', 'Syndicate Bank'),
+        ('LAKSHMI VILAS BANK LTD', 'Lakshmi Vilas Bank Ltd'),
+        ('UCO BANK', 'UCO Bank'),
+        ('UNION BANK OF INDIA', 'Union Bank of India'),
+        ('UNITED BANK OF INDIA', 'United Bank of India'),
+        ('VIJAYA BANK', 'Vijaya Bank'),
+        ('CENTRAL BANK OF INDIA', 'Central Bank of India'),
+        ('DENA BANK', 'Dena Bank'),
+        ('BANDHAN BANK LIMITED', 'Bandhan Bank Limited'),
+        ('KERALA GRAMIN BANK', 'Kerala Gramin Bank'),
+        ('LAXMI VILAS BANK', 'Laxmi Vilas Bank'),
+        ('BANK OF BAHARAIN AND KUWAIT BSC', 'Bank of Baharain and Kuwait BSC'),
+        ('BHARATIYA MAHILA BANK LIMITED', 'Bharatiya Mahila Bank Limited'),
+        ('CATHOLIC SYRIAN BANK', 'Catholic Syrian Bank'),
+        ('CITIBANK NA', 'Citibank NA'),
+        ('CITY UNION BANK LTD', 'City Union Bank Ltd'),
+        ('DEVELOPMENT CREDIT BANK', 'Development Credit Bank'),
+        ('DHANALAXMI BANK', 'Dhanalaxmi Bank'),
+        ('DOHA BANK', 'Doha Bank'),
+        ('FEDERAL BANK LTD', 'Federal Bank Ltd'),
+        ('HDFC BANK LTD', 'HDFC Bank Ltd'),
+        ('ICICI BANK LTD', 'ICICI Bank Ltd'),
+        ('IDBI BANK LTD', 'IDBI Bank Ltd'),
+        ('ING VYSYA BANK LTD', 'ING Vysya Bank Ltd'),
+        ('INDUSIND BANK LTD', 'IndusInd Bank Ltd'),
+        ('JAMMU AND KASHMIR BANK LTD', 'Jammu and Kashmir Bank Ltd'),
+        ('KARNATAKA BANK LTD', 'Karnataka Bank Ltd'),
+        ('KOTAK MAHINDRA BANK', 'Kotak Mahindra Bank'),
+        ('STATE BANK OF INDIA', 'State Bank of India'),
+        ('TAMILNAD MERCANTILE BANK LTD', 'Tamilnad Mercantile Bank Ltd'),
+        ('YES BANK LTD', 'Yes Bank Ltd'),
+        ('OTHER', 'Other'),
+    )
+    bank_name = models.CharField(max_length=100, choices=BANK_CHOICES)
+    branch = models.CharField(max_length=100)
+    account_number = models.CharField(max_length=18)
+    ifsc_code = models.CharField(max_length=11)
+    id_document = models.FileField(upload_to='id_documents/', blank=True, null=True)
+
+
+    def save(self, *args, **kwargs):
+            # Generate a unique employee ID if it's not already set
+            if not self.employee_id:
+                last_id = DeliveryAgentProfile.objects.order_by('-id').first()
+                last_id = int(last_id.employee_id.split('AS')[1]) if last_id else 0
+                new_id = last_id + 1
+                self.employee_id = f'AS{new_id:04}'
+            super().save(*args, **kwargs)
+    
