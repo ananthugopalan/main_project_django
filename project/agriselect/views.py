@@ -138,10 +138,34 @@ def delete_hub(request, hub_id):
 
 
 def admin_delivery_agents(request):
-    return render(request, 'admin_delivery_agents.html')
+    delivery_agents = DeliveryAgentProfile.objects.select_related('delivery_agent').all()
+    return render(request, 'admin_delivery_agents.html',{'delivery_agents':delivery_agents})
 
 
 #Hub
+from django.contrib.auth import authenticate, login
+from django.http import HttpResponseRedirect
+from django.urls import reverse
+
+def hub_login(request):
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+
+        user = authenticate(request, email=email, password=password)
+
+        if user is not None:
+            if user.hub_status:
+                login(request, user)
+                return HttpResponseRedirect(reverse('hub_dashboard'))
+            else:
+                error_message = "Invalid credentials. Please make sure you are logging in as a hub user."
+                return render(request, 'hub_login.html', {'error_message': error_message})
+        else:
+            error_message = "Invalid email or password."
+            return render(request, 'hub_login.html', {'error_message': error_message})
+    else:
+        return render(request, 'hub_login.html')
 
 def hub_dashboard(request):
     return render(request, 'hub_dashboard.html')
