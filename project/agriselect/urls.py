@@ -92,6 +92,7 @@ urlpatterns = [
     path('delivery_agent_login/', views.delivery_agent_login, name='delivery_agent_login'),
     path('delivery_agent/', views.delivery_agent, name='delivery_agent'),
     path('delivery_agent_profile/', views.delivery_agent_profile, name='delivery_agent_profile'),
+    path('get_agent_details/<int:agent_id>/', views.get_agent_details, name='get_agent_details'),
 
 
     #hub

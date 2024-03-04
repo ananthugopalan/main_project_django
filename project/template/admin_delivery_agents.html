@@ -50,6 +50,23 @@
             </ul>
         </nav>
 
+        <!-- Modal for displaying agent details -->
+        <div class="modal fade" id="agentDetailsModal" tabindex="-1" aria-labelledby="agentDetailsModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="agentDetailsModalLabel">Agent Details</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Agent details will be rendered here dynamically -->
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <main class="ms-4 mt-4">
             <section class="content">
@@ -67,21 +84,46 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <form action="#" method="post">
                         {% for delivery_agent in delivery_agents %}
+                        <form action="{% url 'admin_delivery_agents' %}" method="post">
+                            {% csrf_token %}
                             <tr>
+                                <input type="hidden" name="user_id" value="{{ delivery_agent.delivery_agent.id }}">
                                 <td>{{ delivery_agent.employee_id }}</td>
                                 <td>{{ delivery_agent.delivery_agent.email }}</td>
                                 <td>{{ delivery_agent.delivery_agent.first_name }} {{ delivery_agent.delivery_agent.last_name }}</td>
                                 <td>{{ delivery_agent.location }}</td>
                                 <td>{{ delivery_agent.phone}}</td>
-                                <td><a href="#">View</a></td>
-                                <td><button type="submit" class="bg-warning border-0 shadow rounded">Approve</button></td>
+                                <td><a href="#" class="view-agent" data-agent-id="{{ delivery_agent.id }}">View</a></td>
+                                {% if delivery_agent.delivery_agent.is_active %}
+                                    <td><button type="submit" class="bg-success rounded" disabled><i class="fas fa-check"></i></button></td>
+                                {% else %}
+                                    <td class="action-buttons"><button type="submit" class="btn btn-warning border-0 shadow rounded approve-btn" onclick="return confirm('Are you sure you want to approve the request?')">Approve</button>
+                                        <button type="button" class="btn btn-danger reject-btn rounded shadow" onclick="rejectRequest(this)">Reject</button>
+                                    </td>
+                                    
+                                {% endif %}
                             </tr>
-                        {% endfor %}
                         </form>
-                    </tbody>
+                        {% endfor %}
+                    </tbody>                    
                 </table>
+                <!-- Pagination -->
+                <div class="pagination justify-content-center">
+                    <ul class="pagination">
+                        {% if delivery_agents.has_previous %}
+                            <li class="page-item"><a class="page-link" href="?page={{ delivery_agents.previous_page_number }}">Previous</a></li>
+                        {% endif %}
+                        {% for num in delivery_agents.paginator.page_range %}
+                            <li class="page-item{% if num == delivery_agents.number %} active{% endif %}">
+                                <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                            </li>
+                        {% endfor %}
+                        {% if delivery_agents.has_next %}
+                            <li class="page-item"><a class="page-link" href="?page={{ delivery_agents.next_page_number }}">Next</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
             </section>
         </main>
     </div>
@@ -105,6 +147,18 @@
     </footer>
 
     <script>
+        function rejectRequest(btn) {
+            var row = btn.closest('tr');
+            var approveBtn = row.querySelector('.approve-btn');
+            var actionButtons = row.querySelector('.action-buttons');
+            btn.classList.remove('btn-danger');
+            btn.classList.add('btn-secondary');
+            btn.innerText = 'Rejected';
+            approveBtn.style.visibility = 'hidden';
+        }
+    </script>
+    
+    <script>
         // Function to adjust sidebar height
         function adjustSidebarHeight() {
             const sidebar = document.querySelector('.sidenav');
@@ -122,6 +176,27 @@
 
         // Initial adjustment of sidebar height
         adjustSidebarHeight();
+
+        // JavaScript to handle click event and AJAX request
+        $(document).ready(function() {
+            // Handle click event of the "View" link
+            $('.view-agent').click(function(e) {
+                e.preventDefault();
+                var agentId = $(this).data('agent-id');
+                
+                // Make AJAX request to fetch agent details
+                $.ajax({
+                    type: 'GET',
+                    url: '/get_agent_details/' + agentId + '/',
+                    success: function(data) {
+                        // Render data in modal
+                        $('#agentDetailsModal .modal-body').html(data);
+                        $('#agentDetailsModal').modal('show');
+                    }
+                });
+            });
+        });
+
     </script>
     <!-- Footer -->
 </body>

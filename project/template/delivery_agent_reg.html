@@ -107,16 +107,23 @@
                             <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" autocomplete="off" oninput="validateConfirmPassword()" required>
                             <div id="confirmPasswordError" class="text-danger" style="display: none;">Passwords do not match.</div>
                         </div>
-                    </div>                    
-                    <div class="mb-3">
-                        <label for="address" class="form-label">Address</label>
-                        <textarea class="form-control" id="address" name="address" autocomplete="off" oninput="validateAddress()" required></textarea>
-                        <div id="addressError" class="text-danger" style="display: none;"></div>
+                    </div>  
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="address" class="form-label">Date of Birth</label>
+                            <input type="date" class="form-control" id="date_of_birth" name="date_of_birth" autocomplete="off" oninput="validateDateOfBirth()" required>
+                            <div id="dobError" class="text-danger" style="display: none;"></div>
+                        </div>                  
+                        <div class="col-md-6 mb-3">
+                            <label for="address" class="form-label">Address</label>
+                            <textarea class="form-control" id="address" name="address" autocomplete="off" oninput="validateAddress()" required></textarea>
+                            <div id="addressError" class="text-danger" style="display: none;"></div>
+                        </div>
                     </div>
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="phone" class="form-label">Phone Number(+91)</label>
-                            <input type="tel" class="form-control" id="phone" name="phone" autocomplete="off" oninput="validatePhoneNumber()" required>
+                            <input type="tel" class="form-control" id="phone" name="phone" autocomplete="off" onchange="validatePhoneNumber()" required>
                             <div id="phoneError" class="text-danger" style="display: none;"></div>
                         </div>
                         <!-- Location Information -->
@@ -311,6 +318,7 @@
         isValid = isValid && validatePassword();
         isValid = isValid && validateConfirmPassword();
         isValid = isValid && validatePhoneNumber();
+        isValid = isValid && validateDateOfBirth();
         isValid = isValid && validateAddress();
         isValid = isValid && validateLocation();
         isValid = isValid && validateAadhaarNumber();
@@ -512,6 +520,36 @@
         }
     }
     
+    function validateDateOfBirth() {
+        // Get the date of birth value
+        const dobInput = document.getElementById('date_of_birth');
+        const dobError = document.getElementById('dobError');
+        const dobValue = new Date(dobInput.value);
+        
+        // Calculate age
+        const today = new Date();
+        const age = today.getFullYear() - dobValue.getFullYear();
+        const monthDiff = today.getMonth() - dobValue.getMonth();
+        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dobValue.getDate())) {
+            age--;
+        }
+
+        // Check if age is between 18 and 40
+        if (age < 18 || age > 40) {
+            // Show error message and add 'is-invalid' class
+            dobInput.classList.add('is-invalid');
+            dobError.innerText = 'You must be between 18 and 40 years old.';
+            dobError.style.display = 'block';
+            return false;
+        } else {
+            // Remove error message and 'is-invalid' class
+            dobInput.classList.remove('is-invalid');
+            dobError.innerText = '';
+            dobError.style.display = 'none';
+            return true;
+        }
+    }
+
     function validateAddress() {
         // Validation logic for address field goes here
         const addressInput = document.getElementById('address');

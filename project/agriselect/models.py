@@ -256,27 +256,28 @@ class DeliveryAgentProfile(models.Model):
     delivery_agent = models.ForeignKey(CustomUser, on_delete=models.CASCADE, default=None)
     profile_photo = models.ImageField(upload_to='profile_photos/', blank=True, null=True)
     GENDER_CHOICES = (
-        ('male', 'Male'),
-        ('female', 'Female'),
-        ('other', 'Other'),
+        ('Male', 'Male'),
+        ('Female', 'Female'),
+        ('Other', 'Other'),
     )
     gender = models.CharField(max_length=10, choices=GENDER_CHOICES)
+    date_of_birth = models.DateField(null=True, blank=True, default=None) 
     address = models.TextField()
     phone = models.CharField(max_length=15)
     LOCATION_CHOICES = (
-        ('ernakulam', 'Ernakulam'),
-        ('malappuram', 'Malappuram'),
-        ('pathanamthitta', 'Pathanamthitta'),
-        ('kannur', 'Kannur'),
+        ('Ernakulam', 'Ernakulam'),
+        ('Malappuram', 'Malappuram'),
+        ('Pathanamthitta', 'Pathanamthitta'),
+        ('Kannur', 'Kannur'),
         # Add more locations as needed
     )
     location = models.CharField(max_length=100, choices=LOCATION_CHOICES)
-    aadhaar_number = models.CharField(max_length=12)
-    driver_license_number = models.CharField(max_length=50)
+    aadhaar_number = models.CharField(max_length=12, unique=True)
+    driver_license_number = models.CharField(max_length=50, unique=True)
     employee_id = models.CharField(max_length=10, unique=True, default=None)
     date_of_joining = models.DateField()
     vehicle_type = models.CharField(max_length=100, blank=True, null=True)
-    vehicle_number = models.CharField(max_length=20)
+    vehicle_number = models.CharField(max_length=20, unique=True)
     BANK_CHOICES = (
         ('ALLAHABAD BANK', 'Allahabad Bank'),
         ('ANDHRA BANK', 'Andhra Bank'),

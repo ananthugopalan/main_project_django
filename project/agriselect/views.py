@@ -137,10 +137,35 @@ def delete_hub(request, hub_id):
     return redirect('admin_hubs')
 
 
+
 def admin_delivery_agents(request):
+    if request.method == 'POST':
+        # Check if the form is submitted
+        user_id = request.POST.get('user_id')  # Get the user_id from the form
+        # Retrieve the User object
+        user = CustomUser.objects.get(id=user_id)
+        # Update the is_active field to True
+        user.is_active = True
+        user.save()  # Save the user object
+        return redirect('admin_delivery_agents')
+    
     delivery_agents = DeliveryAgentProfile.objects.select_related('delivery_agent').all()
+    paginator = Paginator(delivery_agents, 10)  # Show 10 delivery agents per page
+
+    page = request.GET.get('page')
+    try:
+        delivery_agents = paginator.page(page)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+        delivery_agents = paginator.page(1)
+    except EmptyPage:
+        # If page is out of range (e.g. 9999), deliver last page of results.
+        delivery_agents = paginator.page(paginator.num_pages)
     return render(request, 'admin_delivery_agents.html',{'delivery_agents':delivery_agents})
 
+def get_agent_details(request, agent_id):
+    agent = get_object_or_404(DeliveryAgentProfile, id=agent_id)
+    return render(request, 'agent_details.html', {'agent': agent})
 
 #Hub
 from django.contrib.auth import authenticate, login
@@ -1300,6 +1325,7 @@ def delivery_agent_reg(request):
             delivery_agent=user,
             profile_photo=request.FILES.get('profilePhoto'),
             gender=request.POST.get('gender'),
+            date_of_birth=request.POST.get('date_of_birth'),
             address=request.POST.get('address'),
             phone=request.POST.get('phone'),
             location=request.POST.get('location'),

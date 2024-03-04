@@ -1,0 +1,79 @@
+<!-- Template to render agent details -->
+<table class="table">
+    <tbody>
+        <tr>
+            <th>Employee ID</th>
+            <td>{{ agent.employee_id }}</td>
+        </tr>
+        <tr>
+            <th>Profile Photo</th>
+            <td><img src="{{ agent.profile_photo.url }}" alt="Profile Photo" style="max-width: 200px;"></td>
+        </tr>
+        <tr>
+            <th>Email ID</th>
+            <td>{{ agent.delivery_agent.email }}</td>
+        </tr>
+        <tr>
+            <th>Name</th>
+            <td>{{ agent.delivery_agent.first_name }} {{ agent.delivery_agent.last_name }}</td>
+        </tr>
+        <tr>
+            <th>Gender</th>
+            <td>{{ agent.gender }}</td>
+        </tr>
+        <tr>
+            <th>Address</th>
+            <td>{{ agent.address }}</td>
+        </tr>
+        <tr>
+            <th>Phone No.</th>
+            <td>{{ agent.phone }}</td>
+        </tr>
+        <tr>
+            <th>Nearest Location</th>
+            <td>{{ agent.location }}</td>
+        </tr>
+        <tr>
+            <th>Aadhaar No.</th>
+            <td>{{ agent.aadhaar_number }}</td>
+        </tr>
+        <tr>
+            <th>Driver License No.</th>
+            <td>{{ agent.driver_license_number }}</td>
+        </tr>
+        <tr>
+            <th>Date of Joining</th>
+            <td>{{ agent.date_of_joining }}</td>
+        </tr>
+        <tr>
+            <th>Vehicle Type</th>
+            <td>{{ agent.vehicle_type }}</td>
+        </tr>
+        <tr>
+            <th>Vehicle No.</th>
+            <td>{{ agent.vehicle_number }}</td>
+        </tr>
+        <tr>
+            <th>Bank Name</th>
+            <td>{{ agent.bank_name }}</td>
+        </tr>
+        <tr>
+            <th>Branch</th>
+            <td>{{ agent.branch }}</td>
+        </tr>   
+        <tr>
+            <th>Account No.</th>
+            <td>{{ agent.account_number }}</td>
+        </tr>
+        <tr>
+            <th>IFSC Code</th>
+            <td>{{ agent.ifsc_code }}</td>
+        </tr>
+        <tr>
+            <th>ID Document</th>
+            <td><a href="{{ agent.id_document.url }}">View ID Document</a></td>
+        </tr>
+        
+        <!-- Add more details as needed -->
+    </tbody>
+</table>
