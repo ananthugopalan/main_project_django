@@ -38,20 +38,28 @@
                 <div class="position-sticky">
                     <ul class="nav flex-column mt-4">
                         <li class="nav-item">
-                            <a class="nav-link active text-dark" aria-current="page" href="{% url 'hub_dashboard' %}"><strong>Home</strong></a>
+                            <a class="nav-link active text-dark" aria-current="page" href="{% url 'hub_dashboard' %}">
+                                <i class="fas fa-home"></i> <!-- Font Awesome icon for "Home" -->
+                                <strong>Home</strong>
+                            </a>
                         </li>
                         <li class="pb-2 mb-2" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1);">
-
                         <li class="nav-item">
-                            <a class="nav-link text-dark" href="{% url 'hub_orders' %}"><strong>Manage Orders</strong></a>
+                            <a class="nav-link text-dark" href="{% url 'hub_orders' %}">
+                                <i class="fas fa-tasks"></i> <!-- Font Awesome icon for "Manage Orders" -->
+                                <strong>Manage Orders</strong>
+                            </a>
                         </li>
                         <li class="pb-2 mb-2" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1);">
-                            
                         <li class="nav-item">
-                            <a class="nav-link text-dark" href="{% url 'hub_report' %}"><strong>Report</strong></a>
+                            <a class="nav-link text-dark" href="{% url 'hub_report' %}">
+                                <i class="fas fa-chart-bar"></i> <!-- Font Awesome icon for "Report" -->
+                                <strong>Report</strong>
+                            </a>
                         </li>
                         <li class="pb-2 mb-2" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1);">
                     </ul>
+                    
                 </div>
             </nav>
             <!-- Main Content Area -->

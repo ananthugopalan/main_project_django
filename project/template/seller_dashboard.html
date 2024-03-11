@@ -62,11 +62,22 @@
                 <!-- Sidebar -->
                 <div class="col-md-3" style="margin-top: 1rem;">
                     <div class="list-group">
-                        <a href="{% url 'seller_dashboard' %}" class="list-group-item list-group-item-action" style="background-color:     #4A235A; color: #fff;">Dashboard</a>
-                        <a href="{% url 'seller_addProducts' %}" class="list-group-item list-group-item-action">Add Products</a>
-                        <a href="{% url 'seller_Products' %}" class="list-group-item list-group-item-action">My Products</a>
-                        <a href="{% url 'seller_orders' %}" class="list-group-item list-group-item-action">Orders</a>
-                        <a href="{% url 'seller_report' %}" class="list-group-item list-group-item-action">Report</a>
+                        <a href="{% url 'seller_dashboard' %}" class="list-group-item list-group-item-action" style="background-color: #4A235A; color: #fff;">
+                            <i class="fas fa-tachometer-alt"></i> Dashboard
+                        </a>
+                        <a href="{% url 'seller_addProducts' %}" class="list-group-item list-group-item-action">
+                            <i class="fas fa-plus-circle"></i> Add Products
+                        </a>
+                        <a href="{% url 'seller_Products' %}" class="list-group-item list-group-item-action">
+                            <i class="fas fa-box"></i> My Products
+                        </a>
+                        <a href="{% url 'seller_orders' %}" class="list-group-item list-group-item-action">
+                            <i class="fas fa-shopping-cart"></i> Orders
+                        </a>
+                        <a href="{% url 'seller_report' %}" class="list-group-item list-group-item-action">
+                            <i class="fas fa-chart-bar"></i> Report
+                        </a>
+                        
                     </div>
                 </div>
 

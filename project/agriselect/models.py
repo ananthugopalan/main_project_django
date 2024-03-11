@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.db import models
 from decimal import Decimal
+from django.utils import timezone
 
 
 CustomUser = get_user_model()
@@ -33,6 +34,7 @@ class Product(models.Model):
     season = models.ManyToManyField(
         'Season', related_name='products', blank=True
     )
+    created_at = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
         return self.product_name
@@ -68,12 +70,35 @@ class Address(models.Model):
         ('Work', 'Work'),
         ('Other', 'Other'),
     ]
-    
+    DISTRICT_CHOICES = [
+        ('Alappuzha', 'Alappuzha'),
+        ('Ernakulam', 'Ernakulam'),
+        ('Idukki', 'Idukki'),
+        ('Kannur', 'Kannur'),
+        ('Kasaragod', 'Kasaragod'),
+        ('Kollam', 'Kollam'),
+        ('Kottayam', 'Kottayam'),
+        ('Kozhikode', 'Kozhikode'),
+        ('Malappuram', 'Malappuram'),
+        ('Palakkad', 'Palakkad'),
+        ('Pathanamthitta', 'Pathanamthitta'),
+        ('Thiruvananthapuram', 'Thiruvananthapuram'),
+        ('Thrissur', 'Thrissur'),
+        ('Wayanad', 'Wayanad'),
+    ]
+    LOCATION_CHOICES = (
+        ('Ernakulam', 'Ernakulam'),
+        ('Malappuram', 'Malappuram'),
+        ('Kannur', 'Kannur'),
+        # Add more locations as needed
+    )
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)  # Add a foreign key to CustomUser
     building_name = models.CharField(max_length=255)
     address_type = models.CharField(max_length=10, choices=ADDRESS_TYPE_CHOICES, default='home')
     street = models.CharField(max_length=255)  # Change "address" to "street"
     city = models.CharField(max_length=100)
+    district = models.CharField(max_length=100, choices=DISTRICT_CHOICES, blank=True, null=True)
+    location = models.CharField(max_length=100, choices=LOCATION_CHOICES, blank=True, null=True)
     state = models.CharField(max_length=100)
     zip_code = models.CharField(max_length=10)
 
@@ -95,6 +120,7 @@ class CartItem(models.Model):
     )
     dispatched = models.BooleanField(default=False)  
     accepted_by_store = models.BooleanField(default=False)
+    ready_for_pickup = models.BooleanField(default=False)  # New field
 
     def __str__(self):
         return f'{self.quantity} x {self.product.product_name} ({self.status})'
@@ -124,11 +150,13 @@ class Order(models.Model):
     order_date_only = models.DateField(default=timezone.now)
     order_date = models.DateTimeField(auto_now_add=True)
     razorpay_order_id = models.CharField(max_length=255, default=None)
+    shipping_address = models.ForeignKey(Address, on_delete=models.SET_NULL, null=True, blank=True)
     payment_status = models.CharField(
         max_length=20, choices=PaymentStatusChoices.choices, default=PaymentStatusChoices.PENDING)
     order_status = models.CharField(
         max_length=20, choices=OrderStatusChoices.choices, default=OrderStatusChoices.REQUESTED)
     accepted_by_store = models.BooleanField(default=False)
+    ready_for_pickup = models.BooleanField(default=False)  # New field
 
     def __str__(self):
         return self.user.email
@@ -267,7 +295,6 @@ class DeliveryAgentProfile(models.Model):
     LOCATION_CHOICES = (
         ('Ernakulam', 'Ernakulam'),
         ('Malappuram', 'Malappuram'),
-        ('Pathanamthitta', 'Pathanamthitta'),
         ('Kannur', 'Kannur'),
         # Add more locations as needed
     )
@@ -275,7 +302,6 @@ class DeliveryAgentProfile(models.Model):
     aadhaar_number = models.CharField(max_length=12, unique=True)
     driver_license_number = models.CharField(max_length=50, unique=True)
     employee_id = models.CharField(max_length=10, unique=True, default=None)
-    date_of_joining = models.DateField()
     vehicle_type = models.CharField(max_length=100, blank=True, null=True)
     vehicle_number = models.CharField(max_length=20, unique=True)
     BANK_CHOICES = (

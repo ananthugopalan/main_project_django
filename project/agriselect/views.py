@@ -32,6 +32,7 @@ def generate_bar_plot(data, title):
     plt.close()
     return base64.b64encode(buffer.getvalue()).decode()
 
+@never_cache
 @login_required(login_url='user_login')
 def admin_dashboard(request):
     total_users = CustomUser.objects.count()
@@ -100,8 +101,154 @@ def admin_settings(request):
     return render(request, 'admin_settings.html', {'admin_settings_obj': admin_settings_obj})
 
 
+from django.http import HttpResponse
+from reportlab.lib.pagesizes import letter
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, KeepTogether
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle  # Add this import
+from reportlab.lib import colors
+from .models import CustomUser, Product
+from reportlab.lib.pagesizes import landscape 
+
+
 def admin_report(request):
+    if request.method == 'POST':
+        report_type = request.POST.get('report_type')
+        start_date = request.POST.get('start_date')
+        end_date = request.POST.get('end_date')
+
+        # Get current user email
+        current_user_email = request.user.email
+
+        # Prepare header content with line breaks
+        header_content = [
+            f'Report Type: {report_type}',
+            f'Date Range: {start_date} to {end_date}',
+            f'Current User Email: {current_user_email}'
+        ]
+
+        # Create a PDF document
+        response = HttpResponse(content_type='application/pdf')
+        if report_type == 'user':
+            filename = "user_report.pdf"
+        elif report_type == 'products':
+            filename = "product_report.pdf"
+        elif report_type == 'orders':
+            filename = "order_report.pdf"
+        else:
+            filename = "report.pdf"  # Default filename if report type is not recognized
+        response['Content-Disposition'] = f'attachment; filename="{filename}"'
+
+        doc = SimpleDocTemplate(response, pagesize=letter)
+        elements = []
+
+        # Add header to the document
+        header_style = getSampleStyleSheet()["Normal"]
+        header_style.leading = 18  # Line spacing
+        for line in header_content:
+            header_paragraph = Paragraph(line, header_style)
+            elements.append(header_paragraph)
+            elements.append(Spacer(1, 12))  # Add some space between lines
+
+        if report_type == 'user':
+            # Generate user report
+            users = CustomUser.objects.filter(date_joined__range=[start_date, end_date], hub_status=False)
+
+            # Set up the PDF content
+            data = [['Sl No.','Email', 'First Name', 'Last Name', 'User Type']]
+            for idx, user in enumerate(users, start=1):
+                user_type = 'Customer' if user.is_customer else 'Seller' if user.is_seller else 'Delivery Agent'
+                data.append([idx,user.email, user.first_name, user.last_name, user_type])
+
+            # Create a table
+            table = Table(data)
+            table.setStyle(TableStyle([('BACKGROUND', (0, 0), (-1, 0), colors.gray),
+                                       ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+                                       ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+                                       ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                                       ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+                                       ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+                                       ('GRID', (0, 0), (-1, -1), 1, colors.black)]))
+
+            elements.append(table)
+
+        elif report_type == 'products':
+            # Generate product report
+            products = Product.objects.filter(created_at__range=[start_date, end_date])
+            wrap_style = ParagraphStyle(name='WrapStyle', wordWrap='CJK')
+
+            # Set up the PDF content
+            data = [['Sl No.','Product Name', 'Stock', 'Price', 'Category', 'Subcategory', 'Seller']]  # Update table header
+            for idx, product in enumerate(products, start=1):
+                data.append([idx,
+                            Paragraph(product.product_name, wrap_style),  # Wrap Product Name
+                            product.stock,
+                            product.price,
+                            product.product_category,
+                            product.product_subcategory,
+                            Paragraph(product.seller.email, wrap_style)])  # Wrap Seller Email
+
+            col_widths = [doc.width * 0.05]  # Adjust width of the serial number column
+            col_widths += [doc.width * 0.2]  # Increase width of "Product Name"
+            col_widths += [doc.width * 0.1] * 2  # Adjust width of other columns
+            col_widths += [doc.width * 0.10] * 2  # Increase width of "Category" and "Subcategory"
+            col_widths[-1] = doc.width * 0.25
+
+            # Create a table with adjusted column widths
+            table = Table(data, colWidths=col_widths)
+            table.setStyle(TableStyle([('BACKGROUND', (0, 0), (-1, 0), colors.gray),
+                                    ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+                                    ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+                                    ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                                    ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+                                    ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+                                    ('GRID', (0, 0), (-1, -1), 1, colors.black)]))
+
+            elements.append(table)
+
+
+        elif report_type == 'orders':
+            # Generate order report
+            orders = Order.objects.filter(order_date__range=[start_date, end_date])
+
+            wrap_style = ParagraphStyle(name='WrapStyle', wordWrap='CJK')
+
+            # Set up the PDF content
+            data = [['Sl No.','Order Date', 'User Email', 'Product Name', 'Seller Email', 'Total Price', 'Status', 'Order Status']]  # Update table header
+            for idx, order in enumerate(orders, start=1):
+                data.append([
+                    idx,
+                    Paragraph(order.order_date.strftime('%Y-%m-%d %H:%M:%S'), wrap_style),  # Wrap Order Date
+                    Paragraph(order.user.email, wrap_style),  # Wrap User Email
+                    Paragraph('<font size=10>' + ', '.join([item.product.product_name for item in order.cart_items.all()]) + '</font>', wrap_style),  # Wrap product name
+                    Paragraph(order.cart_items.first().product.seller.email, wrap_style),  # Wrap Seller Email
+                    order.total_price,
+                    order.get_payment_status_display(),
+                    order.get_order_status_display()
+                ])
+
+            col_widths = [doc.width * 0.05]  # Adjust width of the serial number column
+            col_widths += [doc.width * 0.10]  # Increase width of "Order Date"
+            col_widths += [doc.width * 0.15] * 2  # Increase width of "User Email" and "Seller Email"
+            col_widths += [doc.width * 0.2] * 5  # Increase width of other columns
+
+            # Create a table with adjusted column widths
+            table = Table(data, colWidths=col_widths)
+            table.setStyle(TableStyle([('BACKGROUND', (0, 0), (-1, 0), colors.gray),
+                                       ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+                                       ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+                                       ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                                       ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+                                       ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+                                       ('GRID', (0, 0), (-1, -1), 1, colors.black)]))
+
+            elements.append(table)
+
+        # Build the document
+        doc.build(elements)
+        return response
+
     return render(request, 'admin_report.html')
+
 
 def admin_hubs(request):
     if request.method == 'POST':
@@ -137,6 +284,8 @@ def delete_hub(request, hub_id):
     return redirect('admin_hubs')
 
 
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
 
 def admin_delivery_agents(request):
     if request.method == 'POST':
@@ -147,6 +296,12 @@ def admin_delivery_agents(request):
         # Update the is_active field to True
         user.is_active = True
         user.save()  # Save the user object
+
+        subject = 'Congratulations! Your Profile Has Been Approved!'
+        message = 'Welcome to AgriSelect. Your request to become a delivery agent has been approved. You can now login to your account and start using our platform. Best Regards - AgriSelect'
+        html_message = render_to_string('approve_notification.html')
+        recipient_list = [user.email]
+        send_mail(subject, message, from_email=None, recipient_list=recipient_list, html_message=html_message)
         return redirect('admin_delivery_agents')
     
     delivery_agents = DeliveryAgentProfile.objects.select_related('delivery_agent').all()
@@ -192,6 +347,7 @@ def hub_login(request):
     else:
         return render(request, 'hub_login.html')
 
+@never_cache
 def hub_dashboard(request):
     return render(request, 'hub_dashboard.html')
 
@@ -216,6 +372,7 @@ def hub_orders(request):
 
 def hub_report(request):
     return render(request, 'hub_report.html')
+
 
 
 #Customer
@@ -285,6 +442,8 @@ def customer_allProducts(request, category='All'):
 def customer_Profile(request):
     user_profile, created = Customer_Profile.objects.get_or_create(customer=request.user)
     addresses = Address.objects.filter(user_id=request.user.id)
+    district_choices = Address.DISTRICT_CHOICES 
+    
     if request.method == 'POST':
         # Check which form was submitted based on the button clicked
         if 'profile_save_button' in request.POST:
@@ -309,8 +468,9 @@ def customer_Profile(request):
             street = request.POST.get('street')
             city = request.POST.get('city')
             state = request.POST.get('state')
-            zip_code = request.POST.get('zip_code')            
-            
+            zip_code = request.POST.get('zip_code') 
+            district = request.POST.get('district')
+
             address = Address(
                 user=request.user,
                 building_name=building_name,
@@ -318,7 +478,8 @@ def customer_Profile(request):
                 street=street,
                 city=city,
                 state=state,
-                zip_code=zip_code
+                zip_code=zip_code,
+                district=district,
             )
             address.save()
             messages.success(request, 'Address added successfully', extra_tags='add_address_tag')
@@ -327,6 +488,7 @@ def customer_Profile(request):
     context = {
         'user_profile': user_profile,
         'addresses': addresses, 
+        'district_choices': district_choices,
         'form_submitted': request.method == 'POST',
     }
     return render(request, 'customer_Profile.html', context)
@@ -342,6 +504,7 @@ def update_address(request):
         city = request.POST.get('city')
         state = request.POST.get('state')
         zip_code = request.POST.get('zip_code')
+        district = request.POST.get('district')
 
         # Update the address
         address = get_object_or_404(Address, id=address_id)
@@ -351,6 +514,7 @@ def update_address(request):
         address.city = city
         address.state = state
         address.zip_code = zip_code
+        address.district = district
         address.save()
 
         # You can return a JSON response to indicate a successful update
@@ -478,9 +642,7 @@ def add_review(request, product_id):
             review = CustomerReview.objects.create(product=product, user=request.user, rating=rating, comment=comment, sentiment_score=sentiment_score)
             return redirect('customer_ProductView', product_id=product_id)
         else:
-            return JsonResponse({'success': False, 'message': 'You have already reviewed this product.'})
-    
-    
+            return JsonResponse({'success': False, 'message': 'You have already reviewed this product.'})   
 
     return redirect('customer_ProductView', product_id=product_id)
 
@@ -912,7 +1074,7 @@ def sales_statistics(request):
 
 
 from datetime import datetime
-
+@login_required
 def seller_orders(request):
     if request.method == 'POST':  
         cart_item_id = request.POST.get('cart_item_id')  
@@ -1095,39 +1257,31 @@ razorpay_client = razorpay.Client(
 
 
 def homepage(request):
-    cart_items = CartItem.objects.filter(user=request.user, status=CartItem.StatusChoices.ACTIVE)
-    total_price = Decimal(sum(cart_item.product.price * cart_item.quantity for cart_item in cart_items))
-    
-    currency = 'INR'
-
-    # Set the 'amount' variable to 'total_price'
-    amount = int(total_price*100)
-    # amount=20000
-
-    # Create a Razorpay Order
-    razorpay_order = razorpay_client.order.create(dict(
-        amount=amount,
-        currency=currency,
-        payment_capture='0'
-    ))
-
-    # Order id of the newly created order
-    razorpay_order_id = razorpay_order['id']
-    callback_url = '/paymenthandler/'
-
-    order = Order.objects.create(
-        user=request.user,
-        total_price=total_price,
-        razorpay_order_id=razorpay_order_id,
-        payment_status=Order.PaymentStatusChoices.PENDING,
-    )
-
-    # Add the products to the order
-    for cart_items in cart_items:
-        order.cart_items.add(cart_items)
-
-    # Save the order to generate an order ID
-    order.save()
+    if request.method == 'POST':
+        selected_address_id = request.POST.get('selected_address')
+        if selected_address_id:
+            user = request.user
+            cart_items = CartItem.objects.filter(user=user, status=CartItem.StatusChoices.ACTIVE)
+            total_price = Decimal(sum(cart_item.product.price * cart_item.quantity for cart_item in cart_items))
+            currency = 'INR'
+            amount = int(total_price * 100)
+            razorpay_order = razorpay_client.order.create(dict(
+                amount=amount,
+                currency=currency,
+                payment_capture='0'
+            ))
+            razorpay_order_id = razorpay_order['id']
+            callback_url = '/paymenthandler/'
+            order = Order.objects.create(
+                user=user,
+                total_price=total_price,
+                razorpay_order_id=razorpay_order_id,
+                shipping_address_id=selected_address_id,
+                payment_status=Order.PaymentStatusChoices.PENDING,
+            )
+            for cart_item in cart_items:
+                order.cart_items.add(cart_item)
+            order.save()
 
     # Create a context dictionary with all the variables you want to pass to the template
     context = {
@@ -1178,23 +1332,7 @@ def paymenthandler(request):
             order.payment_id = payment_id
             order.payment_status = Order.PaymentStatusChoices.SUCCESSFUL
             order.save()
-
-            # Insert the shipping address into the database
-            selected_address_id = request.POST.get('selected_address')
-            if selected_address_id:
-                selected_address = Address.objects.get(id=selected_address_id)
-                ShippingAddress.objects.create(
-                    order=order,
-                    address=selected_address,
-                    user=request.user,
-                    building_name=selected_address.building_name,
-                    street=selected_address.street,
-                    city=selected_address.city,
-                    state=selected_address.state,
-                    zip_code=selected_address.zip_code,
-                    status=ShippingAddress.StatusChoices.PENDING  # or SHIPPED, DELIVERED
-
-                )
+           
             # Update the stock of products
             for cart_item in order.cart_items.all():
                 product = cart_item.product
@@ -1305,15 +1443,18 @@ def seasonal_sale(request):
 
 
 #delivery agent
+@never_cache
 def delivery_agent_home(request):
     return render(request, 'delivery_agent_home.html')
+
+from django.contrib.auth.hashers import make_password
 
 def delivery_agent_reg(request):
     alert_message = None
     if request.method == 'POST':
         # Extract data from the form
         email = request.POST.get('email')
-        password = request.POST.get('password')
+        password = make_password(request.POST.get('password'))
         first_name = request.POST.get('first_name')
         last_name = request.POST.get('last_name')
         
@@ -1331,7 +1472,6 @@ def delivery_agent_reg(request):
             location=request.POST.get('location'),
             aadhaar_number=request.POST.get('id_number'),
             driver_license_number=request.POST.get('driver_license_number'),
-            date_of_joining=request.POST.get('date_of_joining'),
             vehicle_type=request.POST.get('vehicle_type'),
             vehicle_number=request.POST.get('vehicle_number'),
             bank_name=request.POST.get('bank_name'),
@@ -1347,10 +1487,65 @@ def delivery_agent_reg(request):
     return render(request, 'delivery_agent_reg.html',  {'alert_message': alert_message})
 
 def delivery_agent_login(request):
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+        # Check if the email and password match
+        if email and password:
+            user = CustomUser.objects.filter(email=email).first()
+            if user and user.check_password(password):
+                # If the email and password match, attempt to authenticate the user
+                user = authenticate(request, email=email, password=password)
+                if user:
+                    if user.is_active and user.is_delivery_agent:
+                        login(request, user)
+                        return redirect(reverse('delivery_agent'))  # Redirect to the delivery agent's home page
+                    elif not user.is_active:
+                        messages.error(request, "Your account is not active.")
+                    else:
+                        messages.error(request, "You are not authorized to access this page.")
+                else:
+                    messages.error(request, "Invalid email or password.")
+            else:
+                messages.error(request, "Invalid email or password.")
+        else:
+            messages.error(request, "Email and password are required.")
     return render(request, 'delivery_agent_login.html')
 
+@never_cache
+@login_required(login_url='delivery_agent_login')
 def delivery_agent(request):
     return render(request, 'delivery_agent.html')
 
+@login_required(login_url='delivery_agent_login')
 def delivery_agent_profile(request):
-    return render(request, 'delivery_agent_profile.html')
+    delivery_agent_profile = DeliveryAgentProfile.objects.get(delivery_agent=request.user)
+    context = {'delivery_agent_profile': delivery_agent_profile}
+    return render(request, 'delivery_agent_profile.html', context)
+   
+
+@login_required(login_url='delivery_agent_login')
+def delivery_agent_orders(request):
+    orders_list = Order.objects.filter(cart_items__accepted_by_store=True).distinct()
+    paginator = Paginator(orders_list, 10)  # Number of orders per page
+    if request.method == 'POST':  
+        cart_item_id = request.POST.get('cart_item_id')  
+        cart_item = CartItem.objects.get(pk=cart_item_id)  
+        cart_item.ready_for_pickup = True
+        cart_item.save()
+        for order in Order.objects.filter(cart_items=cart_item):
+            if all(item.ready_for_pickup for item in order.cart_items.all()):
+                order.ready_for_pickup = True
+                order.save()
+
+        return redirect('delivery_agent_orders')
+    page_number = request.GET.get('page')
+    try:
+        orders = paginator.page(page_number)
+    except PageNotAnInteger:
+        orders = paginator.page(1)
+    except EmptyPage:
+        orders = paginator.page(paginator.num_pages)
+
+    context = {'orders': orders}
+    return render(request, 'delivery_agent_orders.html', context)

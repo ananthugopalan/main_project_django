@@ -32,24 +32,23 @@
     <div class="d-flex">
         <nav class="sidenav shadow p-4" style="width: 250px; height: calc(100vh - 80px);background-color: #bee2c8;">
             <ul class="list-unstyled">
-                <li><a href="{% url 'admin_dashboard' %}" class="text-dark text-decoration-none fs-5">Home</a></li>
+                <li><i class="fas fa-home"></i> <a href="{% url 'admin_dashboard' %}" class="text-dark text-decoration-none">Home</a></li>
                 <li class="pb-2 mb-2" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1);">
-                <li><a href="{% url 'admin_products' %}" class="text-dark text-decoration-none fs-5">Products</a></li>
+                <li><i class="fas fa-box"></i> <a href="{% url 'admin_products' %}" class="text-dark text-decoration-none">Products</a></li>
                 <li class="pb-2 mb-2" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1);">
-                <li><a href="{% url 'admin_orders' %}" class="text-dark text-decoration-none fs-5">Orders</a></li>
+                <li><i class="fas fa-shopping-cart"></i> <a href="{% url 'admin_orders' %}" class="text-dark text-decoration-none">Orders</a></li>
                 <li class="pb-2 mb-2" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1);">
-                <li><a href="{% url 'admin_users' %}" class="text-dark text-decoration-none fs-5">Users</a></li>
+                <li><i class="fas fa-users"></i> <a href="{% url 'admin_users' %}" class="text-dark text-decoration-none">Users</a></li>
                 <li class="pb-2 mb-2" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1);">
-                <li><a href="{% url 'admin_report' %}" class="text-dark text-decoration-none fs-5">Report</a></li>
+                <li><i class="fas fa-chart-bar"></i> <a href="{% url 'admin_report' %}" class="text-dark text-decoration-none">Report</a></li>
                 <li class="pb-2 mb-2" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1);">
-                <li><a href="{% url 'admin_delivery_agents' %}" class="text-dark text-decoration-none fs-5">Manage Delivery Agents</a></li>
+                <li><i class="fas fa-truck"></i> <a href="{% url 'admin_delivery_agents' %}" class="text-dark text-decoration-none">Manage Delivery Agents</a></li>
                 <li class="pb-2 mb-2" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1);">
-                <li><a href="{% url 'admin_hubs' %}" class="text-dark text-decoration-none fs-5">Manage Hubs</a></li>
+                <li><i class="fas fa-warehouse"></i> <a href="{% url 'admin_hubs' %}" class="text-dark text-decoration-none">Manage Hubs</a></li>
                 <li class="pb-2 mb-2" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1);">
-                <li><a href="{% url 'admin_settings' %}" class="text-dark text-decoration-none fs-5">Settings</a></li>
+                <li><i class="fas fa-cog"></i> <a href="{% url 'admin_settings' %}" class="text-dark text-decoration-none">Settings</a></li>
                 <li class="pb-2 mb-2" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1);">
-                
-            </ul>
+            </ul>            
         </nav>
         <main class="p-4 flex-grow-1">
             <section class="content">

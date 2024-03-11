@@ -53,15 +53,12 @@
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'index' %}">Home</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">About</a>
-                        </li>
                         {% if user.is_authenticated %}
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'customer_allProducts' %}">All Products</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">Orders</a>
+                            <a class="nav-link" href="{% url 'customer_OrderView' %}">Orders</a>
                         </li>
                         {%else%}
                         <li class="nav-item">
@@ -75,7 +72,10 @@
                             <a class="nav-link" href="#">Contact</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">Gallery</a>
+                            <a class="nav-link" href="{% url 'customer_growbag' %}">Growbag</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'seasonal_sale' %}">Seasonal Sale</a>
                         </li>
                     </ul>
                 </div>
@@ -173,21 +173,21 @@
                     <h4 class="mb-3">Shipping Address</h4>
                     
                     <div id="address-form-card-template">        
-                        <form method="post" action="{% url 'paymenthandler' %}" id="checkout-form">
+                        <form method="post" action="{% url 'homepage' %}" id="checkout-form">
                             {% csrf_token %} 
                         <div class="d-flex flex-wrap" style="margin-left: 15px;" id="address-card-display"> 
                             {% block content %}
                             {% for i in user_addresses %}
                             <div class="card mt-3" style="width: 200px; margin-right: 20px;" id="address-card-{{ i.id }}">
                                 <div class="card-body"> 
-                                    <input type="radio" name="selected_address" value="{{ i.id }}" class="position-absolute top-0 end-0 mt-2 me-2">
+                                    <input type="hidden" name="selected_address" id="selected-address" value="">
+                                    <input type="radio" name="selected_address" value="{{ i.id }}" class="position-absolute top-0 end-0 mt-2 me-2" required>
                                     <strong>{{ i.address_type }}</strong><br>
                                     <p id="card_building" style="margin-bottom: 2px;">Building: {{ i.building_name }}</p>
                                     <p id="card_street" style="margin-bottom: 2px;">Street: {{ i.street }}</p>
                                     <p id="card_city" style="margin-bottom: 2px;">City: {{ i.city }}</p>
                                     <p id="card_city" style="margin-bottom: 2px;">State: {{ i.state }}</p>
-                                    <p id="card_zip-code" style="margin-bottom: 2px;">Zip Code: {{ i.zip_code }}</p>
-                                    
+                                    <p id="card_zip-code" style="margin-bottom: 2px;">Zip Code: {{ i.zip_code }}</p>  
                                 </div>
                             </div>
                             {% endfor %}
@@ -216,7 +216,7 @@
                             </div>
                         </div>                           
                         <hr class="my-4">        
-                        <a href="{% url 'homepage' %}" class="w-100 btn btn-warning btn-lg">Continue to checkout</a>
+                        <button type='submit' class="w-100 btn btn-warning btn-lg continue-btn">Continue to checkout</button>
                     </form>
                 </div>
             </div>
@@ -242,6 +242,51 @@
         </div>
     </footer>
   <!-- Footer -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var radioButtons = document.querySelectorAll('input[type="radio"][name="selected_address"]');
+        var selectedAddressInput = document.getElementById('selected-address');
+
+        radioButtons.forEach(function (radioButton) {
+            radioButton.addEventListener('change', function () {
+                if (this.checked) {
+                    selectedAddressInput.value = this.value;
+                }
+            });
+        });
+    });
+</script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Get all the radio buttons
+        var radioButtons = document.querySelectorAll('input[type="radio"][name="selected_address"]');
+        // Get the "Continue to checkout" button
+        var checkoutButton = document.querySelector('.btn.btn-warning.btn-lg');
+
+        // Function to check if at least one radio button is checked
+        function checkAddressSelection() {
+            var checked = false;
+            // Loop through all the radio buttons
+            for (var i = 0; i < radioButtons.length; i++) {
+                if (radioButtons[i].checked) {
+                    checked = true;
+                    break;
+                }
+            }
+            // Enable or disable the "Continue to checkout" button based on whether at least one radio button is checked
+            checkoutButton.disabled = !checked;
+        }
+
+        // Attach an event listener to each radio button to call checkAddressSelection() when any radio button is clicked
+        radioButtons.forEach(function (radioButton) {
+            radioButton.addEventListener('click', checkAddressSelection);
+        });
+
+        // Call checkAddressSelection() initially to set the initial state of the "Continue to checkout" button
+        checkAddressSelection();
+    });
+</script>
 
       
       <!-- Start Script -->

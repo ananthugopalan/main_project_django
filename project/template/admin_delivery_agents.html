@@ -31,23 +31,23 @@
     <div class="d-flex">
         <nav class="sidenav shadow p-4" style="width: 250px; height: calc(100vh - 80px);background-color: #bee2c8;">
             <ul class="list-unstyled">
-                <li><a href="{% url 'admin_dashboard' %}" class="text-dark text-decoration-none fs-5">Home</a></li>
+                <li><i class="fas fa-home"></i> <a href="{% url 'admin_dashboard' %}" class="text-dark text-decoration-none">Home</a></li>
                 <li class="pb-2 mb-2" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1);">
-                <li><a href="{% url 'admin_products' %}" class="text-dark text-decoration-none fs-5">Products</a></li>
+                <li><i class="fas fa-box"></i> <a href="{% url 'admin_products' %}" class="text-dark text-decoration-none">Products</a></li>
                 <li class="pb-2 mb-2" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1);">
-                <li><a href="{% url 'admin_orders' %}" class="text-dark text-decoration-none fs-5">Orders</a></li>
+                <li><i class="fas fa-shopping-cart"></i> <a href="{% url 'admin_orders' %}" class="text-dark text-decoration-none">Orders</a></li>
                 <li class="pb-2 mb-2" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1);">
-                <li><a href="{% url 'admin_users' %}" class="text-dark text-decoration-none fs-5">Users</a></li>
+                <li><i class="fas fa-users"></i> <a href="{% url 'admin_users' %}" class="text-dark text-decoration-none">Users</a></li>
                 <li class="pb-2 mb-2" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1);">
-                <li><a href="{% url 'admin_report' %}" class="text-dark text-decoration-none fs-5">Report</a></li>
-                <li class="pb-2 mb-2" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1);">  
-                <li><a href="{% url 'admin_delivery_agents' %}" class="text-dark text-decoration-none fs-5">Manage Delivery Agents</a></li>
-                <li class="pb-2 mb-2" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1);">                  
-                <li><a href="{% url 'admin_hubs' %}" class="text-dark text-decoration-none fs-5">Manage Hubs</a></li>
+                <li><i class="fas fa-chart-bar"></i> <a href="{% url 'admin_report' %}" class="text-dark text-decoration-none">Report</a></li>
                 <li class="pb-2 mb-2" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1);">
-                <li><a href="{% url 'admin_settings' %}" class="text-dark text-decoration-none fs-5">Settings</a></li>
+                <li><i class="fas fa-truck"></i> <a href="{% url 'admin_delivery_agents' %}" class="text-dark text-decoration-none">Manage Delivery Agents</a></li>
                 <li class="pb-2 mb-2" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1);">
-            </ul>
+                <li><i class="fas fa-warehouse"></i> <a href="{% url 'admin_hubs' %}" class="text-dark text-decoration-none">Manage Hubs</a></li>
+                <li class="pb-2 mb-2" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1);">
+                <li><i class="fas fa-cog"></i> <a href="{% url 'admin_settings' %}" class="text-dark text-decoration-none">Settings</a></li>
+                <li class="pb-2 mb-2" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1);">
+            </ul>          
         </nav>
 
         <!-- Modal for displaying agent details -->
@@ -99,9 +99,8 @@
                                     <td><button type="submit" class="bg-success rounded" disabled><i class="fas fa-check"></i></button></td>
                                 {% else %}
                                     <td class="action-buttons"><button type="submit" class="btn btn-warning border-0 shadow rounded approve-btn" onclick="return confirm('Are you sure you want to approve the request?')">Approve</button>
-                                        <button type="button" class="btn btn-danger reject-btn rounded shadow" onclick="rejectRequest(this)">Reject</button>
-                                    </td>
-                                    
+                                        <!-- <button type="button" class="btn btn-danger reject-btn rounded shadow" onclick="rejectRequest(this)">Reject</button> -->
+                                    </td>                                    
                                 {% endif %}
                             </tr>
                         </form>
@@ -146,17 +145,17 @@
         </div>
     </footer>
 
-    <script>
+    <!-- <script>
         function rejectRequest(btn) {
             var row = btn.closest('tr');
             var approveBtn = row.querySelector('.approve-btn');
-            var actionButtons = row.querySelector('.action-buttons');
-            btn.classList.remove('btn-danger');
-            btn.classList.add('btn-secondary');
-            btn.innerText = 'Rejected';
-            approveBtn.style.visibility = 'hidden';
+            if (approveBtn) {
+                btn.remove(); // Remove the reject button if the approve button is present
+                approveBtn.disabled = true;
+                approveBtn.innerHTML = '<i class="fas fa-check"></i>'; // Changing the content of approve button to indicator
+            }
         }
-    </script>
+    </script> -->
     
     <script>
         // Function to adjust sidebar height

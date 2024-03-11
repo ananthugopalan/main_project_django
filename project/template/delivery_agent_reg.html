@@ -111,7 +111,7 @@
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="address" class="form-label">Date of Birth</label>
-                            <input type="date" class="form-control" id="date_of_birth" name="date_of_birth" autocomplete="off" oninput="validateDateOfBirth()" required>
+                            <input type="date" class="form-control" id="date_of_birth" name="date_of_birth" autocomplete="off" required>
                             <div id="dobError" class="text-danger" style="display: none;"></div>
                         </div>                  
                         <div class="col-md-6 mb-3">
@@ -123,7 +123,7 @@
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="phone" class="form-label">Phone Number(+91)</label>
-                            <input type="tel" class="form-control" id="phone" name="phone" autocomplete="off" onchange="validatePhoneNumber()" required>
+                            <input type="tel" class="form-control" id="phone" name="phone" autocomplete="off" oninput="validatePhoneNumber()" required>
                             <div id="phoneError" class="text-danger" style="display: none;"></div>
                         </div>
                         <!-- Location Information -->
@@ -133,7 +133,6 @@
                                 <option value="" disabled selected>Select Location</option>
                                 <option value="ernakulam">Ernakulam</option>
                                 <option value="malappuram">Malappuram</option>
-                                <option value="pathanamthitta">Pathanamthitta</option>
                                 <option value="kannur">Kannur</option>
                                 <!-- Add more locations as needed -->
                             </select>
@@ -156,18 +155,12 @@
                         </div>
                     </div>
                     <!-- Employment Details -->
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
+                        <div class="mb-3">
                             <label for="id_document" class="form-label">Upload ID Document (Aadhaar/Driving License)</label>
                             <input type="file" class="form-control" id="id_document" name="id_document" accept=".pdf, .jpg, .jpeg, .png" onchange="validateIdDocument()" required>
                             <small id="idDocumentHelp" class="form-text text-muted">Upload PDF, JPG, or PNG files only.</small>
                             <div id="idDocumentError" class="text-danger" style="display: none;"></div>
                         </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="date_of_joining" class="form-label">Date of Joining</label>
-                            <input type="date" class="form-control" id="date_of_joining" name="date_of_joining" autocomplete="off" required>
-                        </div>
-                    </div>
     
                     <!-- Vehicle Information -->
                     <div class="row">
@@ -318,7 +311,6 @@
         isValid = isValid && validatePassword();
         isValid = isValid && validateConfirmPassword();
         isValid = isValid && validatePhoneNumber();
-        isValid = isValid && validateDateOfBirth();
         isValid = isValid && validateAddress();
         isValid = isValid && validateLocation();
         isValid = isValid && validateAadhaarNumber();
@@ -502,53 +494,24 @@
     }
     
     function validatePhoneNumber() {
-        const phoneInput = document.getElementById('phone');
-        const phoneError = document.getElementById('phoneError');
-        const phoneNumber = phoneInput.value.trim();
-        const phoneRegex = /^[6-9]\d{9}$/;
-    
-        if (!phoneRegex.test(phoneNumber)) {
-            phoneInput.classList.add('is-invalid');
-            phoneError.innerText = 'Please enter a valid 10-digit phone number starting with 6, 7, 8, or 9.';
-            phoneError.style.display = 'block';
-            return false;
-        } else {
-            phoneInput.classList.remove('is-invalid');
-            phoneError.innerText = '';
-            phoneError.style.display = 'none';
-            return true;
-        }
-    }
-    
-    function validateDateOfBirth() {
-        // Get the date of birth value
-        const dobInput = document.getElementById('date_of_birth');
-        const dobError = document.getElementById('dobError');
-        const dobValue = new Date(dobInput.value);
-        
-        // Calculate age
-        const today = new Date();
-        const age = today.getFullYear() - dobValue.getFullYear();
-        const monthDiff = today.getMonth() - dobValue.getMonth();
-        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dobValue.getDate())) {
-            age--;
-        }
+    const phoneInput = document.getElementById('phone');
+    const phoneError = document.getElementById('phoneError');
+    const phoneNumber = phoneInput.value.trim();
+    const phoneRegex = /^[6-9]\d{9}$/;
 
-        // Check if age is between 18 and 40
-        if (age < 18 || age > 40) {
-            // Show error message and add 'is-invalid' class
-            dobInput.classList.add('is-invalid');
-            dobError.innerText = 'You must be between 18 and 40 years old.';
-            dobError.style.display = 'block';
-            return false;
-        } else {
-            // Remove error message and 'is-invalid' class
-            dobInput.classList.remove('is-invalid');
-            dobError.innerText = '';
-            dobError.style.display = 'none';
-            return true;
-        }
+    if (!phoneRegex.test(phoneNumber)) {
+        phoneInput.classList.add('is-invalid');
+        phoneError.innerText = 'Please enter a valid 10-digit phone number starting with 6, 7, 8, or 9.';
+        phoneError.style.display = 'block';
+        return false;
+    } else {
+        phoneInput.classList.remove('is-invalid');
+        phoneError.innerText = '';
+        phoneError.style.display = 'none';
+        return true;
     }
+}
+
 
     function validateAddress() {
         // Validation logic for address field goes here
@@ -690,8 +653,9 @@
         const accountNumberInput = document.getElementById('account_number');
         const accountNumberError = document.getElementById('accountNumberError');
         const accountNumber = accountNumberInput.value.trim();
-    
-        if (!/^\d{9,18}$/.test(accountNumber)) {
+        const accountNumberRegex = /^[1-9]\d{8,17}$/;
+
+        if (!accountNumberRegex.test(accountNumber)) {
             accountNumberInput.classList.add('is-invalid');
             accountNumberError.innerText = 'Account number must contain 9 to 18 digits.';
             accountNumberError.style.display = 'block';

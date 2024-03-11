@@ -15,16 +15,6 @@
 </head>
 <body style="background-color: white;">
 
-
-  <!-- Login starts -->
-  <!-- {% if messages %}
-  <div class="messages">
-    {% for message in messages %}
-      <div class="alert alert-success">{{ message }}</div>
-    {% endfor %}
-  </div>
-{% endif %} -->
-
   <section class="min-vh-100 d-flex flex-column">
     <div class="container">
       <div class="row justify-content-center align-items-center min-vh-100">
@@ -37,7 +27,7 @@
           <div class="h3 text-center mt-5">
             <h4>Sign in</h4>
           </div>
-          <form class="m-3" autocomplete="off" method="post">
+          <form class="m-3" autocomplete="off" method="POST" action="{% url 'delivery_agent_login' %}">
             {% csrf_token %}
             <!-- Email input -->
             <div class="mb-3">
@@ -56,16 +46,11 @@
               </div>
               <a href="{% url 'password_reset' %}" class="text-body">Forgot password?</a>
             </div>
-            {% load socialaccount %}
             <div class="text-center mt-4">
               <button id="login" type="submit" class="btn btn-success" style="padding-left: 2.5rem; padding-right: 2.5rem;">Sign in</button>
               <p class="small mt-2">New User? Create your account here <a href="{% url 'delivery_agent_reg' %}" class="link-danger">Register</a></p>
               <p class="small mt-2"><a href="{% url 'delivery_agent_home' %}" class="link-secondary">Back to Dashboard </a></p>
 
-              <!-- <hr>
-              <a href="{% provider_login_url 'google'%}" class="btn btn-outline-danger mt-2" style="padding-left: 2rem; padding-right: 2rem;">
-                <i class="fab fa-google me-2"></i> Sign in with Google
-              </a> -->
               {% if error_message %}
                         <div class="d-flex justify-content-center"><p class="text-danger mt-2 fs-6">{{error_message}}</p></div>
               {% endif %}

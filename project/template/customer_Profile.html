@@ -229,8 +229,8 @@
                         <div class="card-body">                            
                             <strong>{{ i.address_type }}</strong><br>
                             <p id="card_building" style="margin-bottom: 2px;">Building: {{ i.building_name }}</p>
-                            <p id="card_street" style="margin-bottom: 2px;">Street: {{ i.street }}</p>
                             <p id="card_city" style="margin-bottom: 2px;">City: {{ i.city }}</p>
+                            <p id="card_street" style="margin-bottom: 2px;">District: {{ i.district }}</p>
                             <p id="card_zip-code" style="margin-bottom: 2px;">Zip Code: {{ i.zip_code }}</p>
                             <div class="mt-3 d-flex">
                                 <button class="btn btn-primary btn-sm me-4 edit-address-button"
@@ -261,22 +261,47 @@
                                 <label for="building_name" class="form-label">Building Name</label>
                                 <input type="text" class="form-control" id="building_name" name="building_name" value="{{ address.building_name }}" required>
                             </div>
-                            <div class="mb-1">
-                                <label for="address_type" class="form-label">Address Type</label>
-                                <select class="form-select" id="address_type" name="address_type" required>
-                                    <option value="Home" {% if address.address_type == 'Home' %}selected{% endif %}>Home</option>
-                                    <option value="Work" {% if address.address_type == 'Work' %}selected{% endif %}>Work</option>
-                                    <option value="Other" {% if address.address_type == 'Other' %}selected{% endif %}>Other</option>
-                                </select>
-                            </div>
                             <div class="d-flex">
-                                <div class="mb-1 me-2">
+                                <div class="col-md-6 me-2 mb-1">
+                                    <label for="address_type" class="form-label">Address Type</label>
+                                    <select class="form-select" id="address_type" name="address_type" required>
+                                        <option value="Home" {% if address.address_type == 'Home' %}selected{% endif %}>Home</option>
+                                        <option value="Work" {% if address.address_type == 'Work' %}selected{% endif %}>Work</option>
+                                        <option value="Other" {% if address.address_type == 'Other' %}selected{% endif %}>Other</option>
+                                    </select>
+                                </div>
+                            
+                                <div class="col-md-6 mb-1 me-2">
                                     <label for="street" class="form-label">Street</label>
                                     <input type="text" class="form-control" id="street" name="street" value="{{ address.street }}" required>
                                 </div>
-                                <div class="mb-1">
+                            </div>
+                            <div class="d-flex">
+                                <div class="col-md-6 me-2 mb-1">
                                     <label for="city" class="form-label">City</label>
                                     <input type="text" class="form-control" id="city" name="city" value="{{ address.city }}" required>
+                                </div>
+                                <div class="col-md-6 mb-1">
+                                    <label for="district" class="form-label">District</label>
+                                    {{ address.district }}
+                                    <select class="form-select" id="district" name="district" required>
+                                        <option value="" disabled selected>--Select District--</option>
+                                        <option value="Alappuzha" {% if address.district == 'Alappuzha' %}selected{% endif %}>Alappuzha</option>
+                                        <option value="Ernakulam" {% if address.address_type == 'Ernakulam' %}selected{% endif %}>Ernakulam</option>
+                                        <option value="Idukki" {% if address.address_type == 'Idukki' %}selected{% endif %}>Idukki</option>
+                                        <option value="Kannur" {% if address.address_type == 'Kannur' %}selected{% endif %}>Kannur</option>
+                                        <option value="Kasaragod" {% if address.address_type == 'Kasaragod' %}selected{% endif %}>Kasaragod</option>
+                                        <option value="Kollam" {% if address.address_type == 'Kollam' %}selected{% endif %}>Kollam</option>
+                                        <option value="Kottayam" {% if address.address_type == 'Kottayam' %}selected{% endif %}>Kottayam</option>
+                                        <option value="Kozhikode" {% if address.address_type == 'Kozhikode' %}selected{% endif %}>Kozhikode</option>
+                                        <option value="Malappuram" {% if address.address_type == 'Malappuram' %}selected{% endif %}>Malappuram</option>
+                                        <option value="Palakkad" {% if address.address_type == 'Palakkad' %}selected{% endif %}>Palakkad</option>
+                                        <option value="Pathanamthitta" {% if address.address_type == 'Pathanamthitta' %}selected{% endif %}>Pathanamthitta</option>
+                                        <option value="Thiruvananthapuram" {% if address.address_type == 'Thiruvananthapuram' %}selected{% endif %}>Thiruvananthapuram</option>
+                                        <option value="Thrissur" {% if address.address_type == 'Thrissur' %}selected{% endif %}>Thrissur</option>
+                                        <option value="Wayanad" {% if address.address_type == 'Wayanad' %}selected{% endif %}>Wayanad</option>
+
+                                    </select>
                                 </div>
                             </div>
                             <div class="mb-1">
@@ -300,40 +325,53 @@
                             {% csrf_token %}
                             <div class="mb-1">
                                 <label for="building_name" class="form-label">Building Name</label>
-                                <input type="text" class="form-control" id="building_name" name="building_name" required>
+                                <input type="text" class="form-control" id="building_name" name="building_name" autocomplete="off" required>
                                 <span id="buildingNameError" class="text-danger" style="font-size: 10px;"></span>
                             </div>
-                            <div class="mb-1">
-                                <label for="address_type" class="form-label">Address Type</label>
-                                <select class="form-select" id="address_type" name="address_type" required>
-                                    <option value="" disabled selected>--Select--</option>
-                                    <option value="Home">Home</option>
-                                    <option value="Work">Work</option>
-                                    <option value="Other">Other</option>
-                                </select>
-                                <span id="addressTypeError" class="text-danger" style="font-size: 10px;"></span>
-                            </div>
                             <div class="d-flex">
-                                <div class="mb-1 me-2">
+                                <div class="col-md-6 me-2 mb-1">
+                                    <label for="address_type" class="form-label">Address Type</label>
+                                    <select class="form-select" id="address_type" name="address_type" autocomplete="off" required>
+                                        <option value="" disabled selected>--Select Type--</option>
+                                        <option value="Home">Home</option>
+                                        <option value="Work">Work</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                    <span id="addressTypeError" class="text-danger" style="font-size: 10px;"></span>
+                                </div>
+                            
+                                <div class="col-md-6 mb-1">
                                     <label for="street" class="form-label">Street</label>
-                                    <input type="text" class="form-control" id="street" name="street" required>
+                                    <input type="text" class="form-control" id="street" name="street" autocomplete="off" required>
                                     <span id="streetError" class="text-danger" style="font-size: 10px;"></span>
                                 </div>
-                                <div class="mb-1">
+                            </div>
+                            <div class="d-flex">
+                                <div class="col-md-6 me-2 mb-1">
                                     <label for="city" class="form-label">City</label>
-                                    <input type="text" class="form-control" id="city" name="city" required>
+                                    <input type="text" class="form-control" id="city" name="city" autocomplete="off" required>
                                     <span id="cityError" class="text-danger" style="font-size: 10px;"></span>
                                 </div>
-                            </div>
+                            
+                                <div class="col-md-6 mb-1">
+                                    <label for="district" class="form-label">District</label>
+                                    <select class="form-select" id="district" name="district" required>
+                                        <option value="" disabled selected>--Select District--</option>
+                                        {% for district, _ in district_choices %}
+                                            <option value="{{ district }}">{{ district }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>  
+                            </div>                                                
                             <div class="d-flex">
                                 <div class="mb-1 me-2">
                                     <label for="state" class="form-label">State</label>
-                                    <input type="text" class="form-control" id="state" name="state" required>
+                                    <input type="text" class="form-control" id="state" name="state" autocomplete="off" required>
                                     <span id="stateError" class="text-danger" style="font-size: 10px;"></span>
                                 </div>
                                 <div class="mb-1">
                                     <label for="zip_code" class="form-label">ZIP Code</label>
-                                    <input type="text" class="form-control" id="zip_code" name="zip_code" required>
+                                    <input type="text" class="form-control" id="zip_code" name="zip_code" autocomplete="off" required>
                                     <span id="zipCodeError" class="text-danger" style="font-size: 10px;"></span>
                                 </div>
                             </div>
@@ -386,6 +424,7 @@
         document.getElementById("building_name").value = addressData.building_name;
         document.getElementById("address_type").value = addressData.address_type;
         document.getElementById("street").value = addressData.street;
+        document.getElementById("district").value = addressData.district;
         document.getElementById("city").value = addressData.city;
         document.getElementById("state").value = addressData.state;
         document.getElementById("zip_code").value = addressData.zip_code;
@@ -401,6 +440,7 @@
                 building_name: button.getAttribute('data-building-name'),
                 address_type: button.getAttribute('data-address-type'),
                 street: button.getAttribute('data-street'),
+                district: button.getAttribute('data-district'),
                 city: button.getAttribute('data-city'),
                 state: button.getAttribute('data-state'),
                 zip_code: button.getAttribute('data-zip-code')

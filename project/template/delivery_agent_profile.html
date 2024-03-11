@@ -36,26 +36,33 @@
                 <div class="position-sticky">
                     <ul class="nav flex-column mt-4">
                         <li class="nav-item">
-                            <a class="nav-link active text-dark" aria-current="page" href="#"><strong>Dashboard</strong></a>
+                            <a class="nav-link active text-dark" aria-current="page" href="{% url 'delivery_agent' %}">
+                                <i class="fas fa-chart-line me-2"></i><strong>Dashboard</strong>
+                            </a>
                         </li>
-                        <li class="pb-2 mb-2" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1);">
-
+                        <li class="pb-2 mb-2" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1);"></li>
+                    
                         <li class="nav-item">
-                            <a class="nav-link text-dark" href="#"><strong>Orders</strong></a>
+                            <a class="nav-link text-dark" href="{% url 'delivery_agent_orders' %}">
+                                <i class="fas fa-shopping-basket me-2"></i><strong>Orders</strong>
+                            </a>
                         </li>
-                        <li class="pb-2 mb-2" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1);">
-
+                        <li class="pb-2 mb-2" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1);"></li>
+                    
                         <li class="nav-item">
-                            <a class="nav-link text-dark" href="#"><strong>Customers</strong></a>
+                            <a class="nav-link text-dark" href="#">
+                                <i class="fas fa-users me-2"></i><strong>Customers</strong>
+                            </a>
                         </li>
-                        <li class="pb-2 mb-2" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1);">
-
+                        <li class="pb-2 mb-2" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1);"></li>
+                    
                         <li class="nav-item">
-                            <a class="nav-link text-dark" href="#"><strong>Reports</strong></a>
+                            <a class="nav-link text-dark" href="#">
+                                <i class="fas fa-chart-bar me-2"></i><strong>Reports</strong>
+                            </a>
                         </li>
-                        <li class="pb-2 mb-2" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1);">
-
-                    </ul>
+                        <li class="pb-2 mb-2" style="border-bottom: 1px solid rgba(0, 0, 0, 0.1);"></li>
+                    </ul>    
                 </div>
             </nav>
             <!-- Main Content Area -->
@@ -68,99 +75,153 @@
                         
                     <form action="#" method="POST">
                         <!-- Personal Information -->
-                        <div class="col-md-6">
+                        <div class="row">
                             <!-- Profile Photo Upload -->
-                            <div class="mb-3">
+                            <div class="col-md-6 mb-3">
                                 <label for="profilePhoto" class="form-label">Change Profile Photo</label>
                                 <input class="form-control" type="file" id="profilePhoto" name="profilePhoto">
                             </div>
+                            <!-- Display Profile Photo -->
+                            <div class="col-md-6 mb-3">
+                                <label for="profilePhoto" class="form-label">Profile Photo</label>
+                                {% if delivery_agent_profile.profile_photo %}
+                                    <img src="{{ delivery_agent_profile.profile_photo.url }}" alt="Profile Photo" width="100">
+                                {% else %}
+                                    <p>No profile photo available</p>
+                                {% endif %}
+                            </div>                                
                         </div>
                     </div>
-                        <div class="mb-3">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
                             <label for="first_name" class="form-label">First Name</label>
-                            <input type="text" class="form-control" id="first_name" name="first_name" required>
+                            <input type="text" class="form-control" id="first_name" name="first_name" value="{{ delivery_agent_profile.delivery_agent.first_name }}" required>
                         </div>
-                        <div class="mb-3">
+                        <div class="col-md-6 mb-3">
                             <label for="last_name" class="form-label">Last Name</label>
-                            <input type="text" class="form-control" id="last_name" name="last_name" required>
+                            <input type="text" class="form-control" id="last_name" name="last_name" value="{{ delivery_agent_profile.delivery_agent.last_name }}" required>
                         </div>
+                    </div>
                         <div class="row">
-                            <div class="col-md-5 mb-3">
+                            <div class="col-md-6 mb-3">
                                 <label for="gender" class="form-label">Gender</label>
                                 <select class="form-select" id="gender" name="gender" required>
                                     <option value="">Select Gender</option>
-                                    <option value="male">Male</option>
-                                    <option value="female">Female</option>
-                                    <option value="other">Other</option>
-                                </select>
-                            </div>
+                                    <option value="male" {% if delivery_agent_profile.gender == 'male' %} selected {% endif %}>Male</option>
+                                    <option value="female" {% if delivery_agent_profile.gender == 'female' %} selected {% endif %}>Female</option>
+                                    <option value="other" {% if delivery_agent_profile.gender == 'other' %} selected {% endif %}>Other</option>
+                                </select>                                
+                            </div>                                                          
                         
-                        <!-- Contact Information -->
-                            <div class="col-md-7 mb-3">
+                            <div class="col-md-6 mb-3">
                                 <label for="email" class="form-label">Email</label>
-                                <input type="email" class="form-control" id="email" name="email" required>
+                                <input type="email" class="form-control" id="email" name="email" value="{{ delivery_agent_profile.delivery_agent.email }}" disabled required>
+                            </div>
+                        </div>                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="address" class="form-label">Date of Birth</label>
+                                <input type="date" class="form-control" id="date_of_birth" name="date_of_birth" autocomplete="off" value="{{ delivery_agent_profile.date_of_birth|date:'Y-m-d' }}" required>
+                                <div id="dobError" class="text-danger" style="display: none;"></div>
+                            </div>   
+                            <div class="col-md-6 mb-3">
+                                <label for="address" class="form-label">Address</label>
+                                <textarea class="form-control" id="address" name="address" required>{{ delivery_agent_profile.address }}</textarea>
                             </div>
                         </div>
-                        <div class="mb-3">
-                            <label for="phone" class="form-label">Phone Number</label>
-                            <input type="tel" class="form-control" id="phone" name="phone" required>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="phone" class="form-label">Phone Number</label>
+                                <input type="tel" class="form-control" id="phone" name="phone" value="{{ delivery_agent_profile.phone }}" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="location" class="form-label">Nearest Location</label>
+                                <select class="form-select" id="location" name="location" oninput="validateLocation()" required>
+                                    <option value="" disabled>Select Location</option>
+                                    <option value="ernakulam" {% if delivery_agent_profile.location == 'Ernakulam' %} selected {% endif %}>Ernakulam</option>
+                                    <option value="malappuram" {% if delivery_agent_profile.location == 'Malappuram' %} selected {% endif %}>Malappuram</option>
+                                    <option value="kannur" {% if delivery_agent_profile.location == 'Kannur' %} selected {% endif %}>Kannur</option>
+                                    <!-- Add more locations as needed -->
+                                </select>
+                                <div id="locationError" class="text-danger" style="display: none;"></div>
+                            </div>
+                            
                         </div>
-                        <div class="mb-3">
-                            <label for="address" class="form-label">Address</label>
-                            <textarea class="form-control" id="address" name="address" required></textarea>
-                        </div>
-                        <!-- Location Information -->
-                        <div class="mb-3">
-                            <label for="location" class="form-label">Location</label>
-                            <select class="form-select" id="location" name="location">
-                                <option value="" disabled selected>Select Location</option>
-                                <option value="location1">Location 1</option>
-                                <option value="location2">Location 2</option>
-                                <option value="location3">Location 3</option>
-                                <!-- Add more locations as needed -->
-                            </select>
-                        </div>
-
-                        <!-- Identification Details -->
-                        <div class="mb-3">
-                            <label for="id_number" class="form-label">ID Number</label>
-                            <input type="text" class="form-control" id="id_number" name="id_number" required>
-                        </div>
+                        
                         <!-- Employment Details -->
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label for="employee_id" class="form-label">Employee ID</label>
-                                <input type="text" class="form-control" id="employee_id" name="employee_id">
+                                <label for="id_number" class="form-label">Aadhaar Number</label>
+                                <input type="text" class="form-control" id="id_number" name="id_number" value="{{ delivery_agent_profile.aadhaar_number }}" required>
                             </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="date_of_joining" class="form-label">Date of Joining</label>
-                                <input type="date" class="form-control" id="date_of_joining" name="date_of_joining" required>
-                            </div>
-                        </div>
-        
-                        <!-- Vehicle Information -->
-                        <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label for="vehicle_type" class="form-label">Vehicle Type</label>
-                                <input type="text" class="form-control" id="vehicle_type" name="vehicle_type">
+                                <input type="text" class="form-control" id="vehicle_type" name="vehicle_type" value="{{ delivery_agent_profile.vehicle_type }}" >
                             </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="id_document" class="form-label">Upload ID Document (Aadhaar/Driving License)</label>
+                            <div>
+                                {% if delivery_agent_profile.id_document %}
+                                    <!-- Display the link to view the document -->
+                                    <a href="{{ delivery_agent_profile.id_document.url }}" target="_blank">View Document</a>
+                                {% else %}
+                                    <p>No ID document uploaded</p>
+                                {% endif %}
+                            </div>
+                            <!-- File upload input field -->
+                            <input type="file" class="form-control" id="id_document" name="id_document" accept=".pdf, .jpg, .jpeg, .png" onchange="validateIdDocument()" required>
+                            <small id="idDocumentHelp" class="form-text text-muted">Upload PDF, JPG, or PNG files only.</small>
+                            <div id="idDocumentError" class="text-danger" style="display: none;"></div>
+                        </div>
+                        
+                        <!-- Vehicle Information -->
+                        <div class="row">                            
                             <div class="col-md-6 mb-3">
                                 <label for="vehicle_number" class="form-label">Vehicle Number</label>
-                                <input type="text" class="form-control" id="vehicle_number" name="vehicle_number">
+                                <input type="text" class="form-control" id="vehicle_number" name="vehicle_number" value="{{ delivery_agent_profile.vehicle_number }}" >
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="driver_license_number" class="form-label">Driver License Number</label>
+                                <input type="text" class="form-control" id="driver_license_number" name="driver_license_number" value="{{ delivery_agent_profile.driver_license_number }}" >
                             </div>
                         </div>
-                        <div class="mb-3">
-                            <label for="driver_license_number" class="form-label">Driver License Number</label>
-                            <input type="text" class="form-control" id="driver_license_number" name="driver_license_number">
-                        </div>
+                        
                         <!-- Bank Account Information -->
-                        <div class="mb-3">
-                            <label for="bank_name" class="form-label">Bank Name</label>
-                            <input type="text" class="form-control" id="bank_name" name="bank_name">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="bank_name" class="form-label">Bank Name</label>
+                                <select class="form-select" id="bank_name" name="bank_name" oninput="validateBankName()" required>
+                                    <option value="" disabled>Select Bank</option>
+                                    {% for bank_choice in delivery_agent_profile.BANK_CHOICES %}
+                                        {% if bank_choice.0 == delivery_agent_profile.bank_name %}
+                                            <option value="{{ bank_choice.0 }}" selected>{{ bank_choice.1 }}</option>
+                                        {% else %}
+                                            <option value="{{ bank_choice.0 }}">{{ bank_choice.1 }}</option>
+                                        {% endif %}
+                                    {% endfor %}
+                                </select>
+                                <div id="bankError" class="text-danger" style="display: none;"></div>
+                            </div>
+                        
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="branch" class="form-label">Branch</label>
+                                <input type="text" class="form-control" id="branch" name="branch" autocomplete="off" oninput="validateBranch()" value="{{ delivery_agent_profile.branch }}" required>
+                                <div id="branchError" class="text-danger" style="display: none;"></div>
+                            </div>
                         </div>
-                        <div class="mb-3">
-                            <label for="account_number" class="form-label">Account Number</label>
-                            <input type="text" class="form-control" id="account_number" name="account_number">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="account_number" class="form-label">Account Number</label>
+                                <input type="text" class="form-control" id="account_number" name="account_number" autocomplete="off" oninput="validateAccountNumber()" value="{{ delivery_agent_profile.account_number }}" required>
+                                <div id="accountNumberError" class="text-danger" style="display: none;"></div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="ifsc_code" class="form-label">IFSC Code</label>
+                                <input type="text" class="form-control" id="ifsc_code" name="ifsc_code" autocomplete="off" oninput="validateIFSCCode()" value="{{ delivery_agent_profile.ifsc_code }}" required>
+                                <div id="ifscCodeError" class="text-danger" style="display: none;"></div>
+                            </div>
                         </div>
                         <button type="submit" class="btn btn-success mb-4">Submit</button>
                     </form>
