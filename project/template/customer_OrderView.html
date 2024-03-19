@@ -226,6 +226,18 @@
                                 </div>
                             </td>
                         </tr>
+                        {% if order.ready_for_pickup %}
+                        <tr>
+                            <td colspan="5"> <!-- Span across all columns -->
+                                <form action="#" method="POST">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="order_id" value="{{ order.id }}">
+                                    <input type="text" name="otp" placeholder="Enter OTP" required class="ms-5">
+                                    <button type="submit" class="btn btn-secondary border-1 rounded ms-5"  onclick="return confirm('Are you sure you have received the order successfully?')">Submit</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endif %}
                         <tr style="border-left: white;border-right: white;">
                             <td colspan="5">&nbsp;</td>
                         </tr>

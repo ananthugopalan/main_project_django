@@ -439,6 +439,7 @@ def customer_allProducts(request, category='All'):
     page = paginator.get_page(page_number)
     return render(request, 'customer_allProducts.html', {'page': page,'products': products, 'selected_category': category, 'categories': categories})
 
+
 def customer_Profile(request):
     user_profile, created = Customer_Profile.objects.get_or_create(customer=request.user)
     addresses = Address.objects.filter(user_id=request.user.id)
@@ -484,7 +485,7 @@ def customer_Profile(request):
             address.save()
             messages.success(request, 'Address added successfully', extra_tags='add_address_tag')
             return redirect('customer_Profile') 
-
+    
     context = {
         'user_profile': user_profile,
         'addresses': addresses, 
@@ -1296,7 +1297,7 @@ def homepage(request):
 
     return render(request, 'homepage.html', context=context)
 
-
+from twilio.rest import Client
 # we need to csrf_exempt this url as
 # POST request will be made by Razorpay
 # and it won't have the csrf token.
@@ -1353,7 +1354,15 @@ def paymenthandler(request):
                 cart_item.status = CartItem.StatusChoices.ORDERED
                 cart_item.save()
             
-            # Update the order with payment ID and change status to "Successful
+            if order.payment_status == Order.PaymentStatusChoices.SUCCESSFUL:
+                message_body = f"✅ Your order has been placed for order ID #{order.id} on  📅{order.order_date_only}. We look forward for further orders from you. Thank for choosing AgriSelect🌱 for your need."
+
+                client = Client("AC784edca2d4dc48edab5e0eb39519d949", "b4f393289f7f588341d23277806cdaa3")
+                message = client.messages.create(
+                    from_='whatsapp:+14155238886',
+                    body=message_body,
+                    to='whatsapp:+917306053696'  # Replace with the user's WhatsApp number
+                )
 
             # Redirect to a success page or return a success response
             return redirect('/')
