@@ -81,6 +81,7 @@
                                 <th>Price</th>
                                 <th>Order Date</th>
                                 <th>Action</th>
+                                <th>Send OTP</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -105,6 +106,16 @@
                                                     {% endif %}
                                                 </form>
                                             </td>
+                                            <form method="post" action="{% url 'send_otp_to_customer' order.id %}">
+                                                {% csrf_token %}
+                                            <td>                
+                                                {% if cart_item.ready_for_pickup %}
+                                                    <button type="submit" class="btn btn-secondary rounded" onclick="return confirm('Are you sure you want to send OTP?')">Send</button>
+                                                {% else %}
+                                                    <button type="submit" class="btn btn-secondary rounded" onclick="return confirm('Are you sure you want to send OTP?')" disabled>Send</button>
+                                                {% endif %}
+                                            </td>
+                                            </form>
                                         </tr>
                                     {% endif %}
                                 {% endfor %}

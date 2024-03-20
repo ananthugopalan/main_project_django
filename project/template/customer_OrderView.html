@@ -229,7 +229,7 @@
                         {% if order.ready_for_pickup %}
                         <tr>
                             <td colspan="5"> <!-- Span across all columns -->
-                                <form action="#" method="POST">
+                                <form action="{% url 'verify_order_otp' %}" method="POST">
                                     {% csrf_token %}
                                     <input type="hidden" name="order_id" value="{{ order.id }}">
                                     <input type="text" name="otp" placeholder="Enter OTP" required class="ms-5">
@@ -237,6 +237,7 @@
                                 </form>
                             </td>
                         </tr>
+                        
                         {% endif %}
                         <tr style="border-left: white;border-right: white;">
                             <td colspan="5">&nbsp;</td>

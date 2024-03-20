@@ -21,3 +21,4 @@ def send_sms(recipient_number, message):
     except Exception as e:
         print("Failed to send message:", str(e))
         return False
+    

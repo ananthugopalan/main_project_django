@@ -52,7 +52,8 @@ class Customer_Profile(models.Model):
     last_name = models.CharField(max_length=100)
     mobile_number = models.CharField(max_length=15)
     verified = models.BooleanField(default=False)
-    
+    otp = models.CharField(max_length=100,default='Null')
+
     def __str__(self):
         return self.first_name
     
@@ -158,6 +159,9 @@ class Order(models.Model):
         max_length=20, choices=OrderStatusChoices.choices, default=OrderStatusChoices.REQUESTED)
     accepted_by_store = models.BooleanField(default=False)
     ready_for_pickup = models.BooleanField(default=False)  # New field
+    otp = models.CharField(max_length=100, default='Null')
+    verified = models.BooleanField(default=False)
+
 
     def __str__(self):
         return self.user.email

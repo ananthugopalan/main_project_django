@@ -7,6 +7,7 @@ urlpatterns = [
     path('',views.index,name='index'),
 
     #customer
+
     # path('search/', views.search_products, name='search_products'),
     # path('search/', views.search_view, name='search_view'),
     path('search_product/<str:product_name>', views.search_product, name='search_product'),
@@ -33,6 +34,9 @@ urlpatterns = [
     path('product_seeds/', views.product_seeds, name='product_seeds'),
     
     path('customer_growbag/', views.customer_growbag, name='customer_growbag'),
+
+    path('verify-order-otp/', views.verify_order_otp, name='verify_order_otp'),
+
 
     # Cart
     # path('add_to_Cart/<int:product_id>/', views.add_to_Cart, name='add_to_Cart'),
@@ -94,6 +98,9 @@ urlpatterns = [
     path('delivery_agent_profile/', views.delivery_agent_profile, name='delivery_agent_profile'),
     path('delivery_agent_orders/', views.delivery_agent_orders, name='delivery_agent_orders'),
     path('get_agent_details/<int:agent_id>/', views.get_agent_details, name='get_agent_details'),
+
+    path('send-otp/<int:order_id>/', views.send_otp_to_customer, name='send_otp_to_customer'),
+
 
 
     #hub

@@ -439,6 +439,30 @@ def customer_allProducts(request, category='All'):
     page = paginator.get_page(page_number)
     return render(request, 'customer_allProducts.html', {'page': page,'products': products, 'selected_category': category, 'categories': categories})
 
+import random
+from twilio.rest import Client
+from django.utils import timezone
+
+
+def send_otp_via_sms(mobile_number, otp):
+    # Your Twilio credentials
+    account_sid = 'ACa2fcaf87e061fb6edd80385a76c502f1'
+    auth_token = 'a7574566c793cbadaa642b43e0301903'
+    twilio_number = '+12136744510'
+    
+    # Initialize Twilio client
+    client = Client(account_sid, auth_token)
+    
+    # Compose the message
+    message_body = f"Your OTP for verification is: {otp}"
+    
+    # Send the SMS
+    client.messages.create(from_=twilio_number, body=message_body, to=mobile_number)
+
+# def is_otp_expired(otp_timestamp):
+#     # Check if the OTP timestamp is within the last 10 minutes
+#     ten_minutes_ago = timezone.now() - timezone.timedelta(minutes=10)
+#     return otp_timestamp < ten_minutes_ago
 
 def customer_Profile(request):
     user_profile, created = Customer_Profile.objects.get_or_create(customer=request.user)
@@ -461,6 +485,48 @@ def customer_Profile(request):
 
             messages.success(request, 'Profile added successfully', extra_tags='profile_tag') 
             return redirect('customer_Profile')  # Display a success message
+        
+        elif 'verify_button' in request.POST:
+            # Generate OTP
+            otp = ''.join(random.choices('0123456789', k=6))
+            otp_timestamp = timezone.now()
+            user_profile.otp = otp
+            # user_profile.otp_timestamp = otp_timestamp
+            user_profile.save()
+
+            # Send OTP via SMS
+            send_otp_via_sms(user_profile.mobile_number, otp)
+
+            # Store the OTP in the session to validate later
+            request.session['otp'] = otp
+            # request.session['otp_timestamp'] = otp_timestamp.isoformat()
+
+            return redirect('customer_Profile') 
+        
+        elif 'submit_otp' in request.POST:
+            # Get the entered OTP from the form
+            entered_otp = request.POST.get('otp')
+
+            # Get the OTP stored in the database for the user
+            stored_otp = user_profile.otp
+            # otp_timestamp = user_profile.otp_timestamp
+
+            # Check if the OTP is expired
+            # if is_otp_expired(otp_timestamp):
+            #     messages.error(request, 'OTP has expired. Please request a new OTP.')
+            #     return redirect('customer_Profile')
+
+            # Check if the entered OTP matches the stored OTP
+            if entered_otp == stored_otp:
+                # Update the verified field to True
+                user_profile.verified = True
+                user_profile.save()
+                messages.success(request, 'Mobile number verified successfully')
+            else:
+                messages.error(request, 'Invalid OTP. Please try again.')
+
+            return redirect('customer_Profile')
+
 
         elif 'address_save_button' in request.POST:
             # Handle address form submission
@@ -726,7 +792,28 @@ class CustomerOrderView(View):
         return render(request, self.template_name, context)
 
 
-
+def verify_order_otp(request):
+    if request.method == 'POST':
+        order_id = request.POST.get('order_id')
+        otp_entered = request.POST.get('otp')
+        
+        # Retrieve the order object
+        order = Order.objects.get(id=order_id)
+        
+        # Check if the entered OTP matches the OTP stored in the order and it's not null
+        if order.otp == otp_entered and order.otp != 'Null':
+            # Update the order to mark it as verified
+            order.verified = True
+            order.order_status = order.OrderStatusChoices.DELIVERED
+            order.save()
+            
+            # Redirect to a success page or display a success message
+            messages.success(request, 'Order verified successfully.')
+            return redirect('customer_order_view')  # Change 'success_page' to the name of your success page URL
+        else:
+            # Display an error message if the OTP is incorrect or null
+            messages.error(request, 'Invalid OTP. Please try again.')
+            return redirect('customer_order_view')
 
 
 
@@ -1558,3 +1645,17 @@ def delivery_agent_orders(request):
 
     context = {'orders': orders}
     return render(request, 'delivery_agent_orders.html', context)
+
+def send_otp_to_customer(request, order_id):
+    order = get_object_or_404(Order, id=order_id)
+    user_profile = get_object_or_404(Customer_Profile, customer=order.user)
+    
+    # Generate OTP
+    otp = ''.join(random.choices('0123456789', k=6))
+    order.otp = otp
+    order.save()
+    
+    # Send OTP via SMS
+    send_otp_via_sms(user_profile.mobile_number, otp)
+    
+    return redirect('delivery_agent_orders')

@@ -188,16 +188,9 @@
                                     <div class="col-md-6">
                                         <label class="form-label">Mobile number *</label>
                                         <input type="text" class="form-control" id="mobile_number" name="mobile_number" placeholder="Enter your mobile no." value="{% if form_submitted %}{{ request.POST.mobile_number }}{% else %}{{ user_profile.mobile_number }}{% endif %}" {% if not form_submitted %}disabled{% endif %}>
-                                        <button type="button" class="btn btn-primary" id="verify_button">Verify</button>
                                         <div id="mobile_number_error" class="text-danger"></div>
                                     </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label">Enter OTP *</label>
-                                        <input type="text" class="form-control" id="otp" name="otp" placeholder="Enter OTP" {% if not form_submitted %}disabled{% endif %}>
-                                        <div id="otp_error" class="text-danger"></div>
-                                    </div>
-                                </div> <!-- Row 2 END -->
-                
+                                </div> <!-- Row 2 END -->                
                                 
                                 <!-- Email -->
                                 <div class="row g-3">
@@ -214,11 +207,30 @@
                                     <button type="submit" class="btn btn-danger btn" id="save_button" name="profile_save_button">Save</button>
                                     <button type="submit" class="btn btn-primary btn" id="update_button">Update</button>
                                 </div>
-                                
+                            </form>  
                             </div>
                         </div>
+                        <div class="col-md-12">
+                            <form method="post" action="#">
+                                {% csrf_token %}
+                                <div class="row">                                    
+                                    {% if user_profile.mobile_number %}
+                                    <div class="col-md-4">
+                                        <button type="submit" class="btn text-primary rounded ms-5" id="verify_button" name="verify_button"><u>Verify Mobile</u></button>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <input type="text" class="form-control" id="otp" name="otp" placeholder="Enter OTP">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <button type="submit" class="btn btn-secondary" id="submit_otp" name="submit_otp">Submit OTP</button>
+                                    </div>
+                                    {% else %}
+                                        <button type="submit" class="btn btn-secondary rounded ms-5" id="verify_button" name="verify_button" disabled>Verify Mobile</button>
+                                    {% endif %}
+                                </div>
+                            </form>
+                        </div>
                     </div> <!-- Row END -->
-                    </form>
                     <!-- Form END -->
                 </div>
 
@@ -386,7 +398,7 @@
                     </div>
                 </div>
             </div>
-               
+        </div>   
         </div>
     </div>
 </div>
@@ -409,10 +421,7 @@
             </div>
             </div>
         </footer>
-        <!-- Footer -->
-    
-
-
+        <!-- Footer -->    
 
 <script>
     // Function to show the edit address form and populate it with data
@@ -761,6 +770,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 }
 </script>
+
 
   <!-- Include jQuery library -->
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
