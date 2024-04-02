@@ -106,7 +106,6 @@
                         {% if request.user.is_authenticated %}
                             <a class="dropdown-item text-success" href="#">{{ request.user.first_name }}</a>
                             <a class="dropdown-item" href="{% url 'customer_Profile' %}">Profile</a>
-                            <a class="dropdown-item" href="{% url 'customer_addresses' %}">My Addresses</a>
                             <a class="dropdown-item" href="{% url 'customer_Wishlist' %}">Wishlist</a>
                             <a class="dropdown-item" href="{% url 'user_logout' %}" onclick="return confirm('Are you sure you want to sign out?')">Sign out</a>
                         {% else %}  
@@ -144,8 +143,7 @@
                 <p class="mb-0"><b>Hello!</b></p>
             </div>
             <div class="list-group mt-3 flex-grow-1">
-                <a href="javascript:void(0);" class="list-group-item list-group-item-action mb-2" onclick="showProfileForm()">Dashboard</a>
-                <!-- <a href="javascript:void(0);" class="list-group-item list-group-item-action mb-2" onclick="showAddressCards()">My Addresses</a> -->
+                <a href="javascript:void(0);" class="list-group-item list-group-item-action mb-2" onclick="showAddressCards()">My Addresses</a>
                 <!-- <a href="#" class="list-group-item list-group-item-action mb-2">My Gifts</a>
                 <a href="#" class="list-group-item list-group-item-action mb-2">Payments</a> -->
                 <!-- Add more sidebar items as needed -->
@@ -153,87 +151,8 @@
         </div>
         
         <div class="col-lg-9 mt-5 shadow-lg vh-100"  style="background-color: #ffffff;">
-            <!-- Main Content -->    
-                <!-- Form START -->
-                <div id="profile-form-section">
-                    <form method="POST" class="file-upload mt-1 " action="{% url 'customer_Profile' %}" id="profile-form">
-                    {% csrf_token %}
-                    <div class="row mb-5 gx-5">
-                        <!-- Contact detail -->
-                        <div class="col-xxl-8 mb-5 mb-xxl-0">
-                            <div class="bg-secondary-soft px-4 py-5 rounded">
-                                <div class="row g-3">
-                                    <h5 class="mb-4 mt-0">Personal Details</h5>
-                
-                                    <!-- First Name -->
-                                    <div class="col-md-6">
-                                        <label class="form-label">First Name *</label>
-                                        <input type="text" class="form-control" id="first_name" name="first_name" placeholder="Enter your First Name" value="{% if request.user.is_authenticated %}{{ request.user.first_name }}{% endif %}" disabled>
-                                        <div id="first_name_error" class="text-danger"></div>
-                                    </div>
-                
-                                    <!-- Last Name -->
-                                    <div class="col-md-6">
-                                        <label class="form-label">Last Name *</label>
-                                        <input type="text" class="form-control" id="last_name" name="last_name" placeholder="Enter your Last Name" value="{% if request.user.is_authenticated %}{{ request.user.last_name }}{% endif %}" disabled>
-                                        <div id="last_name_error" class="text-danger"></div>
-                                    </div>
-                                </div> <!-- Row 1 END -->
-                
-                                <!-- Space -->
-                                <div class="mb-3"></div>
-                                
-                                <div class="row">
-                                <!-- Mobile number -->
-                                <div class="row g-3">
-                                    <div class="col-md-6">
-                                        <label class="form-label">Mobile number *</label>
-                                        <input type="text" class="form-control" id="mobile_number" name="mobile_number" placeholder="Enter your mobile no." value="{% if form_submitted %}{{ request.POST.mobile_number }}{% else %}{{ user_profile.mobile_number }}{% endif %}" {% if not form_submitted %}disabled{% endif %}>
-                                        <div id="mobile_number_error" class="text-danger"></div>
-                                    </div>
-
-                                    <div class="col-md-6">
-                                        <label for="inputEmail4" class="form-label">Email *</label>
-                                        <input type="email" class="form-control" id="inputEmail4" name="email" value="{% if request.user.is_authenticated %}{{ request.user.email }}{% endif %}" disabled>
-                                    </div>
-                                </div> <!-- Row 3 END -->
-                
-                                <!-- Add margin to move buttons up -->
-                                <div class="mt-5"></div>
-                
-                                <div class="gap-3 d-md-flex justify-content-md-center text-center">
-                                    <button type="submit" class="btn btn-danger btn" id="save_button" name="profile_save_button">Save</button>
-                                    <button type="submit" class="btn btn-primary btn" id="update_button">Update</button>
-                                </div>
-                            </form>  
-                            </div>
-                        </div>
-                        <div class="col-md-12">
-                            <form method="post" action="#">
-                                {% csrf_token %}
-                                <div class="row">                                    
-                                    {% if user_profile.mobile_number %}
-                                    <div class="col-md-4">
-                                        <button type="submit" class="btn text-primary rounded ms-5" id="verify_button" name="verify_button"><u>Verify Mobile</u></button>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <input type="text" class="form-control" id="otp" name="otp" placeholder="Enter OTP">
-                                    </div>
-                                    <div class="col-md-4">
-                                        <button type="submit" class="btn btn-secondary" id="submit_otp" name="submit_otp">Submit OTP</button>
-                                    </div>
-                                    {% else %}
-                                        <button type="submit" class="btn btn-secondary rounded ms-5" id="verify_button" name="verify_button" disabled>Verify Mobile</button>
-                                    {% endif %}
-                                </div>
-                            </form>
-                        </div>
-                    </div> <!-- Row END -->
-                    <!-- Form END -->
-                </div>
-
-            <!-- Address Form Card Template (hidden)
-            <div id="address-form-card-template" style="display: none">
+            <!-- Address Form Card Template (hidden) -->
+            <div id="address-form-card-template">
                 <div class="flex-wrap" style="margin-left: 15px;" id="add-address-btn">
                     <button type="button" class="btn btn-primary mt-5 ms-3 me-2" id="show-address-form-button">Add Address</button>
                 </div>           
@@ -298,25 +217,13 @@
                                 </div>
                                 <div class="col-md-6 mb-1">
                                     <label for="district" class="form-label">District</label>
-                                    {{ address.district }}
                                     <select class="form-select" id="district" name="district" required>
                                         <option value="" disabled selected>--Select District--</option>
-                                        <option value="Alappuzha" {% if address.district == 'Alappuzha' %}selected{% endif %}>Alappuzha</option>
-                                        <option value="Ernakulam" {% if address.address_type == 'Ernakulam' %}selected{% endif %}>Ernakulam</option>
-                                        <option value="Idukki" {% if address.address_type == 'Idukki' %}selected{% endif %}>Idukki</option>
-                                        <option value="Kannur" {% if address.address_type == 'Kannur' %}selected{% endif %}>Kannur</option>
-                                        <option value="Kasaragod" {% if address.address_type == 'Kasaragod' %}selected{% endif %}>Kasaragod</option>
-                                        <option value="Kollam" {% if address.address_type == 'Kollam' %}selected{% endif %}>Kollam</option>
-                                        <option value="Kottayam" {% if address.address_type == 'Kottayam' %}selected{% endif %}>Kottayam</option>
-                                        <option value="Kozhikode" {% if address.address_type == 'Kozhikode' %}selected{% endif %}>Kozhikode</option>
-                                        <option value="Malappuram" {% if address.address_type == 'Malappuram' %}selected{% endif %}>Malappuram</option>
-                                        <option value="Palakkad" {% if address.address_type == 'Palakkad' %}selected{% endif %}>Palakkad</option>
-                                        <option value="Pathanamthitta" {% if address.address_type == 'Pathanamthitta' %}selected{% endif %}>Pathanamthitta</option>
-                                        <option value="Thiruvananthapuram" {% if address.address_type == 'Thiruvananthapuram' %}selected{% endif %}>Thiruvananthapuram</option>
-                                        <option value="Thrissur" {% if address.address_type == 'Thrissur' %}selected{% endif %}>Thrissur</option>
-                                        <option value="Wayanad" {% if address.address_type == 'Wayanad' %}selected{% endif %}>Wayanad</option>
-
+                                        {% for district, _ in DISTRICT_CHOICES %}
+                                            <option value="{{ district }}" {% if address.district == district %}selected{% endif %}>{{ district }}</option>
+                                        {% endfor %}
                                     </select>
+                                    
                                 </div>
                             </div>
                             <div class="mb-1">
@@ -395,7 +302,7 @@
                         </form>
                     </div>
                 </div>
-            </div> -->
+            </div>
         </div>   
         </div>
     </div>
@@ -670,102 +577,6 @@ document.addEventListener('DOMContentLoaded', function () {
         // Show the address card display
         addressCardDisplay.style.display = "flex";
     }
-</script>
-
-<!-- ... Rest of your HTML ... -->
-
-  <script>
-    // Add event listeners for input fields
-    const firstNameInput = document.querySelector('input[name="first_name"]');
-    const lastNameInput = document.querySelector('input[name="last_name"]');
-    const mobileNumberInput = document.querySelector('input[name="mobile_number"]');
-    const otpInput = document.querySelector('input[name="otp"]');
-    const saveButton = document.querySelector('button#save_button');
-    const verifyButton = document.querySelector('button#verify_button');
-    const updateButton = document.querySelector('button#update_button');
-
-    firstNameInput.addEventListener('input', validateForm);
-    lastNameInput.addEventListener('input', validateForm);
-    mobileNumberInput.addEventListener('input', validateForm);
-
-    function enableInputs(enable) {
-        [firstNameInput, lastNameInput, mobileNumberInput, otpInput].forEach((input) => {
-            input.disabled = !enable;
-        });
-    }
-
-    updateButton.addEventListener('click', function (event) {
-        event.preventDefault(); // Prevent the form from submitting
-
-        // Enable input fields except for email
-        enableInputs(true);
-
-        // Disable the email field
-        emailInput.disabled = true;
-    });
-
-    function validateForm() {
-    const firstName = firstNameInput.value.trim();
-    const lastName = lastNameInput.value.trim();
-    let mobileNumber = mobileNumberInput.value.trim();
-    const firstNameError = document.getElementById('first_name_error');
-    const lastNameError = document.getElementById('last_name_error');
-    const mobileNumberError = document.getElementById('mobile_number_error');
-
-    // Validate First Name
-    if (firstName === '') {
-        firstNameError.textContent = 'First Name is required';
-    } else if (!/^[a-zA-Z]+$/.test(firstName)) {
-        firstNameError.textContent = 'Only alphabets are allowed';
-    } else {
-        firstNameError.textContent = '';
-    }
-
-    // Validate Last Name
-    if (lastName === '') {
-        lastNameError.textContent = 'Last Name is required';
-    } else if (!/^[a-zA-Z ]+$/.test(lastName)) {
-        lastNameError.textContent = 'Only alphabets are allowed';
-    } else {
-        lastNameError.textContent = '';
-    }
-
-    // Only validate and format Mobile Number if it's changed from the existing value
-    if (mobileNumber !== '{{ user_profile.mobile_number }}') {
-        // Remove spaces and non-digit characters from mobile number except '+'
-        mobileNumber = mobileNumber.replace(/[^+\d]/g, '');
-
-        // Automatically add "+91" in front of mobile number if it has 10 digits
-        if (mobileNumber.length === 10) {
-            mobileNumber = '+91' + mobileNumber;
-        }
-
-        // Validate Mobile Number
-        if (mobileNumber === '') {
-            mobileNumberError.textContent = 'Mobile Number is required';
-        } else if (!/^\+91\d{10}$/.test(mobileNumber)) {
-            mobileNumberError.textContent = 'Mobile Number must start with +91 and have 10 digits';
-        } else {
-            mobileNumberError.textContent = '';
-        }
-
-        // Update the input field with the formatted mobile number
-        mobileNumberInput.value = mobileNumber;
-    } else {
-        mobileNumberError.textContent = ''; // Clear error for existing value
-    }
-
-    // Enable or disable buttons based on validation
-    if (firstName !== '' && /^[a-zA-Z]+$/.test(firstName) &&
-        lastName !== '' && /^[a-zA-Z ]+$/.test(lastName) &&
-        (mobileNumber === '{{ user_profile.mobile_number }}' || /^\+91\d{10}$/.test(mobileNumber))) {
-        saveButton.disabled = false;
-        updateButton.disabled = false;
-    } else {
-        saveButton.disabled = true;
-        updateButton.disabled = true;
-    }
-}
 </script>
 
 

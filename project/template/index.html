@@ -128,6 +128,7 @@
 
                             <a class="dropdown-item text-success" href="#">{{ request.user.first_name }}</a>
                             <a class="dropdown-item" href="{% url 'customer_Profile' %}">Profile</a>
+                            <a class="dropdown-item" href="{% url 'customer_addresses' %}">My Addresses</a>
                             <a class="dropdown-item" href="{% url 'customer_Wishlist' %}">Wishlist</a>
                             <a class="dropdown-item" href="{% url 'user_logout' %}" onclick="return confirm('Are you sure you want to sign out?')">Sign out</a>
                             {% elif request.user.is_seller %}

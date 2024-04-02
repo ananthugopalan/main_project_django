@@ -8,6 +8,7 @@
   <link rel="icon" href="{% static 'img/Agriselect1.png' %}" width='30' height='30'>
   <meta name="description" content="">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://www.google.com/recaptcha/api.js" asyn defer></script>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
   <link rel="stylesheet" href="{% static 'css/style.css' %}">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-APkiNv6V6Zzv5SZ/gO4if/XvJ21foE94OcC96vgt1z3xJlZnuB+KqYfhmG1tY2NqCfyWQZC53GoN3R9kbbDvQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -24,6 +25,7 @@
     {% endfor %}
   </div>
 {% endif %} -->
+
 
   <section class="min-vh-100 d-flex flex-column">
     <div class="container">
@@ -56,6 +58,9 @@
               </div>
               <a href="{% url 'password_reset' %}" class="text-body">Forgot password?</a>
             </div>
+            <!-- <div class="input-group mb-3">
+              <div class="g-recaptcha" data-sitekey="6LcFr54pAAAAALblLbxUyj0dIxkV9e7gvJD3qK55"></div>
+            </div> -->
             {% load socialaccount %}
             <div class="text-center mt-4">
               <button id="login" type="submit" class="btn btn-success" style="padding-left: 2.5rem; padding-right: 2.5rem;">Sign in</button>
@@ -95,7 +100,6 @@
   </div> -->
 </footer>
 <!-- Footer -->
-
 
   <!-- Bootstrap and other scripts -->
   <script src="https://kit.fontawesome.com/abaaeb8089.js" crossorigin="anonymous"></script>

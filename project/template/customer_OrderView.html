@@ -111,6 +111,7 @@
 
                             <a class="dropdown-item text-success" href="#">{{ request.user.first_name }}</a>
                             <a class="dropdown-item" href="{% url 'customer_Profile' %}">Profile</a>
+                            <a class="dropdown-item" href="{% url 'customer_addresses' %}">My Addresses</a>
                             <a class="dropdown-item" href="{% url 'customer_Wishlist' %}">Wishlist</a>
                             <a class="dropdown-item" href="{% url 'user_logout' %}" onclick="return confirm('Are you sure you want to sign out?')">Sign out</a>
                             {% elif request.user.is_seller %}
@@ -180,8 +181,7 @@
                                         </li>
                                     {% endfor %}
                                 </ul>
-                            </td>
-                            
+                            </td>                         
                             
                             <td><strong>{{ order.order_date }}</strong></td>
                             <td><strong>₹{{ order.total_price }}</strong></td>
@@ -203,13 +203,13 @@
                                     <div class="d-flex align-items-center">
                                         <span class="badge bg-light text-dark position-relative"><i class="far fa-circle text-secondary bg-success"></i> Order Placed</span>
                                         <hr class="mx-1" style="height: 2px; width: 100px; border: none; background-color: #000;">                                        
-                                        {% if order.order_status == 'Dispatched' %}
+                                        {% if order.accepted_by_store %}                                            
                                             <span class="badge bg-light text-dark position-relative"><i class="far fa-circle text-secondary bg-success"></i>Pick Up by Store</span>
                                         {% else %}
                                             <span class="badge bg-light text-dark position-relative"><i class="far fa-circle text-secondary"></i>Pick Up by Store</span>
                                         {% endif %}                                        
                                         <hr class="mx-1" style="height: 2px; width: 100px; border: none; background-color: #000;">
-                                        {% if order.accepted_by_store %}
+                                        {% if order.picked_by_agent %}
                                             <span class="badge bg-light text-dark position-relative"><i class="far fa-circle text-secondary bg-success"></i> On the Way</span>
                                         {% else %}
                                             <span class="badge bg-light text-dark position-relative"><i class="far fa-circle text-secondary"></i> On the Way</span>
@@ -221,12 +221,16 @@
                                             <span class="badge bg-light text-dark position-relative"><i class="far fa-circle text-secondary"></i> Ready for Pickup</span>
                                         {% endif %}
                                         <hr class="mx-1" style="height: 2px; width: 100px; border: none; background-color: #000;">
-                                        <span class="badge bg-light text-dark position-relative"><i class="far fa-circle text-secondary"></i> Delivered</span>                                   
+                                        {% if order.order_status == order.OrderStatusChoices.DELIVERED %}
+                                            <span class="badge bg-light text-dark position-relative"><i class="far fa-circle text-secondary bg-success"></i> Delivered</span>                                   
+                                        {% else %}
+                                            <span class="badge bg-light text-dark position-relative"><i class="far fa-circle text-secondary"></i> Delivered</span>                                   
+                                        {% endif %}
                                     </div>
                                 </div>
                             </td>
                         </tr>
-                        {% if order.ready_for_pickup %}
+                        {% if order.ready_for_pickup and order.order_status == order.OrderStatusChoices.DISPATCHED %}
                         <tr>
                             <td colspan="5"> <!-- Span across all columns -->
                                 <form action="{% url 'verify_order_otp' %}" method="POST">

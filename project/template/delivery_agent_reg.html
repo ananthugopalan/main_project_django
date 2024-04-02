@@ -155,13 +155,20 @@
                         </div>
                     </div>
                     <!-- Employment Details -->
-                        <div class="mb-3">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
                             <label for="id_document" class="form-label">Upload ID Document (Aadhaar/Driving License)</label>
                             <input type="file" class="form-control" id="id_document" name="id_document" accept=".pdf, .jpg, .jpeg, .png" onchange="validateIdDocument()" required>
                             <small id="idDocumentHelp" class="form-text text-muted">Upload PDF, JPG, or PNG files only.</small>
                             <div id="idDocumentError" class="text-danger" style="display: none;"></div>
                         </div>
-    
+                        <div class="col-md-6 mb-3">
+                            <label for="pincode" class="form-label">Pincode</label>
+                            <input type="text" class="form-control" id="pincode" name="pincode" oninput="validatePincode()" required>
+                            <div id="pincodeError" class="text-danger" style="display: none;"></div>
+                        </div>
+                    </div>
+
                     <!-- Vehicle Information -->
                     <div class="row">
                         <div class="col-md-6 mb-3">
@@ -320,6 +327,7 @@
         isValid = isValid && validateBranch();
         isValid = isValid && validateAccountNumber();
         isValid = isValid && validateIFSCCode();
+        isValid = isValid && validatePincode();
         isValid = isValid && validateIdDocument();
 
         return isValid;
@@ -683,6 +691,25 @@
             ifscCodeInput.classList.remove('is-invalid');
             ifscCodeError.innerText = '';
             ifscCodeError.style.display = 'none';
+            return true;
+        }
+    }
+
+    function validatePincode() {
+        const pincodeInput = document.getElementById('pincode');
+        const pincodeError = document.getElementById('pincodeError');
+        const pincode = pincodeInput.value.trim();
+        const pincodeRegex = /^6\d{5}$/; // Assuming pincode is a 6-digit number
+
+        if (!pincodeRegex.test(pincode)) {
+            pincodeInput.classList.add('is-invalid');
+            pincodeError.innerText = 'Please enter a valid 6-digit pincode.';
+            pincodeError.style.display = 'block';
+            return false;
+        } else {
+            pincodeInput.classList.remove('is-invalid');
+            pincodeError.innerText = '';
+            pincodeError.style.display = 'none';
             return true;
         }
     }

@@ -1,7 +1,7 @@
 from django.shortcuts import render,redirect,get_object_or_404
 from django.http import JsonResponse
 from .forms import ProductForm
-from .models import Customer_Profile,Product, Wishlist, Address, CartItem, Order, ShippingAddress, CustomerReview, Growbag, Notification, Season, SellerRevenue, AdminSettings, DeliveryAgentProfile
+from .models import Customer_Profile,Product, Wishlist, Address, CartItem, Order, ShippingAddress, CustomerReview, Growbag, Notification, Season, SellerRevenue, AdminSettings, DeliveryAgentProfile, UserAgentDistance, AssignedDeliveryAgent
 from userapp.models import CustomUser,SellerDetails
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import never_cache
@@ -249,6 +249,9 @@ def admin_report(request):
 
     return render(request, 'admin_report.html')
 
+def admin_agent_assign(request):
+    delivery_agent = DeliveryAgentProfile.objects.all()
+    return render(request, 'admin_agent_assign.html', {'delivery_agents': delivery_agent})
 
 def admin_hubs(request):
     if request.method == 'POST':
@@ -282,6 +285,19 @@ def delete_hub(request, hub_id):
     hub = CustomUser.objects.get(id=hub_id)
     hub.delete()
     return redirect('admin_hubs')
+
+
+def hub_agent_assign(request):
+    user=request.user
+    
+    distinct_order_ids = Order.objects.filter(
+        accepted_by_store=True
+    ).values('id').distinct()
+    
+    # Retrieve orders using the distinct order IDs
+    show_orders = Order.objects.filter(id__in=distinct_order_ids)
+
+    return render(request, 'hub_agent_assign.html', {'show_orders': show_orders})
 
 
 from django.core.mail import send_mail
@@ -352,7 +368,7 @@ def hub_dashboard(request):
     return render(request, 'hub_dashboard.html')
 
 def hub_orders(request): 
-    orders = Order.objects.filter(cart_items__dispatched=True).distinct()
+    orders = Order.objects.filter(cart_items__dispatched=True, payment_status=Order.PaymentStatusChoices.SUCCESSFUL).distinct()
     if request.method == 'POST':  
         cart_item_id = request.POST.get('cart_item_id')  
         cart_item = CartItem.objects.get(pk=cart_item_id)  
@@ -529,6 +545,7 @@ def customer_Profile(request):
 
 
         elif 'address_save_button' in request.POST:
+            
             # Handle address form submission
             building_name = request.POST.get('building_name')
             address_type = request.POST.get('address_type')
@@ -536,8 +553,20 @@ def customer_Profile(request):
             city = request.POST.get('city')
             state = request.POST.get('state')
             zip_code = request.POST.get('zip_code') 
-            district = request.POST.get('district')
 
+            latitude_zip, longitude_zip = get_lat_long(zip_code)
+            user_profile.latitude_zip = latitude_zip
+            user_profile.longitude_zip = longitude_zip
+            district = request.POST.get('district')
+            if district in ['Ernakulam', 'Thrissur', 'Idukki', 'Alappuzha', 'Kottayam', 'Thiruvananthapuram', 'Pathanamthitta', 'Kollam']:
+                location = 'Ernakulam'
+            elif district in ['Kannur', 'Kasaragod', 'Kozhikode']:
+                location = 'Kannur'
+            elif district in ['Malappuram', 'Palakkad', 'Wayanad']:
+                location = 'Malappuram'
+            else:
+                # Handle other districts
+                location = ''
             address = Address(
                 user=request.user,
                 building_name=building_name,
@@ -547,6 +576,7 @@ def customer_Profile(request):
                 state=state,
                 zip_code=zip_code,
                 district=district,
+                location=location
             )
             address.save()
             messages.success(request, 'Address added successfully', extra_tags='add_address_tag')
@@ -572,7 +602,15 @@ def update_address(request):
         state = request.POST.get('state')
         zip_code = request.POST.get('zip_code')
         district = request.POST.get('district')
-
+        if district in ['Ernakulam', 'Thrissur', 'Idukki', 'Alappuzha', 'Kottayam', 'Thiruvananthapuram', 'Pathanamthitta', 'Kollam']:
+            location = 'Ernakulam'
+        elif district in ['Kannur', 'Kasaragod', 'Kozhikode']:
+            location = 'Kannur'
+        elif district in ['Malappuram', 'Palakkad', 'Wayanad']:
+            location = 'Malappuram'
+        else:
+            # Handle other districts
+            location = ''
         # Update the address
         address = get_object_or_404(Address, id=address_id)
         address.building_name = building_name
@@ -582,6 +620,7 @@ def update_address(request):
         address.state = state
         address.zip_code = zip_code
         address.district = district
+        address.location = location
         address.save()
 
         # You can return a JSON response to indicate a successful update
@@ -761,13 +800,14 @@ class CustomerOrderView(View):
         date_filter = request.GET.get('date_filter')
 
         orders = Order.objects.filter(user=user, payment_status=Order.PaymentStatusChoices.SUCCESSFUL)
-
+    
         if date_filter:
             # Check if date_filter is not None or empty
             if date_filter.strip():
                 # Parse the date from the input field
                 parsed_date = datetime.strptime(date_filter, '%Y-%m-%d').date()
-
+                print(parsed_date)
+                print(date_filter)
                 # Filter orders based on the chosen date
                 orders = orders.filter(order_date__date=parsed_date)
 
@@ -1537,6 +1577,74 @@ def seasonal_sale(request):
 
 
 
+from math import sin, cos, sqrt, atan2, radians
+
+def haversine(lat1, lon1, lat2, lon2):
+    # Helper function to convert latitude and longitude strings to floats
+    def convert_coord(coord):
+        return float(coord) if coord is not None else 0.0
+    
+    # Convert latitude and longitude strings to floats
+    lat1, lon1, lat2, lon2 = map(convert_coord, [lat1, lon1, lat2, lon2])
+
+    # Convert latitude and longitude from degrees to radians
+    lat1, lon1, lat2, lon2 = map(radians, [lat1, lon1, lat2, lon2])
+
+    # Haversine formula (rest of the function remains the same)
+    dlat = lat2 - lat1
+    dlon = lon2 - lon1
+    a = sin(dlat / 2) * 2 + cos(lat1) * cos(lat2) * sin(dlon / 2) * 2
+    print(a)
+    c = 2 * atan2(sqrt(abs(a)), sqrt(1 - abs(a)))
+    distance = 6371.0 * c  # Radius of Earth in kilometers
+
+    return distance
+
+def allot_del_boy(request, order_id):
+    agents = DeliveryAgentProfile.objects.all()
+    order_instance = Order.objects.filter(id=order_id).first()
+    if order_instance:
+            user_order=order_instance.user
+            profile= Address.objects.filter(user=user_order).first()
+            latitude=profile.latitude_zip
+            longitude=profile.longitude_zip
+            for agent in agents:
+                if latitude is not None and longitude is not None:
+                    # Calculate distance for each seller using haversine
+                    distance = haversine(agent.latitude_zip, agent.longitude_zip, latitude, longitude)
+                    UserAgentDistance.objects.update_or_create(
+                        user=request.user,
+                        agent=agent.delivery_agent,
+                        defaults={'distance': distance}
+                    )
+            useragent = UserAgentDistance.objects.filter(user=request.user)
+            nearby_agent = useragent.filter(
+                distance__isnull=False,
+                user=request.user,
+            ).order_by('distance')[:1]
+
+            nearest_user_agent_distance = nearby_agent.first()
+            if nearest_user_agent_distance:
+                nearest_delivery_agent = nearest_user_agent_distance.agent
+            
+            AssignedDeliveryAgent.objects.create(
+            user=request.user, order=order_instance, deliveryagent=nearest_delivery_agent)
+            return redirect('hub_agent_assign')
+
+        
+    else:
+        # Handle the case where no order with the given ID is found
+        return HttpResponse("Order not found")
+    
+from geopy.geocoders import Nominatim
+
+def get_lat_long(location):
+    geolocator = Nominatim(user_agent="my_geocoder")
+    location = geolocator.geocode(location)
+    if location:
+        return location.latitude, location.longitude
+    else:
+        return None, None
 
 #delivery agent
 @never_cache
@@ -1553,11 +1661,14 @@ def delivery_agent_reg(request):
         password = make_password(request.POST.get('password'))
         first_name = request.POST.get('first_name')
         last_name = request.POST.get('last_name')
+        pincode=request.POST.get('pincode'),
+        latitude_zip, longitude_zip = get_lat_long(pincode)
+
         
         # Create a CustomUser instance
         user = CustomUser(email=email, password=password, first_name=first_name, last_name=last_name, is_delivery_agent=True, is_active=False)
         user.save()
-
+        
         delivery_agent_profile = DeliveryAgentProfile(
             delivery_agent=user,
             profile_photo=request.FILES.get('profilePhoto'),
@@ -1567,6 +1678,9 @@ def delivery_agent_reg(request):
             phone=request.POST.get('phone'),
             location=request.POST.get('location'),
             aadhaar_number=request.POST.get('id_number'),
+            pincode=pincode,
+            latitude_zip=latitude_zip,
+            longitude_zip=longitude_zip,
             driver_license_number=request.POST.get('driver_license_number'),
             vehicle_type=request.POST.get('vehicle_type'),
             vehicle_number=request.POST.get('vehicle_number'),
@@ -1611,7 +1725,28 @@ def delivery_agent_login(request):
 @never_cache
 @login_required(login_url='delivery_agent_login')
 def delivery_agent(request):
-    return render(request, 'delivery_agent.html')
+    if request.method == 'POST':
+        user = request.user
+        if user.is_authenticated:
+            delivery_agent_profile = DeliveryAgentProfile.objects.get(delivery_agent=user)
+            if 'availableBtn' in request.POST:
+                delivery_agent_profile.availability = True
+            elif 'notAvailableBtn' in request.POST:
+                delivery_agent_profile.availability = False
+            delivery_agent_profile.save()
+            return redirect('delivery_agent')  # Redirect after POST to avoid resubmission on refresh
+    
+    # Fetch the delivery agent profile
+    user = request.user
+    if user.is_authenticated:
+        delivery_agent_profile = DeliveryAgentProfile.objects.get(delivery_agent=user)
+    else:
+        delivery_agent_profile = None
+
+    context = {
+        'delivery_agent_profile': delivery_agent_profile,
+    }
+    return render(request, 'delivery_agent.html', context)
 
 @login_required(login_url='delivery_agent_login')
 def delivery_agent_profile(request):
@@ -1621,30 +1756,34 @@ def delivery_agent_profile(request):
    
 
 @login_required(login_url='delivery_agent_login')
+# def delivery_agent_orders(request):
+#     orders_list = Order.objects.filter(cart_items__accepted_by_store=True).distinct()
+#     paginator = Paginator(orders_list, 10)  # Number of orders per page
+#     if request.method == 'POST':  
+#         cart_item_id = request.POST.get('cart_item_id')  
+#         cart_item = CartItem.objects.get(pk=cart_item_id)  
+#         cart_item.ready_for_pickup = True
+#         cart_item.save()
+#         for order in Order.objects.filter(cart_items=cart_item):
+#             if all(item.ready_for_pickup for item in order.cart_items.all()):
+#                 order.ready_for_pickup = True
+#                 order.save()
+
+#         return redirect('delivery_agent_orders')
+#     page_number = request.GET.get('page')
+#     try:
+#         orders = paginator.page(page_number)
+#     except PageNotAnInteger:
+#         orders = paginator.page(1)
+#     except EmptyPage:
+#         orders = paginator.page(paginator.num_pages)
+
+#     context = {'orders': orders}
+#     return render(request, 'delivery_agent_orders.html', context)
+
 def delivery_agent_orders(request):
-    orders_list = Order.objects.filter(cart_items__accepted_by_store=True).distinct()
-    paginator = Paginator(orders_list, 10)  # Number of orders per page
-    if request.method == 'POST':  
-        cart_item_id = request.POST.get('cart_item_id')  
-        cart_item = CartItem.objects.get(pk=cart_item_id)  
-        cart_item.ready_for_pickup = True
-        cart_item.save()
-        for order in Order.objects.filter(cart_items=cart_item):
-            if all(item.ready_for_pickup for item in order.cart_items.all()):
-                order.ready_for_pickup = True
-                order.save()
-
-        return redirect('delivery_agent_orders')
-    page_number = request.GET.get('page')
-    try:
-        orders = paginator.page(page_number)
-    except PageNotAnInteger:
-        orders = paginator.page(1)
-    except EmptyPage:
-        orders = paginator.page(paginator.num_pages)
-
-    context = {'orders': orders}
-    return render(request, 'delivery_agent_orders.html', context)
+    del_req= AssignedDeliveryAgent.objects.filter(deliveryagent=request.user)
+    return render(request, 'delivery_agent_orders.html', {'del_req':del_req})
 
 def send_otp_to_customer(request, order_id):
     order = get_object_or_404(Order, id=order_id)
@@ -1659,3 +1798,92 @@ def send_otp_to_customer(request, order_id):
     send_otp_via_sms(user_profile.mobile_number, otp)
     
     return redirect('delivery_agent_orders')
+
+
+def customer_addresses(request):
+    user_profile, created = Customer_Profile.objects.get_or_create(customer=request.user)
+    addresses = Address.objects.filter(user_id=request.user.id)
+    district_choices = Address.DISTRICT_CHOICES 
+    
+    if request.method == 'POST':        
+        
+        if 'address_save_button' in request.POST:
+            
+            # Handle address form submission
+            building_name = request.POST.get('building_name')
+            address_type = request.POST.get('address_type')
+            street = request.POST.get('street')
+            city = request.POST.get('city')
+            state = request.POST.get('state')
+            zip_code = request.POST.get('zip_code') 
+
+            latitude_zip, longitude_zip = get_lat_long(zip_code)
+            
+            district = request.POST.get('district')
+            if district in ['Ernakulam', 'Thrissur', 'Idukki', 'Alappuzha', 'Kottayam', 'Thiruvananthapuram', 'Pathanamthitta', 'Kollam']:
+                location = 'Ernakulam'
+            elif district in ['Kannur', 'Kasaragod', 'Kozhikode']:
+                location = 'Kannur'
+            elif district in ['Malappuram', 'Palakkad', 'Wayanad']:
+                location = 'Malappuram'
+            else:
+                # Handle other districts
+                location = ''
+            address = Address(
+                user=request.user,
+                building_name=building_name,
+                address_type=address_type,
+                street=street,
+                city=city,
+                state=state,
+                zip_code=zip_code,
+                district=district,
+                location=location,
+                latitude_zip = latitude_zip,
+                longitude_zip = longitude_zip
+            )
+            address.save()
+            messages.success(request, 'Address added successfully', extra_tags='add_address_tag')
+            return redirect('customer_addresses') 
+    
+    context = {
+        'addresses': addresses, 
+        'district_choices': district_choices,
+        'form_submitted': request.method == 'POST',
+    }
+    return render(request, 'customer_addresses.html', context)
+
+
+def update_picked(request):
+    if request.method == 'POST':
+        # Get the order ID from the form
+        order_id = request.POST.get('order_id')
+        
+        # Retrieve the AssignedDeliveryAgent object for the given order ID
+        assigned_delivery_agent = AssignedDeliveryAgent.objects.get(order_id=order_id)
+        
+        # Update the status to 'PICKED'
+        assigned_delivery_agent.status = 'PI'
+        assigned_delivery_agent.save()
+        order = Order.objects.get(id=order_id)
+        # Update the ready_for_pickup field of the Order object to True
+        order.picked_by_agent = True
+        order.save()
+        # Redirect to the same page or any other page as needed
+        return redirect('delivery_agent_orders')  # Redirect to the delivery agent orders page
+    
+    # Handle GET requests or any other scenarios if needed
+    return redirect('delivery_agent_orders')
+    
+def update_ready_picked(request):
+    if request.method == 'POST':
+        # Get the order ID from the form
+        order_id = request.POST.get('order_id')
+        assigned_delivery_agent = AssignedDeliveryAgent.objects.get(order_id=order_id)
+        assigned_delivery_agent.ready_for_pickup = True
+        assigned_delivery_agent.save()
+        order = Order.objects.get(id=order_id)
+        # Update the ready_for_pickup field of the Order object to True
+        order.ready_for_pickup = True
+        order.save()
+        return redirect('delivery_agent_orders')

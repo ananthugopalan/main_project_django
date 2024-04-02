@@ -105,6 +105,19 @@
                             </div>
                         </div>
                     </div>
+                    <div class="row mt-5">
+                        <h4>Status:</h4>
+                        <form id="availabilityForm" method="post" action="{% url 'delivery_agent' %}">
+                            {% csrf_token %}
+                            <div class="col-md-2">
+                                <button type="submit" name="availableBtn" id="availableBtn" class="btn btn-success border-0" {% if not available %}disabled{% endif %} onclick="return confirm('Are you sure to change status to available?')">Available</button>
+                            </div>
+                            <div class="col-md-2">
+                                <button type="submit" name="notAvailableBtn" id="notAvailableBtn" class="btn btn-danger border-0" {% if available %}disabled{% endif %} onclick="return confirm('Are you sure to change status to not available?')">Not Available</button>
+                            </div>
+                        </form>                       
+                        
+                    </div>
                 </div>
             </main>
         </div>
@@ -128,7 +141,22 @@
         </div>
     </footer>
     <!-- Footer -->
-
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            updateButtonStates();
+        });
+    
+        function updateButtonStates() {
+            var available = {{ delivery_agent_profile.availability|lower }};
+            if (available) {
+                document.getElementById("availableBtn").disabled = true;
+                document.getElementById("notAvailableBtn").disabled = false;
+            } else {
+                document.getElementById("availableBtn").disabled = false;
+                document.getElementById("notAvailableBtn").disabled = true;
+            }
+        }
+    </script>
     <!-- Bootstrap JS (Optional, for Bootstrap components that require JS) -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     </body>

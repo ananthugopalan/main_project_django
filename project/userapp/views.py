@@ -1,3 +1,5 @@
+import json
+from django.http import HttpResponseRedirect
 from django.shortcuts import render,redirect
 from django.contrib.auth.models import User,auth
 from django.contrib import messages
@@ -8,9 +10,11 @@ from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import urlsafe_base64_encode
 from django.utils.http import urlsafe_base64_decode
 from django.utils.encoding import force_bytes
+import requests
 from .models import CustomUser, SellerDetails
 from django.contrib.auth import authenticate, login as auth_login 
 from django.views.decorators.cache import never_cache
+
 
 
 # Create your views here.
@@ -195,6 +199,17 @@ def seller_registration(request):
 @never_cache
 def user_login(request):
     if request.method == 'POST':
+        # captcha_token = request.POST.get("g-recaptcha-response")
+        # cap_url = "https://www.google.com/recaptcha/api/siteverify"
+        # cap_secret = "6LcFr54pAAAAAGDn79XIH3jRTZokr_RGGglSK1yP"
+        # cap_data = {"secret": cap_secret, "response": captcha_token}
+        
+        # cap_server_response = requests.post(url=cap_url, data=cap_data)
+        # cap_json = json.loads(cap_server_response.text)
+        # print(cap_server_response.text) 
+        # if not cap_json['success']:
+        #     return HttpResponseRedirect(reverse('user_login') + '?alert=invalid_captcha')
+        
         email = request.POST.get('email')
         password = request.POST.get('password')
         if email and password:

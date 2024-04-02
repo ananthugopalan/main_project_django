@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
+    'captcha',
 ]
 
 SITE_ID = 1
@@ -173,3 +174,6 @@ DEFAULT_FROM_EMAIL = 'agriselect1@gmail.com'
 
 RAZOR_KEY_ID = 'rzp_test_jTMQxQDS3uc311'
 RAZOR_KEY_SECRET = 'TGgEWV7SCDVtGwsRxQs9gn4J'
+
+RECAPTCHA_PUBLIC_KEY = '6LcFr54pAAAAALblLbxUyj0dIxkV9e7gvJD3qK55'
+RECAPTCHA_PRIVATE_KEY = '6LcFr54pAAAAAGDn79XIH3jRTZokr_RGGglSK1yP'

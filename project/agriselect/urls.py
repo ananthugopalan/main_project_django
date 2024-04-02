@@ -25,6 +25,7 @@ urlpatterns = [
     path('customer_allProducts/<str:category>/', views.customer_allProducts, name='customer_allProducts'),
     path('customer_OrderView/',views.customer_OrderView,name='customer_OrderView'),
     path('customer/order/view/', CustomerOrderView.as_view(), name='customer_order_view'),
+    path('customer_addresses/',views.customer_addresses,name='customer_addresses'),
 
     path('generate-pdf/<int:order_id>/', GeneratePDF.as_view(), name='generate_pdf'),
     path('seasonal_sale/',views.seasonal_sale, name='seasonal_sale'),
@@ -85,6 +86,8 @@ urlpatterns = [
     path('admin_report/', views.admin_report, name='admin_report'),
     path('admin_hubs/', views.admin_hubs, name='admin_hubs'),
     path('admin_delivery_agents/', views.admin_delivery_agents, name='admin_delivery_agents'),
+    path('admin_agent_assign/', views.admin_agent_assign, name='admin_agent_assign'),
+
 
 
     path('delete_hub/<int:hub_id>/', views.delete_hub, name='delete_hub'),
@@ -100,6 +103,10 @@ urlpatterns = [
     path('get_agent_details/<int:agent_id>/', views.get_agent_details, name='get_agent_details'),
 
     path('send-otp/<int:order_id>/', views.send_otp_to_customer, name='send_otp_to_customer'),
+    path('update_picked/', views.update_picked, name='update_picked'),
+
+    path('update_ready_picked/', views.update_ready_picked, name='update_ready_picked'),
+
 
 
 
@@ -108,6 +115,9 @@ urlpatterns = [
     path('hub_dashboard/', views.hub_dashboard, name='hub_dashboard'),
     path('hub_orders/', views.hub_orders, name='hub_orders'),
     path('hub_report/', views.hub_report, name='hub_report'),
+    path('hub_agent_assign/', views.hub_agent_assign, name='hub_agent_assign'),
+
+    path('allot_del_boy/<int:order_id>/', views.allot_del_boy, name='allot_del_boy'),
 
 
 ]

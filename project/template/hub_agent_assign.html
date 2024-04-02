@@ -73,54 +73,40 @@
             <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
                 <div class="container mt-5">
                     <h4>Orders List</h4>
-                    <table class="table table-bordered mt-4">
+                    <table class="table">
                         <thead>
                             <tr>
                                 <th>Order ID</th>
-                                <th>User Email</th>
-                                <th>Product Name</th>
-                                <th>Quantity</th>
-                                <th>Price</th>
-                                <th>Order Date</th>
-                                <th>Status</th>
-                                <th>Action</th>
+                                <!-- <th>Estimated Delivery Time</th> -->
+                                <!-- <th>Shipping By</th> -->
+                                <th>Allot Delivery Boy</th>
+                                
+                               
                             </tr>
                         </thead>
                         <tbody>
-                            {% for order in orders %}
-                                {% for cart_item in order.cart_items.all %}
-                                    {% if cart_item.dispatched %}
-                                        <tr>
-                                            <td>{{ order.id }}</td>
-                                            <td>{{ order.user.email }}</td>
-                                            <td style="width: 25%"><img class="me-3" src="{{ cart_item.product.product_image.url }}" alt="{{ cart_item.product.product_name }}" width="50" height="50">{{ cart_item.product.product_name }}</td>
-                                            <td>{{ cart_item.quantity }}</td>
-                                            <td>₹{{ cart_item.total_price }}</td>
-                                            <td>{{ order.order_date }}</td>
-                                            <td>
-                                                {% if cart_item.dispatched %}
-                                                    Dispatched
-                                                {% else %}
-                                                    Requested
-                                                {% endif %}
-                                            </td>
-                                            <td>
-                                                <form method="post" action="{% url 'hub_orders' %}">
-                                                    {% csrf_token %}
-                                                    <input type="hidden" name="cart_item_id" value="{{ cart_item.id }}">
-                                                    {% if cart_item.accepted_by_store %}
-                                                        <button type="submit" class="bg-success rounded" disabled><i class="fas fa-check"></i></button>
-                                                    {% else %}
-                                                        <button type="submit" class="bg-warning rounded" onclick="return confirm('Are you sure you want to accept this order?')">Accept</button>
-                                                    {% endif %}
-                                                </form>
-                                            </td>
-                                        </tr>
-                                    {% endif %}
-                                {% endfor %}
-                            {% endfor %}
-                        </tbody>
-                    </table>
+                            {% for order in show_orders|dictsortreversed:"order_date" %}
+                            <tr>
+                                <td><b>{{ order.id }}</b></td>
+                                
+                                {% if order.assigneddeliveryagent_set.all %}
+                                <!-- If a delivery agent is already assigned -->
+                                <td>Delivery Agent allotted</td>
+                            {% else %}
+                                <!-- If a delivery agent is not assigned, display the allot button -->
+                                <td>
+                                    <form action="{% url 'allot_del_boy' order.id %}">
+                                        <button type="submit">Allot Delivery Boy</button>
+                                    </form>
+                                </td>
+                            {% endif %}
+    
+                        </tr>
+   
+                        {% endfor %}
+                    </tbody>
+                </table>
+                                                        
                 </div>
             </main>            
         </div>

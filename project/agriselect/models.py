@@ -53,7 +53,6 @@ class Customer_Profile(models.Model):
     mobile_number = models.CharField(max_length=15)
     verified = models.BooleanField(default=False)
     otp = models.CharField(max_length=100,default='Null')
-
     def __str__(self):
         return self.first_name
     
@@ -103,6 +102,9 @@ class Address(models.Model):
     location = models.CharField(max_length=100, choices=LOCATION_CHOICES, blank=True, null=True)
     state = models.CharField(max_length=100)
     zip_code = models.CharField(max_length=10)
+    latitude_zip = models.CharField(max_length=100, default='Null')
+    longitude_zip = models.CharField(max_length=100, default='Null')
+
 
     def __str__(self):
         return f"{self.user.email} - {self.address_type}"
@@ -158,6 +160,7 @@ class Order(models.Model):
     order_status = models.CharField(
         max_length=20, choices=OrderStatusChoices.choices, default=OrderStatusChoices.REQUESTED)
     accepted_by_store = models.BooleanField(default=False)
+    picked_by_agent = models.BooleanField(default=False)
     ready_for_pickup = models.BooleanField(default=False)  # New field
     otp = models.CharField(max_length=100, default='Null')
     verified = models.BooleanField(default=False)
@@ -372,7 +375,10 @@ class DeliveryAgentProfile(models.Model):
     account_number = models.CharField(max_length=18)
     ifsc_code = models.CharField(max_length=11)
     id_document = models.FileField(upload_to='id_documents/', blank=True, null=True)
-
+    pincode = models.CharField(max_length=6, default='Null')
+    latitude_zip = models.CharField(max_length=100, default='Null')
+    longitude_zip = models.CharField(max_length=100, default='Null')
+    availability = models.BooleanField(default=False)
 
     def save(self, *args, **kwargs):
             # Generate a unique employee ID if it's not already set
@@ -382,4 +388,38 @@ class DeliveryAgentProfile(models.Model):
                 new_id = last_id + 1
                 self.employee_id = f'AS{new_id:04}'
             super().save(*args, **kwargs)
+
+class AssignedDeliveryAgent(models.Model):
+    ORDER_REQUESTED = 'OR'
+    PICKED = 'PI'
+    AT_POINT= 'AP'
+    SUCCESSFUL = 'SU'
     
+    SHIPPED_CHOICES = [
+        (ORDER_REQUESTED, 'Order Requested'),
+        (PICKED, 'PICKED'),
+        (AT_POINT, 'AT_POINT'),
+        (SUCCESSFUL, 'Successful'),
+    ]
+
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    deliveryagent = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='assigned_orders')  
+    status = models.CharField(max_length=2, choices=SHIPPED_CHOICES, default=ORDER_REQUESTED)
+    ready_for_pickup=models.BooleanField(default=False)
+    delivered=models.BooleanField(default=False)
+    delivery_date_alloted = models.DateField(null=True, blank=True)
+    created_at = models.DateField(auto_now_add=True)
+    otp = models.CharField(max_length=6,default='123456')
+
+    def __str__(self):
+        return f"Assigned delivery agent for {self.order}"
+    
+
+class UserAgentDistance(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    agent = models.ForeignKey(CustomUser, on_delete=models.CASCADE,related_name='agent_distances')
+    distance = models.FloatField()
+
+    def __str__(self):
+        return f"{self.user.username} - {self.agent}"
