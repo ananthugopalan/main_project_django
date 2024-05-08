@@ -839,14 +839,15 @@ def verify_order_otp(request):
         
         # Retrieve the order object
         order = Order.objects.get(id=order_id)
-        
+        assign = AssignedDeliveryAgent.objects.get(order=order) 
         # Check if the entered OTP matches the OTP stored in the order and it's not null
         if order.otp == otp_entered and order.otp != 'Null':
             # Update the order to mark it as verified
             order.verified = True
             order.order_status = order.OrderStatusChoices.DELIVERED
             order.save()
-            
+            assign.delivered = True
+            assign.save()
             # Redirect to a success page or display a success message
             messages.success(request, 'Order verified successfully.')
             return redirect('customer_order_view')  # Change 'success_page' to the name of your success page URL
@@ -1529,16 +1530,18 @@ def product_seeds(request):
 @login_required(login_url='user_login')
 def customer_growbag(request):
     if request.method == 'POST':
+        customer = request.user
         color_chosen = request.POST.get('color')  # Get the chosen color from the form data
         size_chosen = request.POST.get('size')  # Get the chosen size from the form data
         drainage_holes = request.POST.get('drainage') == 'on'  # Check if drainage holes are selected
         icon_chosen = request.POST.get('icons')  # Get the chosen icon from the form data
-        current_price = request.POST.get('price')  # Get the current price from the form data
-        qty = request.POST.get('quantity')  # Get the quantity from the form data
+        current_price = Decimal(request.POST.get('price'))  # Convert to Decimal
+        qty = int(request.POST.get('quantity')) 
         image = request.FILES.get('growbag-img')
 
         # Create a new instance of the Growbag model with the form data
         growbag = Growbag(
+            customer = customer,
             color_chosen=color_chosen,
             size_chosen=size_chosen,
             drainage_holes=drainage_holes,
@@ -1550,8 +1553,112 @@ def customer_growbag(request):
 
         # Save the instance to the database
         growbag.save()
-        return redirect('customer_growbag')
+        total_price = current_price * qty
+        request.session['total_price'] = str(total_price)
+        return redirect('growbag_checkout')
+
     return render(request, 'customer_growbag.html')
+
+def growbag_checkout(request):
+    total_price = request.session.get('total_price')
+    total_price = Decimal(total_price)
+    request.session['total_price'] = str(total_price)
+
+    return render(request, 'growbag_checkout.html', {'total_price': total_price})
+
+import razorpay
+from django.conf import settings
+from django.views.decorators.csrf import csrf_exempt
+from django.http import HttpResponseBadRequest
+from decimal import Decimal
+from django.db import transaction
+
+razorpay_client = razorpay.Client(
+	auth=(settings.RAZOR_KEY_ID, settings.RAZOR_KEY_SECRET))
+
+
+def growbag_payment(request):
+    if request.method == 'POST':
+            user = request.user
+            total_price = request.session.get('total_price')
+            total_price = Decimal(total_price)
+            currency = 'INR'
+            amount = int(total_price * 100)
+            razorpay_order = razorpay_client.order.create(dict(
+                amount=amount,
+                currency=currency,
+                payment_capture='0'
+            ))
+            razorpay_order_id = razorpay_order['id']
+            callback_url = '/growbagpaymenthandler/'             
+
+    # Create a context dictionary with all the variables you want to pass to the template
+            context = {
+                'total_price': total_price,
+                'razorpay_order_id': razorpay_order_id,
+                'razorpay_merchant_key': settings.RAZOR_KEY_ID,
+                'razorpay_amount': amount,  # Set to 'total_price'
+                'currency': currency,
+                'callback_url': callback_url,
+            }
+
+    return render(request, 'growbag_payment.html', context=context)
+
+from twilio.rest import Client
+@csrf_exempt
+def growbagpaymenthandler(request):
+    if request.method == "POST":
+        payment_id = request.POST.get('razorpay_payment_id', '')
+        razorpay_order_id = request.POST.get('razorpay_order_id', '')
+        signature = request.POST.get('razorpay_signature', '')
+
+        # Verify the payment signature.
+        params_dict = {
+            'razorpay_order_id': razorpay_order_id,
+            'razorpay_payment_id': payment_id,
+            'razorpay_signature': signature
+        }
+        result = razorpay_client.utility.verify_payment_signature(
+            params_dict)
+        if result is False:
+            # Signature verification failed.    
+            return render(request, 'payment/paymentfail.html')
+        else:
+            total_price = request.session.get('total_price')
+            total_price = Decimal(total_price)
+            # Capture the payment with the amount from the order
+            amount = int(total_price * 100)  # Convert Decimal to paise
+            razorpay_client.payment.capture(payment_id, amount)
+
+            # Update the order with payment ID and change status to "Successful"
+            # order.payment_id = payment_id
+            # order.payment_status = Growbag.PaymentStatusChoices.SUCCESSFUL
+            # order.save()
+           
+            # Update the stock of products
+            # for cart_item in order.cart_items.all():
+            #     product = cart_item.product
+            #     if product.status == Product.StatusChoices.IN_STOCK:
+            #         product.stock -= cart_item.quantity
+            #         if product.stock == 0:
+            #             product.status = Product.StatusChoices.OUT_OF_STOCK
+            #         product.save()
+
+                    
+            #         order_notification(product.seller.id, product.id)
+                
+            #     revenue_amount = cart_item.total_price * Decimal('0.70')  # Calculate revenue (70% of total price)
+            #     SellerRevenue.objects.create(order=order, seller=product.seller, revenue=revenue_amount)
+
+            # cart_items = CartItem.objects.filter(user=request.user)
+            # for cart_item in cart_items:
+            #     cart_item.status = CartItem.StatusChoices.ORDERED
+            #     cart_item.save()
+
+            # Redirect to a success page or return a success response
+            return redirect('/')
+        
+
 
 def seasonal_sale(request):
     admin_settings_obj, created = AdminSettings.objects.get_or_create(pk=1)
@@ -1887,3 +1994,6 @@ def update_ready_picked(request):
         order.ready_for_pickup = True
         order.save()
         return redirect('delivery_agent_orders')
+    
+
+

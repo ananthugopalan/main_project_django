@@ -127,12 +127,14 @@
                                         {% endif %}
                                     </td>
                                     <td>   
-                                    {% if order.ready_for_pickup %}
+                                    {% if order.ready_for_pickup and not order.delivered %}
  
                                     <form method="post" action="{% url 'send_otp_to_customer' order.order.id %}">
                                             {% csrf_token %}                                                    
                                             <button type="submit" class="btn btn-secondary rounded" onclick="return confirm('Are you sure you want to send OTP?')">Send</button>                                        
                                     </form>
+                                    {% elif order.delivered %}
+                                    <button type="submit" class="btn btn-secondary rounded" onclick="return confirm('Are you sure you want to send OTP?')" disabled>Send</button>                                        
                                     {% else %}
                                     <button type="submit" class="btn btn-secondary rounded" onclick="return confirm('Are you sure you want to send OTP?')" disabled>Send</button>                                        
                                     {% endif %}

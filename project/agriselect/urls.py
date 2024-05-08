@@ -35,6 +35,9 @@ urlpatterns = [
     path('product_seeds/', views.product_seeds, name='product_seeds'),
     
     path('customer_growbag/', views.customer_growbag, name='customer_growbag'),
+    path('growbag_payment/', views.growbag_payment, name='growbag_payment'),
+    path('growbagpaymenthandler/', views.growbagpaymenthandler, name='growbagpaymenthandler'),
+    path('growbag_checkout/', views.growbag_checkout, name='growbag_checkout'),
 
     path('verify-order-otp/', views.verify_order_otp, name='verify_order_otp'),
 

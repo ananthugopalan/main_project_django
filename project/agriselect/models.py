@@ -209,6 +209,16 @@ class CustomerReview(models.Model):
     
 
 class Growbag(models.Model):
+    class PaymentStatusChoices(models.TextChoices):
+        PENDING = 'pending', 'Pending'
+        SUCCESSFUL = 'successful', 'Successful'
+        FAILED = 'failed', 'Failed'
+    
+    class StatusChoices(models.TextChoices):
+        PENDING = 'pending', 'Pending'
+        ACTIVE = 'active', 'Active'
+        PAID = 'paid', 'Paid'
+
     COLOR_CHOICES = [
         ('brown', 'Brown'),
         ('blue', 'Blue'),
@@ -240,7 +250,7 @@ class Growbag(models.Model):
         ('crops', 'Crops'),
         ('cannabis', 'Cannabis'),
     ]
-
+    customer = models.ForeignKey(CustomUser, blank=True, null=True, on_delete=models.CASCADE)
     color_chosen = models.CharField(max_length=255, choices=COLOR_CHOICES, default='brown')
     size_chosen = models.CharField(max_length=255, choices=SIZE_CHOICES, default='regular')
     drainage_holes = models.BooleanField(default=False, null=True, blank=True)
@@ -248,7 +258,12 @@ class Growbag(models.Model):
     current_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     qty = models.PositiveIntegerField(default=1)  # Field for quantity
     image = models.ImageField(upload_to='growbag_images/', null=True, blank=True)
-
+    order_date_only = models.DateField(default=timezone.now)
+    razorpay_order_id = models.CharField(max_length=255, null=True, blank=True)
+    payment_status = models.CharField(
+        max_length=20, choices=PaymentStatusChoices.choices, default=PaymentStatusChoices.PENDING)
+    status = models.CharField(
+        max_length=20, choices=StatusChoices.choices, default=StatusChoices.PENDING)
     def __str__(self):
         return f"Growbag - {self.color_chosen} - {self.size_chosen}"
 
