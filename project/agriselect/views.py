@@ -1379,6 +1379,27 @@ from decimal import Decimal
 from django.db import transaction
 
 
+def send_sms_notification(to_number, message):
+    # Twilio credentials
+    account_sid = 'ACa2fcaf87e061fb6edd80385a76c502f1'
+    auth_token = 'a7574566c793cbadaa642b43e0301903'
+    from_number = '+12136744510'
+
+    # Initialize Twilio client
+    client = Client(account_sid, auth_token)
+
+    try:
+        # Send SMS
+        message = client.messages.create(
+            body=message,
+            from_=from_number,
+            to=to_number
+        )
+        print(f"SMS sent successfully: {message.sid}")
+        return True
+    except Exception as e:
+        print(f"Failed to send SMS: {e}")
+        return False
 
 # authorize razorpay client with API Keys.
 razorpay_client = razorpay.Client(
@@ -1482,19 +1503,21 @@ def paymenthandler(request):
                 cart_item.status = CartItem.StatusChoices.ORDERED
                 cart_item.save()
             
-            if order.payment_status == Order.PaymentStatusChoices.SUCCESSFUL:
-                message_body = f"✅ Your order has been placed for order ID #{order.id} on  📅{order.order_date_only}. We look forward for further orders from you. Thank for choosing AgriSelect🌱 for your need."
+            # if order.payment_status == Order.PaymentStatusChoices.SUCCESSFUL:
+            #     message_body = f"✅ Your order has been placed for order ID #{order.id} on  📅{order.order_date_only}. We look forward for further orders from you. Thank for choosing AgriSelect🌱 for your need."
 
-                client = Client("AC784edca2d4dc48edab5e0eb39519d949", "b4f393289f7f588341d23277806cdaa3")
-                message = client.messages.create(
-                    from_='whatsapp:+14155238886',
-                    body=message_body,
-                    to='whatsapp:+917306053696'  # Replace with the user's WhatsApp number
-                )
+            #     client = Client("AC784edca2d4dc48edab5e0eb39519d949", "b4f393289f7f588341d23277806cdaa3")
+            #     message = client.messages.create(
+            #         from_='whatsapp:+14155238886',
+            #         body=message_body,
+            #         to='whatsapp:+917306053696'  # Replace with the user's WhatsApp number
+            #     )
+            customer_profile = Customer_Profile.objects.get(customer=order.user)
+            message = f"Dear {customer_profile.first_name}, your order payment was successful. Thank you for shopping with AgriSelect!"
+            send_sms_notification(customer_profile.mobile_number, message)
 
             # Redirect to a success page or return a success response
             return redirect('/')
-
 
 
 @login_required(login_url='user_login')
